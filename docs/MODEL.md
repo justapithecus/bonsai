@@ -22,6 +22,23 @@ Intent → Shape → Motion → Accessibility → Capability → Fit → (In)Act
 
 Each dimension is defined independently and must not collapse into another.
 
+### Quantification Without Normative Collapse
+
+Quantitative structure is permitted within the model, so long as it does not collapse into normative conclusions.
+
+Bonsai may use:
+- explicit metrics
+- feature vectors
+- coefficients and ratios
+- distances, similarities, and divergences
+- envelopes and constraints
+
+Bonsai must not:
+- aggregate dimensions into a single scalar
+- imply ordering of repositories or people
+- encode “closer is better” semantics
+- hide assumptions inside composite metrics
+
 ---
 
 ## 1. Intent
@@ -179,6 +196,9 @@ Fit is NOT:
 
 Fit surfaces *tension*, not judgment.
 
+Fit is computed as constraint satisfaction, not scoring.
+It indicates where observed conditions fall outside declared intent envelopes.
+
 ---
 
 ## 7. (In)Action
@@ -217,6 +237,26 @@ Bonsai may not:
 - declare outcomes as favorable or unfavorable
 
 All interpretation beyond surfaced observations is the responsibility of the human steward.
+
+---
+
+## Computational Boundary
+
+Bonsai is not a decision engine.
+It is an instrument for making constraints and tensions legible.
+
+The system computes:
+- observations
+- relations
+- constraints
+- tensions
+- unknowns
+
+The system does not compute:
+- decisions
+- priorities
+- actions
+- value judgments
 
 ---
 
