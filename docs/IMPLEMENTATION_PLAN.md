@@ -144,3 +144,110 @@ Support slow reflection over quarters and years.
 Explore team or organizational use without violating core constraints.
 
 This phase is optional and not required for project success.
+
+### Stretch Guidance (Computation Without Normative Collapse)
+
+#### Core Clarification
+Avoiding scores and rankings does not imply avoiding quantitative structure.
+
+Bonsai permits:
+- explicit metrics
+- feature vectors
+- coefficients
+- distances
+- envelopes and constraints
+- clustering and embeddings
+
+Bonsai forbids:
+- normative aggregation into a single scalar
+- implicit or explicit ordering of repositories or people
+- optimization toward a notion of “better”
+- loss functions that encode preference or priority
+
+The boundary is **normative collapse**, not quantification.
+
+#### Design Principle
+
+> Bonsai over-engineers features and under-engineers conclusions.
+
+All computation must stop at the point where:
+- tensions are surfaced
+- constraints are evaluated
+- unknowns are made explicit
+
+No computation may continue into:
+- judgment
+- prioritization
+- recommendation
+- optimization
+
+#### Feature Engineering Guidance
+
+Implementation may:
+- represent repositories as multi-dimensional feature vectors
+- use coefficients and ratios to describe relationships
+- compute distances, similarities, and divergences
+- evaluate observations against declared intent envelopes
+- surface violations of declared constraints deterministically
+
+Implementation must not:
+- reduce multiple dimensions into a single “health” value
+- rank or order repositories by desirability
+- encode “closer is better” semantics
+- hide assumptions behind composite metrics
+
+#### Fit Computation (Constraint Satisfaction)
+
+Fit is computed as constraint satisfaction, not scoring.
+
+Allowed outputs include:
+- “Observed structure lies outside declared complexity tolerance”
+- “Motion exceeds declared stability expectations”
+- “Accessibility assumptions exceed declared audience”
+
+Forbidden outputs include:
+- “This project is unhealthy”
+- “This repo should be prioritized”
+- “This is worse than X”
+
+Fit surfaces where reality violates expectations, not what to do about it.
+
+#### Machine Learning (Stretch Only)
+
+Machine learning may be used only for:
+- feature extraction
+- pattern recognition
+- clustering
+- classification of observed phenomena
+- compression of high-dimensional observation space
+
+Machine learning must not:
+- define success criteria
+- own a loss function tied to outcomes
+- produce recommendations
+- replace explicit intent with learned intent
+- collapse uncertainty into confidence
+
+ML outputs must remain:
+- observational
+- contextual
+- discardable
+- non-normative
+
+#### Computational Boundary (Explicit)
+
+> Bonsai is not a decision engine.
+> It is an instrument for making constraints and tensions legible.
+
+The system computes:
+- observations
+- relations
+- constraints
+- tensions
+- unknowns
+
+The system does not compute:
+- decisions
+- priorities
+- actions
+- value judgments
