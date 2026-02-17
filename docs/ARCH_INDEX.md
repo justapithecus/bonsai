@@ -16,6 +16,9 @@ It is not a design document. It is a structural lookup table.
 - `AGENTS.md`
   Role definitions and development discipline.
 
+- `.grove.yaml`
+  Grove's own stewardship declaration. Grove observes itself.
+
 ---
 
 ## /docs

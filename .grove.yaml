@@ -1,0 +1,7 @@
+grove:
+  intent: "A stewardship engine for long-running software ecosystems that surfaces structural integrity and temporal rhythm without optimizing for velocity."
+  horizon: "perennial"
+  role: "stewardship"
+  phase: "expanding"
+  steward: "Andrew"
+  consolidation_interval_days: 120

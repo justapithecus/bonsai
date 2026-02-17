@@ -22,6 +22,10 @@ The following must always hold. No role, feature, or extension may violate them.
 - **No intent inference.** Intent is declared by humans, never derived from code, activity, or popularity.
 - **Inaction is first-class.** Doing nothing is a valid and often correct outcome.
 
+### Self-Observation
+
+Grove is subject to its own ecology. It declares its own `.grove.yaml`, observes its own structural integrity, and is not exempt from its own invariants.
+
 ---
 
 ## Stewardship Framing
@@ -159,9 +163,12 @@ Dormancy has two contextual modes — **Hibernation** (resting, still-living) an
 
 **Climate** is an ecosystem-level declaration describing the overall atmospheric state of a steward's portfolio. It uses the same seasonal vocabulary. Climate is:
 
-- Manually declared by the steward — never inferred
+- Always set by the steward — never changed by inference or automation
 - Portfolio-wide — not per-repository
 - Not stored in `.grove.yaml`
+- Rare to change — quarterly at most, requiring explicit confirmation
+
+Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation neglect, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
 
 When climate and season diverge, Grove surfaces the tension as observation. It does not enforce alignment, recommend changes, or create urgency.
 

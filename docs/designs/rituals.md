@@ -30,7 +30,7 @@ Seasons map from phases; they are not independently declared.
 
 ### Climate
 
-An ecosystem-level declaration that describes the overall atmospheric state of a portfolio. Climate is manually declared by the steward, applies across repositories, and uses the same seasonal vocabulary. Climate is never inferred from aggregate data.
+An ecosystem-level declaration that describes the overall atmospheric state of a portfolio. Climate is always set by the steward, applies across repositories, and uses the same seasonal vocabulary. Climate is never changed by inference; review may be prompted by observation of activity patterns.
 
 ---
 
@@ -172,9 +172,10 @@ Climate is a portfolio-level declaration that describes the overall atmospheric 
 
 ### Properties
 
-- Climate is **manually declared** by the steward. It is never inferred from aggregate project data.
+- Climate is **always set by the steward**. It is never changed by inference or automation.
 - Climate applies across the entire portfolio, not per-repository.
 - Climate is not stored in `.grove.yaml` (which is per-repo). It is an ecosystem-level configuration.
+- Climate changes should be **rare** — quarterly at most — and require **explicit confirmation**.
 - Climate may differ from the predominant season of individual projects. This tension is surfaced, not enforced.
 
 ### Climate/Season Tension
@@ -197,15 +198,34 @@ Grove may suggest that a ritual might be relevant based on observable conditions
 - Phase has been stable for an extended period
 - Intent has not been updated in a long time
 - Ecosystem balance has not been reviewed recently
+- Activity tempo has shifted notably across the portfolio
 
 Grove may **never**:
 
 - Automatically initiate or trigger a ritual
 - Change project state based on ritual engagement or non-engagement
+- Change climate or any declared value
 - Create notifications, alerts, or persistent reminders for rituals
 - Track whether a ritual was accepted, declined, or ignored
 
+Inference suggests review. It never changes state.
+
 The suggested window for ritual relevance is **quarterly**. This is a suggestion cadence, not a schedule.
+
+### Inference Types
+
+v1 inference types — patterns Grove may observe to suggest review:
+
+- **Activity tempo** — Shifts in commit frequency, PR cadence, or engagement patterns across the portfolio.
+- **Consolidation neglect** — A project's consolidation interval has elapsed without a consolidation ritual being surfaced or engaged.
+- **Dependency gravity** — Changes in dependency load that shift the structural weight of a project within the portfolio.
+
+### Future Inference Types
+
+The following inference types are deferred. They are recorded here for boundary-setting, not for implementation.
+
+- **Epistemic drift** — Divergence between a project's documented knowledge and its observed behavior. Requires capability probes and accessibility analysis not yet available.
+- **Agency creep** — A system begins making decisions or prescribing actions beyond its declared scope. Relevant to Grove's own self-observation. Requires meta-observational infrastructure not yet available.
 
 ---
 
@@ -240,6 +260,7 @@ The following patterns indicate drift away from the ritual model's intent:
 - **Rhythm Optimization** — Analyzing ritual cadences to suggest "optimal" timing or frequency.
 - **Ritual Metrics** — Any quantitative measurement of ritual participation, duration, or outcomes.
 - **Seasonal Comparison** — Ranking projects or stewards based on seasonal state or transition patterns.
+- **Automatic Climate Change** — Changing the declared climate based on inference, aggregate data, or observed patterns without explicit steward confirmation.
 
 ---
 

@@ -49,6 +49,7 @@ The declared function of a project within a portfolio.
 | `library` | Reusable module. Consumed by other codebases. |
 | `experiment` | Exploratory work. May not persist. |
 | `documentation` | Knowledge artifact. Guides, references, specifications. |
+| `stewardship` | Meta-observational system. Observes other projects or the ecosystem itself. |
 
 ---
 
@@ -125,9 +126,12 @@ Season exists to provide atmospheric vocabulary for the UI and reflective langua
 An ecosystem-level declaration describing the overall atmospheric state of a steward's portfolio. Climate uses the same seasonal vocabulary: Expansion, Consolidation, Pruning, Dormancy.
 
 Climate is:
-- **manually declared** by the steward — never inferred from aggregate data
+- **always set by the steward** — never changed by inference or automation
 - **portfolio-wide** — not per-repository
 - **not stored in `.grove.yaml`** — it is an ecosystem-level configuration
+- **rare to change** — quarterly at most, requiring explicit confirmation
+
+Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation neglect, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
 
 When the declared climate differs from a project's derived season, Grove surfaces this as an observation. Climate/season tension is never accompanied by recommendations, urgency, or corrective suggestions.
 
