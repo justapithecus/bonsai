@@ -30,6 +30,7 @@ The current lifecycle state of a project.
 | `emerging` | Early formation. Structure is fluid. Intent may still be solidifying. |
 | `expanding` | Active growth. New capabilities, new surface area. |
 | `consolidating` | Tightening structure. Reducing excess. Strengthening boundaries. |
+| `pruning` | Deliberate removal. Reshaping scope. Reducing surface area with intent. |
 | `resting` | Intentional inactivity. The project is not abandoned — it is still. |
 | `archival` | No further changes expected. Preserved for reference. |
 
@@ -78,3 +79,56 @@ The observed count and surface area of external dependencies.
 Unlike the other primitives, dependency load is **observed**, not declared. It is derived from package manifests, lock files, and import graphs.
 
 Dependency load is a contextual signal. A high count is not inherently problematic. A low count is not inherently virtuous. Interpretation requires intent context.
+
+---
+
+## Ritual
+
+A structured, reflective checkpoint that recurs on a declared or suggested cadence. Rituals shape attention through rhythm. They do not produce tasks, scores, deadlines, or compliance artifacts.
+
+Grove defines a closed vocabulary of four foundational rituals:
+
+| Ritual | Purpose |
+|---|---|
+| `consolidation` | Reflective review of structural integrity and alignment with declared intent. |
+| `stewardship_reaffirmation` | Reflective checkpoint on the steward's relationship to the project. |
+| `intent_redeclaration` | Revisiting declared intent to confirm or update it. |
+| `ecosystem_balance` | Portfolio-level reflection on proportion and distribution across projects. |
+
+Rituals are invitations, not obligations. They are not tracked, scored, or measured. Declining a ritual has zero consequences.
+
+See [`docs/designs/rituals.md`](designs/rituals.md) for the full specification.
+
+---
+
+## Season
+
+A presentation-layer atmosphere derived from a project's declared phase. Seasons are never stored as data fields and never independently declared.
+
+| Declared Phase | Season |
+|---|---|
+| `emerging` | Expansion |
+| `expanding` | Expansion |
+| `consolidating` | Consolidation |
+| `pruning` | Pruning |
+| `resting` | Dormancy |
+| `archival` | Dormancy |
+
+Dormancy has two contextual modes — **Hibernation** (resting, with expectation of re-engagement) and **Survival** (archival, preserved but not expected to resume) — which are presentation-layer annotations, not phase values.
+
+Season exists to provide atmospheric vocabulary for the UI and reflective language. It is derived at presentation time and must not appear in `.grove.yaml` or any data model.
+
+---
+
+## Climate
+
+An ecosystem-level declaration describing the overall atmospheric state of a steward's portfolio. Climate uses the same seasonal vocabulary: Expansion, Consolidation, Pruning, Dormancy.
+
+Climate is:
+- **manually declared** by the steward — never inferred from aggregate data
+- **portfolio-wide** — not per-repository
+- **not stored in `.grove.yaml`** — it is an ecosystem-level configuration
+
+When the declared climate differs from a project's derived season, Grove surfaces this as an observation. Climate/season tension is never accompanied by recommendations, urgency, or corrective suggestions.
+
+See [`docs/designs/rituals.md`](designs/rituals.md) for the full specification.

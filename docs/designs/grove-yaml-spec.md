@@ -69,6 +69,7 @@ Current lifecycle state. One of:
 - `emerging`
 - `expanding`
 - `consolidating`
+- `pruning`
 - `resting`
 - `archival`
 
@@ -107,3 +108,14 @@ A repository without `.grove.yaml` is displayed as **Unclassified**. It is still
 - `consolidation_interval_days` must be a positive integer if present.
 - `steward` must be a non-empty string if present.
 - Unrecognized fields under `grove:` are ignored.
+
+---
+
+## Ecosystem-Level Configuration
+
+The following concepts are explicitly **not** part of `.grove.yaml`:
+
+- **Season** is derived from the declared `phase` at presentation time. It is never stored as a field. See [`docs/ecology.md`](../ecology.md#season).
+- **Climate** is an ecosystem-level declaration that applies across the entire portfolio. It is not per-repository and is not stored in `.grove.yaml`. See [`docs/ecology.md`](../ecology.md#climate).
+
+These exclusions are by design. `.grove.yaml` declares per-repository stewardship context. Portfolio-level and presentation-layer concepts belong elsewhere.

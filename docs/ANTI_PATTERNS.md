@@ -49,8 +49,20 @@ These are signals to pause and reconsider, not instructions to act.
 13. **Over-Observation**  
     Accumulating measurements, probes, or analyses beyond what is necessary to support stewardship questions, increasing anxiety without improving clarity.
 
-14. **False Precision**  
+14. **False Precision**
     Presenting observations with a level of exactness or confidence that exceeds the reliability or context of the underlying data.
+
+15. **Ritual Gamification**
+    Tracking ritual completion, measuring adherence rates, or creating incentives around ritual engagement. Rituals are invitations, not achievements.
+
+16. **Seasonal Urgency**
+    Using seasonal transitions or phase durations to create time pressure, deadline-like framing, or calls to action. Seasons describe atmosphere, not schedules.
+
+17. **Climate Enforcement**
+    Using the declared climate to prescribe phase changes, prioritize projects, or direct portfolio rebalancing. Climate/season tension is surfaced, not enforced.
+
+18. **Rhythm Optimization**
+    Analyzing ritual cadences, seasonal durations, or engagement patterns to suggest "optimal" timing, frequency, or participation. Rhythm resists optimization.
 
 ---
 

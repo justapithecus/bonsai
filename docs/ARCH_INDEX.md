@@ -44,7 +44,7 @@ Documentation and design artifacts.
   Long-horizon stewardship framing.
 
 - `ecology.md`
-  v1 primitives (horizon, phase, role, steward, cadence, dependency load).
+  v1 primitives (horizon, phase, role, steward, cadence, dependency load, ritual, season, climate).
 
 - `roadmap.md`
   Planned evolution of Grove.
@@ -54,6 +54,9 @@ Documentation and design artifacts.
 
 - `designs/`
   Specifications and interaction notes.
+
+  - `designs/rituals.md`
+    Design specification for rituals, seasons, and climate.
 
 ---
 
@@ -97,6 +100,8 @@ Framework-agnostic logic:
 - Phase evaluation
 - Consolidation checks
 - Dependency load calculation
+- Ritual eligibility and invitation surfacing
+- Season derivation from phase
 
 ### /lib/github
 
