@@ -168,7 +168,7 @@ Dormancy has two contextual modes — **Hibernation** (resting, still-living) an
 - Not stored in `.grove.yaml`
 - Rare to change — quarterly at most, requiring explicit confirmation
 
-Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation neglect, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
+Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation lapse, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
 
 When climate and season diverge, Grove surfaces the tension as observation. It does not enforce alignment, recommend changes, or create urgency.
 

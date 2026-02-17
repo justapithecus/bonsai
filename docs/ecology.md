@@ -131,7 +131,7 @@ Climate is:
 - **not stored in `.grove.yaml`** — it is an ecosystem-level configuration
 - **rare to change** — quarterly at most, requiring explicit confirmation
 
-Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation neglect, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
+Grove may observe activity patterns across the portfolio that suggest a climate review — shifts in tempo, prolonged consolidation lapse, or gravitational changes in dependency structure. These observations are invitations to reflect, not prompts to act. They never change the declared climate value.
 
 When the declared climate differs from a project's derived season, Grove surfaces this as an observation. Climate/season tension is never accompanied by recommendations, urgency, or corrective suggestions.
 

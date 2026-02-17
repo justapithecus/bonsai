@@ -217,7 +217,7 @@ The suggested window for ritual relevance is **quarterly**. This is a suggestion
 v1 inference types — patterns Grove may observe to suggest review:
 
 - **Activity tempo** — Shifts in commit frequency, PR cadence, or engagement patterns across the portfolio.
-- **Consolidation neglect** — A project's consolidation interval has elapsed without a consolidation ritual being surfaced or engaged.
+- **Consolidation lapse** — A project's consolidation interval has elapsed without a consolidation ritual being surfaced.
 - **Dependency gravity** — Changes in dependency load that shift the structural weight of a project within the portfolio.
 
 ### Future Inference Types
