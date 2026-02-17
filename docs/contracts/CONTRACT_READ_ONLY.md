@@ -1,15 +1,15 @@
 # CONTRACT_READ_ONLY.md
 
 ## Purpose
-Ensure Bonsai remains a read-only system for observation and stewardship reflection.
+Ensure Grove remains a read-only system for observation and stewardship reflection.
 
 ## Scope
-All interfaces, outputs, and derived artifacts produced by Bonsai.
+All interfaces, outputs, and derived artifacts produced by Grove.
 
 ## Invariants
-- Bonsai does not write to, modify, or mutate observed repositories.
-- Bonsai does not execute changes on behalf of a user.
-- Bonsai outputs are observational artifacts only.
+- Grove does not write to, modify, or mutate observed repositories.
+- Grove does not execute changes on behalf of a user.
+- Grove outputs are observational artifacts only.
 
 ## Prohibitions
 - No edit, commit, patch, or refactor pathways are exposed.

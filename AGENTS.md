@@ -1,70 +1,101 @@
 # AGENTS.md
 
+## Normative Authority
+
+`CLAUDE.md` is the constitutional layer for this repository.
+
+All roles defined here operate within its invariants. No role may override, relax, or reinterpret the constraints defined in `CLAUDE.md`.
+
+---
+
 ## Purpose
 
-This file defines how AI agents (including Codex, ChatGPT, or future tools) must behave when interacting with the Bonsai repository.
+This file defines **agent roles** for AI-assisted development in the Grove repository.
 
-Bonsai is not a productivity tool. It is a stewardship practice.
-
-Agents must prioritize restraint, clarity, and alignment with Bonsai’s philosophy over feature velocity or technical novelty.
+Each role has a bounded scope, explicit responsibilities, and clear prohibitions. Roles exist to prevent drift, not to accelerate output.
 
 ---
 
-## Core Constraints
+## Architect
 
-Agents MUST:
+Define system structure, maintain invariants, prevent feature creep, guard against dashboard drift.
 
-- Treat Bonsai as **read-only, observational, and non-prescriptive**
-- Avoid language of productivity, velocity, optimization, or output
-- Avoid scoring, ranking, or gamification metaphors
-- Avoid urgency framing or calls to action
-- Treat inaction as a valid and often correct outcome
+**Responsibilities:**
+- Maintain `CLAUDE.md`, `AGENTS.md`, and `docs/ARCH_INDEX.md`
+- Evaluate proposed features against the 5-question gate in `CLAUDE.md`
+- Ensure module boundaries remain explicit and independently legible
+- Guard against premature platformization or abstraction
 
-Agents MUST NOT:
-
-- Introduce task management, issue tracking, or workflow systems
-- Infer project intent automatically
-- Prescribe actions (“should refactor”, “must fix”, etc.)
-- Optimize for popularity, stars, or adoption metrics
-- Collapse observations into judgments
+**Prohibitions:**
+- Does not implement features
+- Does not write application code
+- Does not introduce new dependencies without stewardship justification
 
 ---
 
-## Language Guidelines
+## Implementer
 
-Preferred language:
-- observe
-- notice
-- surface
-- suggest consideration
-- indicate tension
-- appears aligned / misaligned
+Build within constraints. Preserve calm UX. Avoid hidden automation. Keep modules explicit and reversible.
 
-Forbidden language:
-- success / failure
-- good / bad
-- healthy / unhealthy (without explicit context)
-- underperforming
-- productivity
-- efficiency
+**Responsibilities:**
+- Write code that conforms to contracts in `docs/contracts/`
+- Maintain separation between `grove-core` and `grove-web`
+- Ensure all computation stops at observation — never extends into judgment
+- Keep UI consistent with UX discipline defined in `CLAUDE.md`
+
+**Prohibitions:**
+- Does not redefine philosophy or invariants
+- Does not introduce scoring, ranking, or gamification
+- Does not add features that require frequent attention to remain useful
 
 ---
 
-## Interaction Model
+## Reviewer
 
-Agents should:
+Check drift against `CLAUDE.md`. Detect metric creep and urgency framing. Ensure code clarity.
 
-1. Ask which **stewardship question** a change supports
-2. Identify which **contract** constrains the change
-3. Prefer documentation and clarification over implementation
-4. Defer implementation if philosophical clarity is lacking
+**Responsibilities:**
+- Verify changes map to a stewardship question in `docs/QUESTIONS.md`
+- Verify changes conform to constraining contracts in `docs/contracts/`
+- Check for forbidden language and prescriptive framing
+- Prioritize structural coherence over feature completeness
 
-If a proposed change cannot be mapped to an explicit question in `docs/QUESTIONS.md`, it likely does not belong.
+**Prohibitions:**
+- Does not approve changes that violate core invariants
+- Does not trade clarity for velocity
+- Does not waive contract constraints
 
 ---
 
-## Default Bias
+## Refactorer
 
-When in doubt, do less.
+Consolidate structure. Reduce complexity. Strengthen boundaries. Improve legibility.
 
-Silence, omission, and restraint are acceptable outcomes.
+**Responsibilities:**
+- Simplify code without expanding scope
+- Improve module boundaries and naming clarity
+- Remove dead code and redundant abstractions
+- Ensure changes remain reversible
+
+**Prohibitions:**
+- Must not expand scope
+- Must not introduce new features under the guise of refactoring
+- Must not alter observable behavior
+
+---
+
+## Cosmology Layer Specialist
+
+*(Optional future role — not yet active.)*
+
+Maintain manifold consistency. Ensure projection is derived, not manual. Prevent philosophical bloat.
+
+**Responsibilities:**
+- Ensure cosmology projections derive from ecology primitives
+- Maintain mathematical consistency of projection models
+- Guard against speculative or unfalsifiable abstractions
+
+**Prohibitions:**
+- Must not introduce manual curation of projections
+- Must not make cosmology layer required for core functionality
+- Must not violate any invariant in `CLAUDE.md`

@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This document defines the canonical conceptual model used by Bonsai.
+This document defines the canonical conceptual model used by Grove.
 
 The model specifies:
-- the entities Bonsai observes
+- the entities Grove observes
 - the dimensions along which observation occurs
 - the boundaries of interpretation
-- what Bonsai can and cannot conclude
+- what Grove can and cannot conclude
 
 All implementation, metrics, presentation, and future extensions must conform to this model.
 
@@ -16,7 +16,7 @@ All implementation, metrics, presentation, and future extensions must conform to
 
 ## Core Model
 
-Bonsai evaluates software projects using a fixed sequence of conceptual dimensions:
+Grove evaluates software projects using a fixed sequence of conceptual dimensions:
 
 Intent → Shape → Motion → Accessibility → Capability → Fit → (In)Action
 
@@ -26,14 +26,14 @@ Each dimension is defined independently and must not collapse into another.
 
 Quantitative structure is permitted within the model, so long as it does not collapse into normative conclusions.
 
-Bonsai may use:
+Grove may use:
 - explicit metrics
 - feature vectors
 - coefficients and ratios
 - distances, similarities, and divergences
 - envelopes and constraints
 
-Bonsai must not:
+Grove must not:
 - aggregate dimensions into a single scalar
 - imply ordering of repositories or people
 - encode “closer is better” semantics
@@ -67,9 +67,9 @@ Intent describes what a project claims to be, not what it currently is.
 - inferred from popularity
 - inferred from historical behavior
 
-Bonsai treats intent as authoritative input.
+Grove treats intent as authoritative input.
 
-If intent is missing or ambiguous, Bonsai must surface that absence rather than compensate for it.
+If intent is missing or ambiguous, Grove must surface that absence rather than compensate for it.
 
 ---
 
@@ -205,7 +205,7 @@ It indicates where observed conditions fall outside declared intent envelopes.
 
 **(In)Action** represents the set of possible responses a human steward may consider.
 
-Bonsai does not decide actions.
+Grove does not decide actions.
 
 Possible actions include:
 - pruning
@@ -222,15 +222,15 @@ Inaction is a valid and often correct outcome.
 
 ## Interpretation Boundary
 
-Bonsai enforces a strict boundary between **observation** and **interpretation**.
+Grove enforces a strict boundary between **observation** and **interpretation**.
 
-Bonsai may:
+Grove may:
 - surface patterns
 - indicate misalignment
 - highlight disproportion
 - reveal absence or ambiguity
 
-Bonsai may not:
+Grove may not:
 - prescribe action
 - create urgency
 - assert intent
@@ -242,7 +242,7 @@ All interpretation beyond surfaced observations is the responsibility of the hum
 
 ## Computational Boundary
 
-Bonsai is not a decision engine.
+Grove is not a decision engine.
 It is an instrument for making constraints and tensions legible.
 
 The system computes:

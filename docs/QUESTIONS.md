@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document enumerates the stewardship questions Bonsai is allowed to surface.
+This document enumerates the stewardship questions Grove is allowed to surface.
 
 Questions are observational, not prescriptive.  
 They are designed to guide attention, not action.

@@ -2,17 +2,17 @@
 
 ## Canonical Intent
 
-Bonsai exists to support the **stewardship of software portfolios over time**.
+Grove exists to support the **stewardship of software portfolios over time**.
 
 It is concerned with proportion, alignment, and care — not activity maximization, production, or growth.
 
-Bonsai treats software projects as living systems whose condition cannot be inferred from activity, popularity, or momentum alone.
+Grove treats software projects as living systems whose condition cannot be inferred from activity, popularity, or momentum alone.
 
 ---
 
-## What Bonsai Centers
+## What Grove Centers
 
-Bonsai centers:
+Grove centers:
 
 - **Legibility over cleverness**
 - **Alignment over acceleration**
@@ -20,7 +20,7 @@ Bonsai centers:
 - **Observation over intervention**
 - **Long-horizon thinking over short-term metrics**
 
-Bonsai assumes that:
+Grove assumes that:
 - growth is not inherently beneficial
 - stability is not neglect
 - inactivity may be intentional
@@ -28,9 +28,9 @@ Bonsai assumes that:
 
 ---
 
-## What Bonsai Refuses to Center
+## What Grove Refuses to Center
 
-Bonsai explicitly does not center:
+Grove explicitly does not center:
 
 - activity maximization
 - speed
@@ -44,9 +44,9 @@ Any capability that meaningfully centers these is out of scope.
 
 ---
 
-## The Role of Bonsai
+## The Role of Grove
 
-Bonsai is **read-only and observational**.
+Grove is **read-only and observational**.
 
 It may surface:
 - tension
@@ -61,7 +61,7 @@ It may not:
 - rank projects or people
 - declare outcomes as favorable or unfavorable
 
-Bonsai’s role ends at **making conditions visible**.
+Grove’s role ends at **making conditions visible**.
 
 Action — including inaction — remains a human responsibility.
 
@@ -69,7 +69,7 @@ Action — including inaction — remains a human responsibility.
 
 ## Intent Is Declared, Not Inferred
 
-Bonsai requires that project intent be **explicitly declared by humans**.
+Grove requires that project intent be **explicitly declared by humans**.
 
 Intent includes, but is not limited to:
 - purpose
@@ -78,7 +78,7 @@ Intent includes, but is not limited to:
 - acceptable complexity
 - expected rate of change
 
-Bonsai will never infer intent from:
+Grove will never infer intent from:
 - code structure
 - activity patterns
 - dependency graphs
@@ -91,7 +91,7 @@ When intent changes, it must change explicitly.
 
 ## Scope of Application
 
-Bonsai is designed to be useful for:
+Grove is designed to be useful for:
 
 - individuals managing multiple projects
 - long-lived personal codebases
@@ -99,7 +99,7 @@ Bonsai is designed to be useful for:
 - exploratory or cyclical work
 - software that is allowed to rest
 
-Bonsai does not assume:
+Grove does not assume:
 - teams
 - deadlines
 - roadmaps
@@ -111,7 +111,7 @@ These may exist, but are not required.
 
 ## On Slowness
 
-Bonsai is intentionally slow.
+Grove is intentionally slow.
 
 It must remain useful even if:
 - opened infrequently
@@ -124,7 +124,7 @@ Any capability that requires frequent attention in order to be effective violate
 
 ## On Measurement
 
-Metrics in Bonsai are **contextual signals**, not scores.
+Metrics in Grove are **contextual signals**, not scores.
 
 Measurements exist only to support stewardship questions.
 
@@ -133,13 +133,13 @@ If a measurement:
 - encourages comparison without context
 - collapses nuance into a single value
 
-…it does not belong in Bonsai.
+…it does not belong in Grove.
 
 ---
 
 ## Failure Modes (Explicitly Guarded Against)
 
-Bonsai must not become:
+Grove must not become:
 
 - an activity dashboard
 - a code quality scorecard
@@ -148,15 +148,15 @@ Bonsai must not become:
 - a popularity contest
 - a prescriptive advisor
 
-If Bonsai drifts toward any of these, it has moved away from its intent.
+If Grove drifts toward any of these, it has moved away from its intent.
 
 ---
 
 ## North Star Constraint
 
-> Bonsai must remain valuable even if it never grows, never becomes popular, and never demands attention.
+> Grove must remain valuable even if it never grows, never becomes popular, and never demands attention.
 
-If Bonsai changes how a developer decides what **not** to work on, it has served its intent.
+If Grove changes how a developer decides what **not** to work on, it has served its intent.
 
 ---
 

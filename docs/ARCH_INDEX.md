@@ -1,91 +1,175 @@
-# ARCH_INDEX.md
+# Grove — Architectural Index
 
-## Bonsai — Architectural Index
-
-This document provides a concise architectural overview of Bonsai for humans and AI agents.
-
-If you are reading this, assume limited time and context. This file exists to prevent conceptual drift.
+This document provides a fast navigation map of the repository.
+It is not a design document. It is a structural lookup table.
 
 ---
 
-## What Bonsai Is
+## Root
 
-Bonsai is a read-only system for observing and stewarding software portfolios over long periods of time.
+- `README.md`
+  High-level overview and purpose.
 
-It models projects not as units of work, but as living systems that require proportion, care, and restraint.
+- `CLAUDE.md`
+  Constitutional constraints and invariants.
 
-Bonsai does not optimize for activity, velocity, or output.
+- `AGENTS.md`
+  Role definitions and development discipline.
 
 ---
 
-## Conceptual Model
+## /docs
 
-Bonsai operates on a fixed conceptual spine:
+Documentation and design artifacts.
 
-Intent → Shape → Motion → Accessibility → Capability → Fit → (In)Action
+- `INTENT.md`
+  Canonical intent declaration for Grove.
 
-- Intent: human-declared purpose and audience
-- Shape: static structure of the codebase
-- Motion: how the code changes over time
-- Accessibility: cognitive legibility relative to intent
-- Capability: observed, time-bound behavior
-- Fit: alignment or tension between the above
-- Action: prune, preserve, freeze, split, archive — or do nothing
+- `MODEL.md`
+  Conceptual model: Intent, Shape, Motion, Accessibility, Capability, Fit, (In)Action.
+
+- `QUESTIONS.md`
+  Enumerated stewardship questions Grove is allowed to surface.
+
+- `MEASURES.md`
+  Measurement vocabulary and contextual signal definitions.
+
+- `ANTI_PATTERNS.md`
+  Drift patterns that indicate deviation from intent and contracts.
+
+- `IMPLEMENTATION_PLAN.md`
+  Phased implementation plan inherited from Phase 0 doctrine.
+
+- `philosophy.md`
+  Long-horizon stewardship framing.
+
+- `ecology.md`
+  v1 primitives (horizon, phase, role, steward, cadence, dependency load).
+
+- `roadmap.md`
+  Planned evolution of Grove.
+
+- `contracts/`
+  Formalized invariants and interface boundaries.
+
+- `designs/`
+  Specifications and interaction notes.
+
+---
+
+## Core Concepts
+
+Grove operates on a fixed conceptual spine:
+
+**Intent → Shape → Motion → Accessibility → Capability → Fit → (In)Action**
+
+- **Intent** — human-declared purpose and audience
+- **Shape** — static structure of the codebase
+- **Motion** — how the code changes over time
+- **Accessibility** — cognitive legibility relative to intent
+- **Capability** — observed, time-bound behavior
+- **Fit** — alignment or tension between the above
+- **(In)Action** — prune, preserve, freeze, split, archive — or do nothing
 
 Inaction is a first-class outcome.
 
 ---
 
-## Architectural Subsystems
+## Data Flow (v1)
 
-Bonsai is organized conceptually, not operationally.
+```
+.grove.yaml → grove-core → grove-web
+GitHub API  ↗
+```
 
-1. **Intent Layer**
-   - Human-authored declarations
-   - Never inferred automatically
+- **grove-core** — Pure TypeScript logic. Parses `.grove.yaml`, computes ecology signals, evaluates fit. No framework dependencies.
+- **grove-web** — TanStack Start application layer. OAuth, GitHub fetching, rendering.
 
-2. **Observation Engine**
-   - Structural analysis (LoC, files, languages)
-   - Temporal analysis (commits, churn)
-   - Accessibility probes
-   - Capability probes (experimental)
+---
 
-3. **Interpretation Boundary**
-   - Governed by contracts
-   - Prevents judgment, prescription, or urgency
+## Architecture (planned)
 
-4. **Presentation Layer**
-   - Read-only UI
-   - Comparative and contextual
-   - Designed to shape attention, not decisions
+### /lib/grove-core
+
+Framework-agnostic logic:
+- `.grove.yaml` parsing
+- Horizon handling
+- Phase evaluation
+- Consolidation checks
+- Dependency load calculation
+
+### /lib/github
+
+GitHub API client and repo sync logic.
+
+### /app
+
+TanStack Start application layer:
+- `routes/` — Web routes (overview, repo detail, auth callbacks)
+- `components/` — Reusable UI components
+- `styles/` — Global styling and design primitives
+
+### /server
+
+Server-side utilities:
+- `auth/` — GitHub OAuth integration
+- `sync/` — Repository loading and classification logic
+
+---
+
+## Sync Engine (v1)
+
+GitHub API. Live fetch per session. No persistence.
+
+---
+
+## Storage Model
+
+- **v1:** None. Session-based.
+- **v2:** SQLite or Postgres. Snapshot history.
+
+---
+
+## Configuration
+
+- `.grove.yaml` (per-repo file)
+  Declares: intent, horizon, role, phase, steward, consolidation cadence.
+  See `docs/designs/grove-yaml-spec.md`.
 
 ---
 
 ## Contracts
 
-Contracts are the normative authority in Bonsai.
+Contracts are the normative authority for implementation behavior.
 
 They constrain interpretation, language, and behavior — not runtime APIs.
 
-All implementation must conform to contracts defined in `docs/contracts/`.
+All contracts live in `docs/contracts/`.
 
 ---
 
 ## Phase Discipline
 
-Bonsai evolves slowly and deliberately.
-
-- Phase 0: Doctrine and contracts
-- Phase 1: Observation engine (local-first)
-- Phase 2: Read-only UI
-- Phase 3: Capability and accessibility probes
-- Phase 4: Long-horizon memory
+- Phase 0: Doctrine and contracts (current)
+- Phase 1: Ecology engine + web UI (TanStack Start, GitHub OAuth, `.grove.yaml`)
+- Phase 2: Persistence layer (SQLite/Postgres, snapshot history)
+- Phase 3: Drift detection and consolidation tracking
+- Phase 4: Cosmology projection layer
 - Phase 5: Optional generalization
 
 Later phases may not be reached. This is acceptable.
 
 ---
 
+## Future (Not Yet Implemented)
+
+- Persistence layer
+- Historical drift tracking
+- Cosmology projection engine
+- Background sync jobs
+
+---
+
 ## Invariant
 
-Bonsai must remain useful even if visited only a few times per year.
+Grove must remain useful even if visited only a few times per year.

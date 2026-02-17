@@ -7,7 +7,7 @@ Require intent to be declared by humans and never inferred.
 Intent capture, storage, and display.
 
 ## Invariants
-- Intent is declared by a person, not inferred by Bonsai.
+- Intent is declared by a person, not inferred by Grove.
 - Intent remains separate from observation outputs.
 - Absent intent is treated as unknown, not missing.
 

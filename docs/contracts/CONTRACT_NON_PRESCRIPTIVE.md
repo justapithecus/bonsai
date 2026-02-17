@@ -1,14 +1,14 @@
 # CONTRACT_NON_PRESCRIPTIVE.md
 
 ## Purpose
-Prevent Bonsai from directing action or prioritization.
+Prevent Grove from directing action or prioritization.
 
 ## Scope
 All guidance surfaces, narratives, and comparative views.
 
 ## Invariants
-- Bonsai does not recommend actions.
-- Bonsai does not rank or score observed repositories.
+- Grove does not recommend actions.
+- Grove does not rank or score observed repositories.
 - Inaction remains a valid outcome.
 
 ## Prohibitions

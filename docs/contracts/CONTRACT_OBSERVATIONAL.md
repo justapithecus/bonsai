@@ -1,7 +1,7 @@
 # CONTRACT_OBSERVATIONAL.md
 
 ## Purpose
-Constrain Bonsai to factual observation without interpretation.
+Constrain Grove to factual observation without interpretation.
 
 ## Scope
 All data collection, summaries, and presentation layers.

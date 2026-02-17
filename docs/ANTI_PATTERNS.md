@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Describe patterns that indicate drift away from Bonsai's intent and contracts.
+Describe patterns that indicate drift away from Grove's intent and contracts.
 
 These are signals to pause and reconsider, not instructions to act.
 
@@ -26,7 +26,7 @@ These are signals to pause and reconsider, not instructions to act.
    Features that apply changes, open edit paths, or trigger external workflows.
 
 6. **Task System Import**  
-   Issue tracking, backlogs, roadmaps, or workflow systems embedded in Bonsai.
+   Issue tracking, backlogs, roadmaps, or workflow systems embedded in Grove.
 
 7. **Metric Collapse**  
    Reducing multiple contextual signals into a single value, verdict, or summary judgment.
