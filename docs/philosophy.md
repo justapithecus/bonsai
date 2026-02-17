@@ -67,3 +67,11 @@ Periods of inactivity are features, not bugs. A project that is resting may be c
 Dormancy is not uniform. A project in hibernation rests with the expectation of future re-engagement — it is still-living but intentionally still. A project in survival persists in a minimal state, preserved but not expected to resume. Both are valid. Neither requires intervention.
 
 Grove treats stillness with the same attention it gives to motion.
+
+---
+
+## Self-observation
+
+A system that observes other systems but exempts itself from observation accumulates a structural blind spot. The observatory that never turns its instruments inward cannot know whether its own lenses are distorting what it sees.
+
+Grove is subject to its own ecology. It declares its own `.grove.yaml`, applies its own primitives, and is constrained by its own contracts. This is not recursion for its own sake — it is structural completeness. A stewardship system that cannot account for its own phase, rhythm, and drift has an unexamined assumption at its foundation.

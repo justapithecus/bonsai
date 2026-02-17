@@ -60,6 +60,7 @@ Declared function within a portfolio. One of:
 - `library`
 - `experiment`
 - `documentation`
+- `stewardship`
 
 See [Role](../ecology.md#role) in ecology primitives.
 
