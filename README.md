@@ -1,75 +1,48 @@
-# Bonsai
+# Grove
 
-**Cultivating software in proportion**
+A stewardship engine for long-running software ecosystems.
 
-Bonsai is a read-only practice for observing and stewarding software portfolios over long periods of time.
-
-Rather than optimizing for activity, output, or popularity, Bonsai helps developers understand their projects in terms of intent, structure, change, and fit. It exists to support pruning, preservation, deliberate inaction, and long-horizon care.
-
-Bonsai treats software projects as living systems. Growth is not assumed to be good. Activity is not assumed to be progress.
+Grove helps you observe the structural integrity of your projects over time. It is complementary to GitHub, not competitive with it. It is focused on proportion, alignment, and care — not activity, velocity, or output.
 
 ---
 
-## What Bonsai Is
+## Core Principles
 
-- A portfolio-level lens for understanding code over time
-- A way to notice drift, excess, stagnation, and quiet completion
-- An alternative to social trust signals like stars or hype
-- A tool for deciding what to leave alone
-
----
-
-## What Bonsai Is Not
-
-- A productivity tool
-- A task, issue, or project manager
-- A replacement for GitHub, GitLab, or git itself
-- A scoring, ranking, or gamification system
-- A system that demands attention or action
-
-Bonsai is observational, not corrective.
+- **Declared horizons.** Projects state their intended lifespan and scope.
+- **Explicit stewardship.** Someone is named responsible. Responsibility is visible.
+- **Rest and consolidation.** Periods of inactivity are features, not bugs.
+- **No gamification.** No streaks, badges, leaderboards, or achievement systems.
+- **No ranking.** Projects are not ordered by desirability.
+- **No scoring.** Observations are not collapsed into single values.
 
 ---
 
-## The Model
+## Modes
 
-Bonsai evaluates projects through a simple, fixed lens:
+### Ecology Mode (default)
 
-**Intent → Shape → Motion → Fit → Action (or Inaction)**
+Structural observation. Grove reads declared intent and observed structure, then surfaces tension, drift, and disproportion. It does not prescribe action.
 
-- **Intent** — what the project claims to be
-- **Shape** — what the code looks like
-- **Motion** — how it changes over time
-- **Fit** — alignment between intent, shape, and motion
-- **Action** — prune, preserve, freeze, split, archive… or do nothing
+### Cosmology Mode (future)
 
-Inaction is a valid and often correct outcome.
-
----
-
-## Core Assumptions
-
-- Growth is not inherently good
-- Stability is not neglect
-- Popularity is not health
-- Maintenance is a form of care
-- Restraint is a design choice
+Long-horizon projection derived from ecology primitives. Optional. Not yet implemented.
 
 ---
 
 ## Status
 
-This project is in **Phase 0**.
+Grove is in early experimental development.
 
-No UI.  
-No automation.  
-No recommendations.
+The current focus is establishing doctrine, contracts, and the first observation primitives before building UI or automation.
 
-The current focus is defining the model, language, and constraints before any implementation.
+---
+
+## Philosophy
+
+See [`docs/philosophy.md`](docs/philosophy.md) for the long-horizon stewardship framing that motivates Grove.
 
 ---
 
 ## License
 
 TBD
-

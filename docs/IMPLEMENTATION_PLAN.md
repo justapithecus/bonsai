@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document defines the phased implementation plan for Bonsai.
+This document defines the phased implementation plan for Grove.
 
 Each phase exists to enable specific stewardship questions, not to deliver features.
 
@@ -13,7 +13,7 @@ Progress is measured by clarity gained, not surface area shipped.
 ## Phase 0 — Doctrine and Contracts
 
 ### Purpose
-Establish the philosophical and epistemic constraints that govern Bonsai.
+Establish the philosophical and epistemic constraints that govern Grove.
 
 No code is written in this phase.
 
@@ -35,7 +35,7 @@ No code is written in this phase.
 
 ### Exit Criteria
 
-- Bonsai’s model can be applied to a repository on paper
+- Grove’s model can be applied to a repository on paper
 - All terms are defined and non-overlapping
 - Contracts clearly forbid common failure modes
 
@@ -133,7 +133,7 @@ Support slow reflection over quarters and years.
 
 ### Exit Criteria
 
-- Bonsai remains calm and non-demanding
+- Grove remains calm and non-demanding
 - Memory aids reflection, not urgency
 
 ---
@@ -150,7 +150,7 @@ This phase is optional and not required for project success.
 #### Core Clarification
 Avoiding scores and rankings does not imply avoiding quantitative structure.
 
-Bonsai permits:
+Grove permits:
 - explicit metrics
 - feature vectors
 - coefficients
@@ -158,7 +158,7 @@ Bonsai permits:
 - envelopes and constraints
 - clustering and embeddings
 
-Bonsai forbids:
+Grove forbids:
 - normative aggregation into a single scalar
 - implicit or explicit ordering of repositories or people
 - optimization toward a notion of “better”
@@ -168,7 +168,7 @@ The boundary is **normative collapse**, not quantification.
 
 #### Design Principle
 
-> Bonsai over-engineers features and under-engineers conclusions.
+> Grove over-engineers features and under-engineers conclusions.
 
 All computation must stop at the point where:
 - tensions are surfaced
@@ -236,7 +236,7 @@ ML outputs must remain:
 
 #### Computational Boundary (Explicit)
 
-> Bonsai is not a decision engine.
+> Grove is not a decision engine.
 > It is an instrument for making constraints and tensions legible.
 
 The system computes:

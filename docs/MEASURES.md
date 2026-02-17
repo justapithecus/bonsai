@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Define the measurement vocabulary Bonsai uses as contextual signals.
+Define the measurement vocabulary Grove uses as contextual signals.
 
 Measures are descriptive, time-bound, and never collapsed into scores.
 
