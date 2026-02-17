@@ -77,6 +77,7 @@ They are designed to guide attention, not action.
 27. Where does the declared climate appear in tension with individual project seasons?
 28. Which projects appear eligible for a stewardship ritual based on elapsed cadence or phase stability?
 29. When was the last ritual engagement observed for this project, if any?
+30. What activity patterns across the portfolio, if any, suggest that the declared climate may warrant review?
 
 ---
 

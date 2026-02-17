@@ -2,44 +2,56 @@
 
 A stewardship engine for long-running software ecosystems.
 
-Grove helps you observe the structural integrity of your projects over time. It is complementary to GitHub, not competitive with it. It is focused on proportion, alignment, and care — not activity, velocity, or output.
+Software exists in seasons. Projects expand, consolidate, are pruned, and rest. All systems — natural or synthetic — obey constraints. Grove observes these conditions; it does not direct them.
+
+Modern tools measure activity. Grove observes rhythm.
 
 ---
 
-## Core Principles
+## What Grove Observes
 
-- **Declared horizons.** Projects state their intended lifespan and scope.
-- **Explicit stewardship.** Someone is named responsible. Responsibility is visible.
-- **Rest and consolidation.** Periods of inactivity are features, not bugs.
-- **No gamification.** No streaks, badges, leaderboards, or achievement systems.
-- **No ranking.** Projects are not ordered by desirability.
-- **No scoring.** Observations are not collapsed into single values.
+Declared intent and whether structure aligns with it.
+Named stewardship — who is responsible, and whether that is visible.
+Structural integrity over time.
+Consolidation cadence — rhythm, not deadlines.
+Dependency gravity across a portfolio.
+Seasonal atmosphere derived from declared phase.
+Ecological balance — proportion and distribution of attention.
 
 ---
 
-## Modes
+## What Grove Does Not Do
 
-### Ecology Mode (default)
+No velocity measurement. No sprint tracking.
+No ranking of repositories or people.
+No scoring — observations are not collapsed into single values.
+No gamification. No streaks. No badges.
+No alerts. No urgency. No notifications that demand attention.
+No intent inference. Intent is declared by humans.
 
-Structural observation. Grove reads declared intent and observed structure, then surfaces tension, drift, and disproportion. It does not prescribe action.
+Inaction is a first-class outcome.
 
-### Cosmology Mode (future)
+---
 
-Long-horizon projection derived from ecology primitives. Optional. Not yet implemented.
+## Relationship to GitHub
+
+Grove is complementary to GitHub, not competitive with it. GitHub shows what happened — commits, pull requests, activity. Grove shows what it means to the people who care for the code over time.
+
+Where GitHub shows activity, Grove shows seasons.
 
 ---
 
 ## Status
 
-Grove is in early experimental development.
-
-The current focus is establishing doctrine, contracts, and the first observation primitives before building UI or automation.
+Grove is in Phase 1 — building the first observation engine and read-only interface. Phase 0 doctrine and contracts are substantially complete.
 
 ---
 
-## Philosophy
+## Further Reading
 
-See [`docs/philosophy.md`](docs/philosophy.md) for the long-horizon stewardship framing that motivates Grove.
+- [Philosophy](docs/philosophy.md) — long-horizon stewardship framing
+- [Ecology Primitives](docs/ecology.md) — observation vocabulary
+- [Design Principles](docs/design_principles.md) — UI guardrails
 
 ---
 

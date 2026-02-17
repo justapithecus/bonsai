@@ -49,6 +49,9 @@ Documentation and design artifacts.
 - `ecology.md`
   v1 primitives (horizon, phase, role, steward, cadence, dependency load, ritual, season, climate).
 
+- `design_principles.md`
+  UI design guardrails.
+
 - `roadmap.md`
   Planned evolution of Grove.
 
@@ -60,6 +63,9 @@ Documentation and design artifacts.
 
   - `designs/rituals.md`
     Design specification for rituals, seasons, and climate.
+
+  - `designs/ui-v0.md`
+    Phase 1 UI implementation handoff.
 
 ---
 

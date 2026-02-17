@@ -22,6 +22,12 @@ Grove does not assume growth is desirable.
 
 ---
 
+## Natural structure
+
+Software ecosystems exhibit patterns that natural systems share: expansion without clear boundary, consolidation under pressure, deliberate pruning, dormancy that is not death. Grove borrows its structural vocabulary from these patterns — not as metaphor, but as recognition. The vocabulary names conditions that exist whether or not they are observed.
+
+---
+
 ## Constraint clarity
 
 Constraints are explicit, not discovered through failure. A project's boundaries — its intended lifespan, acceptable complexity, expected audience — should be declared upfront and revisited deliberately.
