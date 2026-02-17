@@ -229,6 +229,7 @@ Grove may:
 - indicate misalignment
 - highlight disproportion
 - reveal absence or ambiguity
+- invite engagement with stewardship rituals as reflective checkpoints
 
 Grove may not:
 - prescribe action

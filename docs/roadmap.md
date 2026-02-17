@@ -34,9 +34,13 @@ Build the first observation layer and a read-only interface.
 - `.grove.yaml` parsing via `grove-core`
 - Live repository fetching (no persistence)
 - Ecology primitive display
+- Seasonal atmosphere overlay derived from declared phase
+- Basic ritual scaffolding (invitation display, closed vocabulary)
 
 **Exit criteria:**
 - A steward can view their portfolio through declared ecology primitives
+- Seasonal atmosphere is visible and derived from phase
+- Ritual invitations can be surfaced without tracking or compliance
 - No scoring, ranking, or prescriptive output
 
 ---
@@ -64,10 +68,15 @@ Surface structural drift relative to declared intent.
 - Consolidation cadence tracking
 - Shape and motion drift indicators
 - Elapsed-interval surfacing (without urgency)
+- Ritual eligibility surfacing based on elapsed cadence and phase stability
+- Climate declaration (ecosystem-level)
+- Climate/season tension surfacing as observation
 
 **Exit criteria:**
 - Drift is visible without being alarming
 - Consolidation reminders feel like gentle observation, not obligation
+- Ritual invitations surface contextually without creating urgency
+- Climate/season tension is visible without prescribing alignment
 
 ---
 

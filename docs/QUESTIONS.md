@@ -70,6 +70,16 @@ They are designed to guide attention, not action.
 
 ---
 
+## Rhythm and Seasonal State
+
+25. What is the declared phase and what season does it express?
+26. How long has the current phase been declared, and does the duration suggest a seasonal shift?
+27. Where does the declared climate appear in tension with individual project seasons?
+28. Which projects appear eligible for a stewardship ritual based on elapsed cadence or phase stability?
+29. When was the last ritual engagement observed for this project, if any?
+
+---
+
 ## Epistemic Boundaries
 
 24. What is explicitly unknown due to missing intent or missing observation data?

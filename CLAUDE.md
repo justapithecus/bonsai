@@ -16,7 +16,7 @@ The following must always hold. No role, feature, or extension may violate them.
 
 - **No ranking.** Grove does not order repositories or people by desirability.
 - **No scoring.** Grove does not collapse observations into single values, grades, or verdicts.
-- **No prescriptive engines.** Grove does not recommend actions, next steps, or priorities.
+- **No prescriptive engines.** Grove does not recommend actions, next steps, or priorities. Grove may suggest stewardship rituals — structured, reflective checkpoints that shape rhythm without imposing authority.
 - **No gamification.** Grove does not use streaks, badges, leaderboards, or achievement systems.
 - **No alert culture.** Grove does not demand attention, create urgency, or require frequent visits.
 - **No intent inference.** Intent is declared by humans, never derived from code, activity, or popularity.
@@ -31,6 +31,7 @@ Grove surfaces:
 - drift over time
 - disproportion
 - periods of rest and consolidation
+- rhythm and seasonal atmosphere
 - quiet completion
 - absence and ambiguity
 
@@ -54,6 +55,8 @@ Language must be observational and calm. Grove describes conditions; it does not
 - suggest consideration
 - indicate tension
 - appears aligned / misaligned
+- invite reflection
+- suggest ritual consideration
 
 ### Forbidden vocabulary
 
@@ -75,6 +78,7 @@ Language must be observational and calm. Grove describes conditions; it does not
 - The interface is an observatory, not a control panel.
 - Information density serves reflection, not reaction.
 - Every screen must remain useful if visited only a few times per year.
+- Seasonal atmosphere may influence visual tone — color temperature, typography weight, spatial density — but must never encode urgency, judgment, or ranking.
 
 ---
 
@@ -118,6 +122,48 @@ If a proposed change cannot be mapped to an explicit question in `docs/QUESTIONS
 When in doubt, do less.
 
 Silence, omission, and restraint are acceptable outcomes.
+
+---
+
+## Rituals and Rhythm
+
+Grove defines a closed vocabulary of four foundational rituals — structured, reflective checkpoints that shape stewardship rhythm without imposing authority:
+
+- **Consolidation** — reflective review of structural integrity and alignment with declared intent
+- **Stewardship Reaffirmation** — reflective checkpoint on the steward's relationship to a project
+- **Intent Re-Declaration** — revisiting declared intent to confirm or update it
+- **Ecosystem Balance** — portfolio-level reflection on proportion and distribution
+
+Rituals are **invitations, not obligations**. They:
+
+- Do not produce tasks, deadlines, or notifications
+- Have no completion state — they are not "done" or "undone"
+- Have no metrics — participation and frequency are not tracked
+- Use a closed vocabulary — no additional rituals without amending `docs/designs/rituals.md`
+- May be declined, ignored, or postponed with zero consequences
+
+---
+
+## Seasons and Climate
+
+**Season** is a presentation-layer atmosphere derived from a project's declared phase. It is never stored as a data field and never independently declared.
+
+| Phase | Season |
+|---|---|
+| `emerging`, `expanding` | Expansion |
+| `consolidating` | Consolidation |
+| `pruning` | Pruning |
+| `resting`, `archival` | Dormancy |
+
+Dormancy has two contextual modes — **Hibernation** (resting, still-living) and **Survival** (archival, preserved) — which are presentation-layer annotations, not phase values.
+
+**Climate** is an ecosystem-level declaration describing the overall atmospheric state of a steward's portfolio. It uses the same seasonal vocabulary. Climate is:
+
+- Manually declared by the steward — never inferred
+- Portfolio-wide — not per-repository
+- Not stored in `.grove.yaml`
+
+When climate and season diverge, Grove surfaces the tension as observation. It does not enforce alignment, recommend changes, or create urgency.
 
 ---
 

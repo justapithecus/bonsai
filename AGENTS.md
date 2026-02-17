@@ -25,6 +25,7 @@ Define system structure, maintain invariants, prevent feature creep, guard again
 - Evaluate proposed features against the 5-question gate in `CLAUDE.md`
 - Ensure module boundaries remain explicit and independently legible
 - Guard against premature platformization or abstraction
+- Guard the ritual boundary defined in `docs/contracts/CONTRACT_NON_PRESCRIPTIVE.md`
 
 **Prohibitions:**
 - Does not implement features
@@ -57,6 +58,7 @@ Check drift against `CLAUDE.md`. Detect metric creep and urgency framing. Ensure
 **Responsibilities:**
 - Verify changes map to a stewardship question in `docs/QUESTIONS.md`
 - Verify changes conform to constraining contracts in `docs/contracts/`
+- Verify ritual-related changes conform to the ritual boundary in `docs/contracts/CONTRACT_NON_PRESCRIPTIVE.md`
 - Check for forbidden language and prescriptive framing
 - Prioritize structural coherence over feature completeness
 

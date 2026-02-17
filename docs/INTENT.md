@@ -147,6 +147,8 @@ Grove must not become:
 - a project management tool
 - a popularity contest
 - a prescriptive advisor
+- a ritual compliance system
+- a seasonal optimization engine
 
 If Grove drifts toward any of these, it has moved away from its intent.
 
