@@ -2,7 +2,7 @@ import type { Portfolio } from '@grove/core'
 import { classifyRepository, fetchUserRepos } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
-import { useGroveSession } from './session'
+import { isSessionConfigured, useGroveSession } from './session'
 
 const BATCH_SIZE = 10
 
@@ -12,6 +12,10 @@ const BATCH_SIZE = 10
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Portfolio> => {
+    if (!isSessionConfigured()) {
+      return { repositories: [] }
+    }
+
     const session = await useGroveSession()
     const token = session.data.githubToken
 
