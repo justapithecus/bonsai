@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 
-import { useGroveSession } from './session'
+import { isSessionConfigured, useGroveSession } from './session'
 
 export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -103,6 +103,10 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
 export const getSession = createServerFn({ method: 'GET' }).handler(
   async () => {
+    if (!isSessionConfigured()) {
+      return { authenticated: false, login: undefined, climate: undefined }
+    }
+
     const session = await useGroveSession()
     return {
       authenticated: !!session.data.githubToken,
