@@ -37,7 +37,7 @@ export function surfaceRitualInvitations(
     if (undeclaredCount >= 2) {
       invitations.push({
         ritual: 'intent_redeclaration',
-        observation: `${undeclaredCount} ecology fields remain undeclared. This project may benefit from revisiting its declared intent.`,
+        observation: `${undeclaredCount} of 5 ecology fields are undeclared for this project.`,
       })
     }
   }

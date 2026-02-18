@@ -9,9 +9,19 @@ export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
       throw new Error('GITHUB_CLIENT_ID not configured')
     }
 
+    // Generate CSRF state and persist in session
+    const state = crypto.randomUUID()
+    const session = await useGroveSession()
+    await session.update({ ...session.data, oauthState: state })
+
+    // `repo` scope is required to observe private repositories.
+    // GitHub's OAuth scope model does not offer a read-only scope
+    // for private repo metadata — `repo` is the narrowest scope
+    // that grants visibility into private repositories.
     const params = new URLSearchParams({
       client_id: clientId,
       scope: 'read:user repo',
+      state,
     })
 
     return `https://github.com/login/oauth/authorize?${params.toString()}`
@@ -19,8 +29,21 @@ export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
 )
 
 export const exchangeCode = createServerFn({ method: 'POST' })
-  .inputValidator((data: { code: string }) => data)
+  .inputValidator((data: { code: string; state: string }) => data)
   .handler(async ({ data }) => {
+    // Validate CSRF state before touching the token endpoint
+    const session = await useGroveSession()
+    const expectedState = session.data.oauthState
+
+    // Clear stored state regardless of outcome (single-use)
+    await session.update({ ...session.data, oauthState: undefined })
+
+    if (!expectedState || data.state !== expectedState) {
+      throw new Error(
+        'OAuth state mismatch — possible CSRF. Please try signing in again.',
+      )
+    }
+
     const clientId = process.env.GITHUB_CLIENT_ID
     const clientSecret = process.env.GITHUB_CLIENT_SECRET
 
@@ -66,10 +89,11 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
     const user = await userResponse.json()
 
-    // Store in session
-    const session = await useGroveSession()
+    // Store credentials in session. Explicitly clear oauthState to avoid
+    // reintroducing it from the stale session.data snapshot captured above.
     await session.update({
       ...session.data,
+      oauthState: undefined,
       githubToken: tokenData.access_token,
       githubLogin: user.login,
     })
