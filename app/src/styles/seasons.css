@@ -61,3 +61,59 @@
   --grove-font-weight-display: 300;
   --grove-density-factor: 0.85;
 }
+
+/* ---- Dark mode ---- */
+/* Same seasonal hue relationships, inverted luminance. */
+/* Font weights and density factors are inherited from light mode. */
+
+@media (prefers-color-scheme: dark) {
+  :root,
+  [data-season] {
+    --grove-bg: #1c1b19;
+    --grove-text: #dddbd7;
+    --grove-text-muted: #8a8884;
+    --grove-border: #302f2c;
+    --grove-accent: #9a9894;
+    --grove-surface: #252422;
+  }
+
+  /* Expansion dark — warm golden undertones */
+  [data-season='expansion'] {
+    --grove-bg: #1e1a13;
+    --grove-text: #e8dfd0;
+    --grove-text-muted: #9e9070;
+    --grove-border: #383024;
+    --grove-accent: #c4a46a;
+    --grove-surface: #28221a;
+  }
+
+  /* Consolidation dark — cool neutral clarity */
+  [data-season='consolidation'] {
+    --grove-bg: #181a1e;
+    --grove-text: #dcdee4;
+    --grove-text-muted: #7e8292;
+    --grove-border: #2c2e36;
+    --grove-accent: #8890a6;
+    --grove-surface: #22242a;
+  }
+
+  /* Pruning dark — deep steel-blue focus */
+  [data-season='pruning'] {
+    --grove-bg: #151a22;
+    --grove-text: #d4dae6;
+    --grove-text-muted: #7888a0;
+    --grove-border: #283040;
+    --grove-accent: #6a82a8;
+    --grove-surface: #1c2230;
+  }
+
+  /* Dormancy dark — deeply muted, minimal contrast */
+  [data-season='dormancy'] {
+    --grove-bg: #1a1a18;
+    --grove-text: #aaa8a2;
+    --grove-text-muted: #706e68;
+    --grove-border: #2c2c28;
+    --grove-accent: #8a8a82;
+    --grove-surface: #232320;
+  }
+}
