@@ -10,12 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemoIndexRouteImport } from './routes/demo.index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as RepoOwnerNameRouteImport } from './routes/repo.$owner.$name'
+import { Route as DemoRepoOwnerNameRouteImport } from './routes/demo.repo.$owner.$name'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoIndexRoute = DemoIndexRouteImport.update({
+  id: '/demo/',
+  path: '/demo/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -28,35 +35,64 @@ const RepoOwnerNameRoute = RepoOwnerNameRouteImport.update({
   path: '/repo/$owner/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoRepoOwnerNameRoute = DemoRepoOwnerNameRouteImport.update({
+  id: '/demo/repo/$owner/$name',
+  path: '/demo/repo/$owner/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/demo/': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
+  '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/demo': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
+  '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/demo/': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
+  '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/callback' | '/repo/$owner/$name'
+  fullPaths:
+    | '/'
+    | '/auth/callback'
+    | '/demo/'
+    | '/repo/$owner/$name'
+    | '/demo/repo/$owner/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/callback' | '/repo/$owner/$name'
-  id: '__root__' | '/' | '/auth/callback' | '/repo/$owner/$name'
+  to:
+    | '/'
+    | '/auth/callback'
+    | '/demo'
+    | '/repo/$owner/$name'
+    | '/demo/repo/$owner/$name'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/callback'
+    | '/demo/'
+    | '/repo/$owner/$name'
+    | '/demo/repo/$owner/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  DemoIndexRoute: typeof DemoIndexRoute
   RepoOwnerNameRoute: typeof RepoOwnerNameRoute
+  DemoRepoOwnerNameRoute: typeof DemoRepoOwnerNameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +102,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/': {
+      id: '/demo/'
+      path: '/demo'
+      fullPath: '/demo/'
+      preLoaderRoute: typeof DemoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -82,13 +125,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RepoOwnerNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo/repo/$owner/$name': {
+      id: '/demo/repo/$owner/$name'
+      path: '/demo/repo/$owner/$name'
+      fullPath: '/demo/repo/$owner/$name'
+      preLoaderRoute: typeof DemoRepoOwnerNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  DemoIndexRoute: DemoIndexRoute,
   RepoOwnerNameRoute: RepoOwnerNameRoute,
+  DemoRepoOwnerNameRoute: DemoRepoOwnerNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
