@@ -1,7 +1,7 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
-import { exchangeCode, validateOAuthState } from '../server/auth'
+import { exchangeCode } from '../server/auth'
 
 export const Route = createFileRoute('/auth/callback')({
   component: AuthCallbackPage,
@@ -25,8 +25,7 @@ function AuthCallbackPage() {
       return
     }
 
-    validateOAuthState({ data: { state } })
-      .then(() => exchangeCode({ data: { code } }))
+    exchangeCode({ data: { code, state } })
       .then(() => {
         router.navigate({ to: '/' })
       })

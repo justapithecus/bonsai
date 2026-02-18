@@ -29,8 +29,21 @@ export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
 )
 
 export const exchangeCode = createServerFn({ method: 'POST' })
-  .inputValidator((data: { code: string }) => data)
+  .inputValidator((data: { code: string; state: string }) => data)
   .handler(async ({ data }) => {
+    // Validate CSRF state before touching the token endpoint
+    const session = await useGroveSession()
+    const expectedState = session.data.oauthState
+
+    // Clear stored state regardless of outcome (single-use)
+    await session.update({ ...session.data, oauthState: undefined })
+
+    if (!expectedState || data.state !== expectedState) {
+      throw new Error(
+        'OAuth state mismatch — possible CSRF. Please try signing in again.',
+      )
+    }
+
     const clientId = process.env.GITHUB_CLIENT_ID
     const clientSecret = process.env.GITHUB_CLIENT_SECRET
 
@@ -76,8 +89,7 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
     const user = await userResponse.json()
 
-    // Store in session
-    const session = await useGroveSession()
+    // Store credentials in session (reuse session from state validation)
     await session.update({
       ...session.data,
       githubToken: tokenData.access_token,
@@ -85,20 +97,6 @@ export const exchangeCode = createServerFn({ method: 'POST' })
     })
 
     return { login: user.login }
-  })
-
-export const validateOAuthState = createServerFn({ method: 'POST' })
-  .inputValidator((data: { state: string }) => data)
-  .handler(async ({ data }) => {
-    const session = await useGroveSession()
-    const expected = session.data.oauthState
-
-    // Clear stored state regardless of outcome (single-use)
-    await session.update({ ...session.data, oauthState: undefined })
-
-    if (!expected || data.state !== expected) {
-      throw new Error('OAuth state mismatch — possible CSRF. Please try signing in again.')
-    }
   })
 
 export const getSession = createServerFn({ method: 'GET' }).handler(
