@@ -89,9 +89,11 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
     const user = await userResponse.json()
 
-    // Store credentials in session (reuse session from state validation)
+    // Store credentials in session. Explicitly clear oauthState to avoid
+    // reintroducing it from the stale session.data snapshot captured above.
     await session.update({
       ...session.data,
+      oauthState: undefined,
       githubToken: tokenData.access_token,
       githubLogin: user.login,
     })
