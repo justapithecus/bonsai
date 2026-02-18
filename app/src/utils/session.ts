@@ -4,4 +4,5 @@ export interface GroveSession {
   githubToken?: string
   githubLogin?: string
   climate?: Climate
+  oauthState?: string
 }

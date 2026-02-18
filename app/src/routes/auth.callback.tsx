@@ -1,37 +1,39 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
-import { exchangeCode } from '../server/auth'
+import { exchangeCode, validateOAuthState } from '../server/auth'
 
 export const Route = createFileRoute('/auth/callback')({
   component: AuthCallbackPage,
   validateSearch: (
     search: Record<string, unknown>,
-  ): { code?: string; error?: string } => ({
+  ): { code?: string; state?: string; error?: string } => ({
     code: typeof search.code === 'string' ? search.code : undefined,
+    state: typeof search.state === 'string' ? search.state : undefined,
     error: typeof search.error === 'string' ? search.error : undefined,
   }),
 })
 
 function AuthCallbackPage() {
-  const { code, error: authError } = Route.useSearch()
+  const { code, state, error: authError } = Route.useSearch()
   const router = useRouter()
   const [error, setError] = useState<string | undefined>(authError)
 
   useEffect(() => {
-    if (!code) {
-      setError('No authorization code received')
+    if (!code || !state) {
+      setError('No authorization code or state received')
       return
     }
 
-    exchangeCode({ data: { code } })
+    validateOAuthState({ data: { state } })
+      .then(() => exchangeCode({ data: { code } }))
       .then(() => {
         router.navigate({ to: '/' })
       })
       .catch((err) => {
         setError(err.message || 'Authentication failed')
       })
-  }, [code, router])
+  }, [code, state, router])
 
   return (
     <div

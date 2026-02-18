@@ -7,7 +7,7 @@ import type {
   RepositoryEcology,
   RitualInvitation,
 } from '@grove/core'
-import { classifyRepository, fetchUserRepos } from '@grove/github'
+import { classifyRepository, fetchRepository } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
 import { useGroveSession } from './session'
@@ -29,14 +29,7 @@ export const loadRepository = createServerFn({ method: 'GET' })
     }
 
     const fullName = `${data.owner}/${data.name}`
-
-    // Fetch repos to find the target
-    const repos = await fetchUserRepos(token)
-    const repo = repos.find((r) => r.full_name === fullName)
-
-    if (!repo) {
-      throw new Error(`Repository not found: ${fullName}`)
-    }
+    const repo = await fetchRepository(token, fullName)
 
     const ecology = await classifyRepository(token, repo)
 

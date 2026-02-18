@@ -48,6 +48,35 @@ export async function fetchUserRepos(token: string): Promise<GitHubRepo[]> {
 }
 
 /**
+ * Fetch a single repository by full name (owner/name).
+ */
+export async function fetchRepository(
+  token: string,
+  fullName: string,
+): Promise<GitHubRepo> {
+  const response = await fetch(`${GITHUB_API}/repos/${fullName}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `GitHub API error: ${response.status} ${response.statusText}`,
+    )
+  }
+
+  const r: GitHubRepo = await response.json()
+  return {
+    full_name: r.full_name,
+    html_url: r.html_url,
+    default_branch: r.default_branch,
+    pushed_at: r.pushed_at,
+  }
+}
+
+/**
  * Fetch raw .grove.yaml content from a repository.
  * Returns undefined if the file does not exist (404).
  */
