@@ -1,4 +1,4 @@
-import type { Climate, RepositoryEcology } from '@grove/core'
+import type { Climate, DensityObservation, RepositoryEcology } from '@grove/core'
 import { CLIMATES } from '@grove/core'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -7,6 +7,58 @@ import { ClimateBand } from '../components/ClimateBand'
 import { Header } from '../components/Header'
 
 // --- Sample data ---
+
+// Simulated density observations for demo repositories
+const DEMO_DENSITY: Record<string, DensityObservation> = {
+  'justapithecus/grove': {
+    tier: 'thickening',
+    description:
+      'A developing structure with moderate file count and observable change.',
+    signals: {
+      fileCount: 142,
+      commitsLast30d: 18,
+      commitsLast90d: 45,
+      dependencyManifestsObserved: ['package.json'],
+      ecosystemDependencyCount: 1,
+      observedAt: '2026-02-23T00:00:00Z',
+    },
+  },
+  'justapithecus/lode': {
+    tier: 'dense_canopy',
+    description:
+      'A substantial structure with many files and sustained observed activity.',
+    signals: {
+      fileCount: 487,
+      commitsLast30d: 12,
+      commitsLast90d: 58,
+      dependencyManifestsObserved: ['package.json'],
+      observedAt: '2026-02-23T00:00:00Z',
+    },
+  },
+  'justapithecus/ephemeron': {
+    tier: 'rooting',
+    description:
+      'An establishing structure — some files present, with modest observed activity.',
+    signals: {
+      fileCount: 34,
+      commitsLast30d: 7,
+      commitsLast90d: 12,
+      observedAt: '2026-02-23T00:00:00Z',
+    },
+  },
+  'justapithecus/still-water': {
+    tier: 'sparse',
+    description:
+      'A spare structure with few files and little recent change observed.',
+    signals: {
+      fileCount: 22,
+      commitsLast30d: 0,
+      commitsLast90d: 1,
+      dependencyManifestsObserved: ['package.json'],
+      observedAt: '2026-02-23T00:00:00Z',
+    },
+  },
+}
 
 const DEMO_REPOSITORIES: RepositoryEcology[] = [
   {
@@ -23,6 +75,7 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
       consolidation_interval_days: 120,
     },
     season: { season: 'expansion', sourcePhase: 'expanding' },
+    density: DEMO_DENSITY['justapithecus/grove'],
   },
   {
     fullName: 'justapithecus/lode',
@@ -38,6 +91,7 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
       consolidation_interval_days: 90,
     },
     season: { season: 'consolidation', sourcePhase: 'consolidating' },
+    density: DEMO_DENSITY['justapithecus/lode'],
   },
   {
     fullName: 'justapithecus/ephemeron',
@@ -49,6 +103,7 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
       phase: 'emerging',
     },
     season: { season: 'expansion', sourcePhase: 'emerging' },
+    density: DEMO_DENSITY['justapithecus/ephemeron'],
   },
   {
     fullName: 'justapithecus/still-water',
@@ -68,6 +123,7 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
       sourcePhase: 'resting',
       dormancyMode: 'hibernation',
     },
+    density: DEMO_DENSITY['justapithecus/still-water'],
   },
   {
     fullName: 'justapithecus/codename',
@@ -195,6 +251,12 @@ function DemoRepoCard({
           )}
           {repo.declaration.steward && (
             <Field label="Steward" value={repo.declaration.steward} />
+          )}
+          {repo.density && (
+            <Field
+              label="Structure"
+              value={repo.density.tier.replace(/_/g, ' ')}
+            />
           )}
         </div>
       )}

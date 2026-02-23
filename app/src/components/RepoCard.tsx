@@ -72,6 +72,12 @@ export function RepoCard({ repo, climate }: RepoCardProps) {
           {repo.declaration.steward && (
             <Field label="Steward" value={repo.declaration.steward} />
           )}
+          {repo.density && (
+            <Field
+              label="Structure"
+              value={repo.density.tier.replace(/_/g, ' ')}
+            />
+          )}
         </div>
       )}
 

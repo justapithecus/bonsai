@@ -37,6 +37,7 @@ export async function fetchUserRepos(token: string): Promise<GitHubRepo[]> {
         html_url: r.html_url,
         default_branch: r.default_branch,
         pushed_at: r.pushed_at,
+        size: r.size,
       })),
     )
 
@@ -73,6 +74,7 @@ export async function fetchRepository(
     html_url: r.html_url,
     default_branch: r.default_branch,
     pushed_at: r.pushed_at,
+    size: r.size,
   }
 }
 

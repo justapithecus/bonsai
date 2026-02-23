@@ -4,4 +4,5 @@ export interface GitHubRepo {
   html_url: string
   default_branch: string
   pushed_at: string | null
+  size?: number // KB, from GitHub API
 }
