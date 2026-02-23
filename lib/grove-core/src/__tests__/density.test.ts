@@ -224,6 +224,42 @@ describe('observeStructuralDensity', () => {
         tierIndex(without!.tier),
       )
     })
+
+    it('omitting entanglement shifts tier by at most one step across representative inputs', () => {
+      // Verifies that the 0.15-weighted entanglement factor cannot cause
+      // more than a single tier boundary crossing, even at maximum
+      // ecosystemDependencyCount. This bounds the cross-view variance
+      // between portfolio (with entanglement) and detail (without).
+      const tierIndex = (tier: DensityTier) => DENSITY_TIERS.indexOf(tier)
+
+      const representativeInputs = [
+        { fileCount: 5, commitsLast30d: 0, commitsLast90d: 0 },
+        { fileCount: 50, commitsLast30d: 5, commitsLast90d: 12 },
+        { fileCount: 80, commitsLast30d: 8, commitsLast90d: 20 },
+        { fileCount: 150, commitsLast30d: 12, commitsLast90d: 30 },
+        { fileCount: 250, commitsLast30d: 20, commitsLast90d: 50 },
+        { fileCount: 400, commitsLast30d: 30, commitsLast90d: 70 },
+        { fileCount: 600, commitsLast30d: 40, commitsLast90d: 100 },
+        { fileCount: 1000, commitsLast30d: 50, commitsLast90d: 120 },
+      ]
+
+      // Test with high entanglement count (saturates tanh at weight 0.15)
+      const maxEntanglement = 20
+
+      for (const base of representativeInputs) {
+        const without = observeStructuralDensity(makeSignals(base))
+        const withMax = observeStructuralDensity(
+          makeSignals({ ...base, ecosystemDependencyCount: maxEntanglement }),
+        )
+
+        expect(without).toBeDefined()
+        expect(withMax).toBeDefined()
+
+        const drift = tierIndex(withMax!.tier) - tierIndex(without!.tier)
+        expect(drift).toBeGreaterThanOrEqual(0)
+        expect(drift).toBeLessThanOrEqual(1)
+      }
+    })
   })
 
   describe('output shape', () => {
