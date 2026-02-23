@@ -29,7 +29,9 @@ export function isConfigured(): boolean {
  * Fetches `https://api.github.com/user` once, then caches the result
  * in a module-level singleton for the process lifetime.
  *
- * Returns undefined when no token is configured.
+ * Returns undefined when no token is configured or when the token
+ * is invalid/expired — callers degrade to the unauthenticated state
+ * rather than crashing route loaders.
  */
 export async function getStewardIdentity(): Promise<
   StewardIdentity | undefined
@@ -39,21 +41,27 @@ export async function getStewardIdentity(): Promise<
 
   if (cached && cached.token === token) return cached
 
-  const response = await fetch('https://api.github.com/user', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-    },
-  })
+  try {
+    const response = await fetch('https://api.github.com/user', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+      },
+    })
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch GitHub user (${response.status}). Check that GITHUB_TOKEN is valid.`,
-    )
+    if (!response.ok) {
+      console.warn(
+        `[grove] GitHub identity check failed (${response.status}). Check that GITHUB_TOKEN is valid.`,
+      )
+      return undefined
+    }
+
+    const user = await response.json()
+
+    cached = { token, login: user.login, id: user.id }
+    return cached
+  } catch (err) {
+    console.warn('[grove] Failed to reach GitHub API:', err)
+    return undefined
   }
-
-  const user = await response.json()
-
-  cached = { token, login: user.login, id: user.id }
-  return cached
 }

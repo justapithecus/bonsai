@@ -21,7 +21,7 @@ import {
   recordSnapshotBatch,
   upsertRepositories,
 } from './db'
-import { getStewardIdentity, getToken, isConfigured } from './identity'
+import { getStewardIdentity, isConfigured } from './identity'
 
 const BATCH_SIZE = 10
 
@@ -36,12 +36,13 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       return { repositories: [] }
     }
 
-    const token = getToken()
-
-    if (!token) {
+    // Resolve identity first — degrades to empty portfolio on bad/expired token
+    const identity = await getStewardIdentity()
+    if (!identity) {
       return { repositories: [] }
     }
 
+    const token = identity.token
     const repos = await fetchUserRepos(token)
 
     // Phase 1: Classify in batches
@@ -138,10 +139,9 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       )
     }
 
-    const identity = await getStewardIdentity()
     return {
       repositories,
-      climate: identity ? getCurrentClimate(identity.id) : undefined,
+      climate: getCurrentClimate(identity.id),
     }
   },
 )
