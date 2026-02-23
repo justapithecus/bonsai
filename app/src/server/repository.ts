@@ -12,7 +12,6 @@ import {
   classifyRepository,
   fetchRepository,
   fetchStructuralSignals,
-  fetchUserRepos,
 } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
@@ -35,24 +34,18 @@ export const loadRepository = createServerFn({ method: 'GET' })
     }
 
     const fullName = `${data.owner}/${data.name}`
+    const repo = await fetchRepository(token, fullName)
 
-    // Fetch repo + user repos in parallel for consistent entanglement detection
-    const [repo, userRepos] = await Promise.all([
-      fetchRepository(token, fullName),
-      fetchUserRepos(token),
-    ])
-
-    const ecosystemRepoNames = userRepos.map((r) => r.full_name)
-
-    // Classify and fetch structural signals in parallel
+    // Classify and fetch structural signals in parallel.
+    // Entanglement (ecosystemRepoNames) is omitted here: it is a
+    // portfolio-level signal that requires fetching all user repos,
+    // which would add N-page pagination cost per detail page load.
+    // The entanglement factor is weighted at 0.15 — omitting it may
+    // produce a slightly lower tier than the portfolio view in rare
+    // cases, but avoids disproportionate API cost for a single-repo view.
     const [ecology, signals] = await Promise.all([
       classifyRepository(token, repo),
-      fetchStructuralSignals(
-        token,
-        fullName,
-        repo.default_branch,
-        ecosystemRepoNames,
-      ),
+      fetchStructuralSignals(token, fullName, repo.default_branch),
     ])
 
     // Observe consolidation interval
