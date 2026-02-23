@@ -1,4 +1,9 @@
-import type { Portfolio, RepositoryEcology } from '@grove/core'
+import type {
+  DensityObservation,
+  Portfolio,
+  RepositoryEcology,
+  StructuralSignals,
+} from '@grove/core'
 import {
   observeConsolidationInterval,
   observeStructuralDensity,
@@ -10,6 +15,12 @@ import {
 } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
+import {
+  getCurrentClimate,
+  recordDeclarationIfChanged,
+  recordSnapshotBatch,
+  upsertRepositories,
+} from './db'
 import { isSessionConfigured, useGroveSession } from './session'
 
 const BATCH_SIZE = 10
@@ -55,7 +66,8 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
     }
 
     // Fetch signals in batches for classified repos only
-    const densityByName = new Map<string, ReturnType<typeof observeStructuralDensity>>()
+    const signalsByName = new Map<string, StructuralSignals>()
+    const densityByName = new Map<string, DensityObservation>()
 
     for (let i = 0; i < classifiedIndices.length; i += BATCH_SIZE) {
       const batchIndices = classifiedIndices.slice(i, i + BATCH_SIZE)
@@ -88,7 +100,9 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
           lastActivityDate,
         )
 
-        densityByName.set(ecology.fullName, observeStructuralDensity(signals, consolidation))
+        signalsByName.set(ecology.fullName, signals)
+        const density = observeStructuralDensity(signals, consolidation)
+        if (density) densityByName.set(ecology.fullName, density)
       }
     }
 
@@ -98,9 +112,38 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       return density ? { ...ecology, density } : ecology
     })
 
+    // Phase 2: Persist observations to SQLite
+    upsertRepositories(
+      repos.map((r) => ({
+        fullName: r.full_name,
+        htmlUrl: r.html_url,
+        defaultBranch: r.default_branch,
+        pushedAt: r.pushed_at,
+        sizeKb: r.size,
+      })),
+    )
+
+    recordSnapshotBatch(
+      repositories.map((ecology) => ({
+        ecology,
+        signals: signalsByName.get(ecology.fullName),
+        density: densityByName.get(ecology.fullName),
+      })),
+    )
+
+    for (const ecology of repositories) {
+      recordDeclarationIfChanged(
+        ecology.fullName,
+        ecology.declaration,
+        ecology.classified,
+      )
+    }
+
     return {
       repositories,
-      climate: session.data.climate,
+      climate: session.data.githubId
+        ? getCurrentClimate(session.data.githubId)
+        : undefined,
     }
   },
 )

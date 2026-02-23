@@ -1,8 +1,7 @@
-import type { Climate } from '@grove/core'
-
 export interface GroveSession {
   githubToken?: string
   githubLogin?: string
-  climate?: Climate
+  /** Immutable GitHub user ID — stable across username changes. */
+  githubId?: number
   oauthState?: string
 }

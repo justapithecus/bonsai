@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 
+import { getCurrentClimate } from './db'
 import { isSessionConfigured, useGroveSession } from './session'
 
 export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
@@ -91,11 +92,13 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
     // Store credentials in session. Explicitly clear oauthState to avoid
     // reintroducing it from the stale session.data snapshot captured above.
+    // user.id is GitHub's immutable numeric ID — stable across username renames.
     await session.update({
       ...session.data,
       oauthState: undefined,
       githubToken: tokenData.access_token,
       githubLogin: user.login,
+      githubId: user.id,
     })
 
     return { login: user.login }
@@ -108,10 +111,11 @@ export const getSession = createServerFn({ method: 'GET' }).handler(
     }
 
     const session = await useGroveSession()
+    const userId = session.data.githubId
     return {
       authenticated: !!session.data.githubToken,
       login: session.data.githubLogin,
-      climate: session.data.climate,
+      climate: userId ? getCurrentClimate(userId) : undefined,
     }
   },
 )

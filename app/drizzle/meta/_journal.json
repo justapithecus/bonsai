@@ -8,6 +8,13 @@
       "when": 1771868069422,
       "tag": "0000_initial",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771871808422,
+      "tag": "0001_climate_user_id",
+      "breakpoints": true
     }
   ]
 }

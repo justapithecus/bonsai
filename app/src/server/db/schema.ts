@@ -75,10 +75,13 @@ export const declarationChanges = sqliteTable(
 /**
  * Steward-set, append-only climate declarations.
  * Climate persists across sessions (survives logout).
+ * Keyed by declared_by_id (immutable GitHub user ID) for continuity
+ * across username changes. declared_by stores the login for display.
  */
 export const climateDeclarations = sqliteTable('climate_declarations', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   climate: text('climate').notNull(),
   declaredAt: text('declared_at').notNull(),
   declaredBy: text('declared_by'),
+  declaredById: integer('declared_by_id'),
 })

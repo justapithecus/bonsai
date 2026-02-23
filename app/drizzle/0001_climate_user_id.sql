@@ -1,0 +1,1 @@
+ALTER TABLE `climate_declarations` ADD `declared_by_id` integer;
