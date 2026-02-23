@@ -2,12 +2,12 @@ import { CLIMATES } from '@grove/core'
 import type { Climate } from '@grove/core'
 import { createServerFn } from '@tanstack/react-start'
 
+import { getCurrentClimate, persistClimate } from './db'
 import { useGroveSession } from './session'
 
 export const getClimate = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Climate | undefined> => {
-    const session = await useGroveSession()
-    return session.data.climate
+    return getCurrentClimate()
   },
 )
 
@@ -20,9 +20,6 @@ export const declareClimate = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data }) => {
     const session = await useGroveSession()
-    await session.update({
-      ...session.data,
-      climate: data.climate,
-    })
+    persistClimate(data.climate, session.data.githubLogin)
     return { climate: data.climate }
   })

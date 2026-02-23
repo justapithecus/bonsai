@@ -15,6 +15,11 @@ import {
 } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
+import {
+  recordDeclarationIfChanged,
+  recordSnapshot,
+  upsertRepository,
+} from './db'
 import { useGroveSession } from './session'
 
 export interface RepositoryDetail {
@@ -66,8 +71,25 @@ export const loadRepository = createServerFn({ method: 'GET' })
       consolidation,
     )
 
+    // Phase 2: Persist observations to SQLite
+    upsertRepository({
+      fullName: repo.full_name,
+      htmlUrl: repo.html_url,
+      defaultBranch: repo.default_branch,
+      pushedAt: repo.pushed_at,
+      sizeKb: repo.size,
+    })
+
+    const enrichedEcology = { ...ecology, density }
+    recordSnapshot(enrichedEcology, signals, density)
+    recordDeclarationIfChanged(
+      ecology.fullName,
+      ecology.declaration,
+      ecology.classified,
+    )
+
     return {
-      ecology: { ...ecology, density },
+      ecology: enrichedEcology,
       consolidation,
       ritualInvitations,
     }

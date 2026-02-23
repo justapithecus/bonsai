@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 
+import { getCurrentClimate } from './db'
 import { isSessionConfigured, useGroveSession } from './session'
 
 export const getAuthUrl = createServerFn({ method: 'GET' }).handler(
@@ -111,7 +112,7 @@ export const getSession = createServerFn({ method: 'GET' }).handler(
     return {
       authenticated: !!session.data.githubToken,
       login: session.data.githubLogin,
-      climate: session.data.climate,
+      climate: getCurrentClimate(),
     }
   },
 )
