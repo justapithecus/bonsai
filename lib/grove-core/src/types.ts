@@ -87,12 +87,40 @@ export interface ClimateTension {
   season: Season
 }
 
+// Density tiers — observational, not evaluative
+export const DENSITY_TIERS = [
+  'sparse',
+  'rooting',
+  'thickening',
+  'dense_canopy',
+  'tangled_thicket',
+] as const
+export type DensityTier = (typeof DENSITY_TIERS)[number]
+
+/** Observed structural signals — all optional, absence is valid */
+export interface StructuralSignals {
+  fileCount?: number
+  commitsLast30d?: number
+  commitsLast90d?: number
+  dependencyManifestsObserved?: string[]
+  ecosystemDependencyCount?: number
+  observedAt: string // ISO 8601
+}
+
+/** Derived density observation — descriptive tier, not a score */
+export interface DensityObservation {
+  tier: DensityTier
+  description: string
+  signals: StructuralSignals
+}
+
 // Classified repository
 export interface RepositoryEcology {
   fullName: string
   htmlUrl: string
   declaration?: GroveDeclaration
   season?: SeasonDerivation
+  density?: DensityObservation
   classified: boolean
 }
 

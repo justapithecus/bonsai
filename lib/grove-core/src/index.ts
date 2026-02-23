@@ -1,4 +1,5 @@
 export { observeConsolidationInterval } from './consolidation'
+export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
 export type { ParseResult } from './parser'
 export {
@@ -12,6 +13,8 @@ export type {
   Climate,
   ClimateTension,
   ConsolidationObservation,
+  DensityObservation,
+  DensityTier,
   DormancyMode,
   GroveDeclaration,
   Horizon,
@@ -23,9 +26,11 @@ export type {
   Role,
   Season,
   SeasonDerivation,
+  StructuralSignals,
 } from './types'
 export {
   CLIMATES,
+  DENSITY_TIERS,
   DORMANCY_MODES,
   HORIZONS,
   PHASES,
