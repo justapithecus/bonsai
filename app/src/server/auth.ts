@@ -92,11 +92,13 @@ export const exchangeCode = createServerFn({ method: 'POST' })
 
     // Store credentials in session. Explicitly clear oauthState to avoid
     // reintroducing it from the stale session.data snapshot captured above.
+    // user.id is GitHub's immutable numeric ID — stable across username renames.
     await session.update({
       ...session.data,
       oauthState: undefined,
       githubToken: tokenData.access_token,
       githubLogin: user.login,
+      githubId: user.id,
     })
 
     return { login: user.login }
@@ -109,11 +111,11 @@ export const getSession = createServerFn({ method: 'GET' }).handler(
     }
 
     const session = await useGroveSession()
-    const login = session.data.githubLogin
+    const userId = session.data.githubId
     return {
       authenticated: !!session.data.githubToken,
-      login,
-      climate: login ? getCurrentClimate(login) : undefined,
+      login: session.data.githubLogin,
+      climate: userId ? getCurrentClimate(userId) : undefined,
     }
   },
 )

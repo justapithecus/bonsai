@@ -84,6 +84,10 @@ export function upsertRepositories(
 /**
  * Record a single ecology snapshot.
  * Skips insert if the most recent snapshot for this repo is within the minimum interval.
+ *
+ * The interval check and insert run inside a transaction so the guard
+ * is atomic — prevents duplicate snapshots if the deployment model
+ * ever changes from synchronous single-process.
  */
 export function recordSnapshot(
   ecology: RepositoryEcology,
@@ -92,15 +96,21 @@ export function recordSnapshot(
   db: GroveDb = getDb(),
 ): boolean {
   const now = new Date()
-  if (isWithinInterval(ecology.fullName, now, db)) return false
-
-  insertSnapshot(ecology, signals, density, now, db)
-  return true
+  // Wrap check+insert in a transaction for atomicity.
+  // better-sqlite3 transactions acquire an EXCLUSIVE lock, so concurrent
+  // callers (if any) block until this completes.
+  return db.transaction(() => {
+    if (isWithinInterval(ecology.fullName, now, db)) return false
+    db.insert(ecologySnapshots)
+      .values(buildSnapshotValues(ecology, signals, density, now))
+      .run()
+    return true
+  })
 }
 
 /**
  * Record ecology snapshots for multiple repositories in a single transaction.
- * Per-repo interval check is applied before entering the transaction.
+ * Interval check and inserts are all inside the transaction for atomicity.
  */
 export function recordSnapshotBatch(
   entries: Array<{
@@ -111,17 +121,10 @@ export function recordSnapshotBatch(
   db: GroveDb = getDb(),
 ) {
   const now = new Date()
-
-  // Pre-filter outside transaction to avoid type mismatch with tx
-  const eligible = entries.filter(
-    ({ ecology }) => !isWithinInterval(ecology.fullName, now, db),
-  )
-
-  if (eligible.length === 0) return
-
-  db.transaction((tx) => {
-    for (const { ecology, signals, density } of eligible) {
-      tx.insert(ecologySnapshots)
+  db.transaction(() => {
+    for (const { ecology, signals, density } of entries) {
+      if (isWithinInterval(ecology.fullName, now, db)) continue
+      db.insert(ecologySnapshots)
         .values(buildSnapshotValues(ecology, signals, density, now))
         .run()
     }
@@ -207,18 +210,6 @@ function buildSnapshotValues(
     densityTier: density?.tier ?? null,
     densityDescription: density?.description ?? null,
   }
-}
-
-function insertSnapshot(
-  ecology: RepositoryEcology,
-  signals: StructuralSignals | undefined,
-  density: DensityObservation | undefined,
-  now: Date,
-  db: GroveDb,
-) {
-  db.insert(ecologySnapshots)
-    .values(buildSnapshotValues(ecology, signals, density, now))
-    .run()
 }
 
 export { MIN_SNAPSHOT_INTERVAL_MS }

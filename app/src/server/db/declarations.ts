@@ -9,6 +9,10 @@ import { declarationChanges } from './schema'
  * Record a declaration change only if the current declaration differs
  * from the most recently stored one for this repository.
  *
+ * The comparison and insert run inside a transaction so the dedupe
+ * check is atomic — prevents duplicate rows if the deployment model
+ * ever changes from synchronous single-process.
+ *
  * Returns true if a new row was inserted.
  */
 export function recordDeclarationIfChanged(
@@ -17,35 +21,37 @@ export function recordDeclarationIfChanged(
   classified: boolean,
   db: GroveDb = getDb(),
 ): boolean {
-  const latest = db
-    .select()
-    .from(declarationChanges)
-    .where(eq(declarationChanges.fullName, fullName))
-    .orderBy(desc(declarationChanges.id))
-    .limit(1)
-    .get()
+  return db.transaction(() => {
+    const latest = db
+      .select()
+      .from(declarationChanges)
+      .where(eq(declarationChanges.fullName, fullName))
+      .orderBy(desc(declarationChanges.id))
+      .limit(1)
+      .get()
 
-  const current = serializeDeclaration(declaration, classified)
-  if (latest && serializeDeclaration(rowToDeclaration(latest), latest.classified) === current) {
-    return false
-  }
+    const current = serializeDeclaration(declaration, classified)
+    if (latest && serializeDeclaration(rowToDeclaration(latest), latest.classified) === current) {
+      return false
+    }
 
-  db.insert(declarationChanges)
-    .values({
-      fullName,
-      observedAt: new Date().toISOString(),
-      classified,
-      intent: declaration?.intent ?? null,
-      horizon: declaration?.horizon ?? null,
-      role: declaration?.role ?? null,
-      phase: declaration?.phase ?? null,
-      steward: declaration?.steward ?? null,
-      consolidationIntervalDays:
-        declaration?.consolidation_interval_days ?? null,
-    })
-    .run()
+    db.insert(declarationChanges)
+      .values({
+        fullName,
+        observedAt: new Date().toISOString(),
+        classified,
+        intent: declaration?.intent ?? null,
+        horizon: declaration?.horizon ?? null,
+        role: declaration?.role ?? null,
+        phase: declaration?.phase ?? null,
+        steward: declaration?.steward ?? null,
+        consolidationIntervalDays:
+          declaration?.consolidation_interval_days ?? null,
+      })
+      .run()
 
-  return true
+    return true
+  })
 }
 
 /**

@@ -141,8 +141,8 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
 
     return {
       repositories,
-      climate: session.data.githubLogin
-        ? getCurrentClimate(session.data.githubLogin)
+      climate: session.data.githubId
+        ? getCurrentClimate(session.data.githubId)
         : undefined,
     }
   },

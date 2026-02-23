@@ -8,9 +8,9 @@ import { useGroveSession } from './session'
 export const getClimate = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Climate | undefined> => {
     const session = await useGroveSession()
-    const login = session.data.githubLogin
-    if (!login) return undefined
-    return getCurrentClimate(login)
+    const userId = session.data.githubId
+    if (!userId) return undefined
+    return getCurrentClimate(userId)
   },
 )
 
@@ -25,11 +25,12 @@ export const declareClimate = createServerFn({ method: 'POST' })
     const session = await useGroveSession()
     const token = session.data.githubToken
     const login = session.data.githubLogin
+    const userId = session.data.githubId
 
-    if (!token || !login) {
+    if (!token || !login || !userId) {
       throw new Error('Not authenticated')
     }
 
-    persistClimate(data.climate, login)
+    persistClimate(data.climate, userId, login)
     return { climate: data.climate }
   })
