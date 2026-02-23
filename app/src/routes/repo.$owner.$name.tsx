@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { ConsolidationDisplay } from '../components/ConsolidationDisplay'
+import { DensityDisplay } from '../components/DensityDisplay'
 import { Header } from '../components/Header'
 import { PhaseIndicator } from '../components/PhaseIndicator'
 import { RitualInvitation } from '../components/RitualInvitation'
@@ -125,6 +126,9 @@ function RepositoryDetailPage() {
 
             {/* Consolidation */}
             <ConsolidationDisplay consolidation={consolidation} />
+
+            {/* Structural density */}
+            <DensityDisplay density={ecology.density} />
           </div>
         )}
 
