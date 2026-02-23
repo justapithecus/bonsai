@@ -48,14 +48,20 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
     const ecosystemRepoNames = repos.map((r) => r.full_name)
     const reposByName = new Map(repos.map((r) => [r.full_name, r]))
 
-    const enriched: RepositoryEcology[] = []
-    const toEnrich = classified.filter((e) => e.classified)
-    const unclassified = classified.filter((e) => !e.classified)
+    // Collect only classified repos for signal fetching, preserving indices
+    const classifiedIndices: number[] = []
+    for (let i = 0; i < classified.length; i++) {
+      if (classified[i]!.classified) classifiedIndices.push(i)
+    }
 
-    for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
-      const batch = toEnrich.slice(i, i + BATCH_SIZE)
+    // Fetch signals in batches for classified repos only
+    const densityByName = new Map<string, ReturnType<typeof observeStructuralDensity>>()
+
+    for (let i = 0; i < classifiedIndices.length; i += BATCH_SIZE) {
+      const batchIndices = classifiedIndices.slice(i, i + BATCH_SIZE)
       const signalResults = await Promise.all(
-        batch.map((ecology) => {
+        batchIndices.map((idx) => {
+          const ecology = classified[idx]!
           const repo = reposByName.get(ecology.fullName)
           if (!repo) return Promise.resolve(undefined)
           return fetchStructuralSignals(
@@ -67,13 +73,10 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
         }),
       )
 
-      for (let j = 0; j < batch.length; j++) {
-        const ecology = batch[j]!
+      for (let j = 0; j < batchIndices.length; j++) {
+        const ecology = classified[batchIndices[j]!]!
         const signals = signalResults[j]
-        if (!signals) {
-          enriched.push(ecology)
-          continue
-        }
+        if (!signals) continue
 
         // Observe consolidation for density computation
         const repo = reposByName.get(ecology.fullName)
@@ -85,13 +88,18 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
           lastActivityDate,
         )
 
-        const density = observeStructuralDensity(signals, consolidation)
-        enriched.push({ ...ecology, density })
+        densityByName.set(ecology.fullName, observeStructuralDensity(signals, consolidation))
       }
     }
 
+    // Rebuild list in original order, spreading density onto classified repos
+    const repositories = classified.map((ecology) => {
+      const density = densityByName.get(ecology.fullName)
+      return density ? { ...ecology, density } : ecology
+    })
+
     return {
-      repositories: [...enriched, ...unclassified],
+      repositories,
       climate: session.data.climate,
     }
   },
