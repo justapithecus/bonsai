@@ -70,7 +70,7 @@ export async function fetchStructuralSignals(
 }
 
 interface TreeSignals {
-  fileCount: number
+  fileCount: number | undefined
   manifests: string[]
   hasRootPackageJson: boolean
 }
@@ -91,6 +91,11 @@ async function fetchTreeSignals(
 
   const data = await response.json()
   const tree: Array<{ path: string; type: string }> = data.tree ?? []
+
+  // GitHub truncates recursive trees for very large repos.
+  // When truncated, fileCount would be an undercount — drop it to avoid
+  // presenting partial data as complete observation.
+  const truncated: boolean = data.truncated === true
 
   let fileCount = 0
   const manifests: string[] = []
@@ -114,7 +119,11 @@ async function fetchTreeSignals(
     }
   }
 
-  return { fileCount, manifests, hasRootPackageJson }
+  return {
+    fileCount: truncated ? undefined : fileCount,
+    manifests,
+    hasRootPackageJson,
+  }
 }
 
 interface CommitSignals {
@@ -186,24 +195,25 @@ async function fetchEcosystemDependencyCount(
       ...Object.keys(pkg.peerDependencies ?? {}),
     ])
 
-    // Extract short names from ecosystem repo full names for matching
-    // e.g. "justapithecus/lode" → "lode", "@grove/core" matches "grove"
+    // Build a set of ecosystem repo short names for exact matching
+    // e.g. "justapithecus/lode" → "lode"
     const ecosystemShortNames = new Set(
       ecosystemRepoNames.map((name) => {
         const parts = name.split('/')
-        return parts[parts.length - 1]!
+        return parts[parts.length - 1]!.toLowerCase()
       }),
     )
 
     let count = 0
     for (const dep of allDeps) {
-      // Match if the dependency name contains any ecosystem repo short name
-      // This catches workspace refs like "@grove/core" matching repo "grove"
-      for (const repoName of ecosystemShortNames) {
-        if (dep.includes(repoName)) {
-          count++
-          break
-        }
+      // Extract the package's short name:
+      // "@scope/pkg" → "pkg", "some-lib" → "some-lib"
+      const depShortName = dep.includes('/')
+        ? dep.split('/').pop()!.toLowerCase()
+        : dep.toLowerCase()
+
+      if (ecosystemShortNames.has(depShortName)) {
+        count++
       }
     }
 

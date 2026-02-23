@@ -12,6 +12,7 @@ import {
   classifyRepository,
   fetchRepository,
   fetchStructuralSignals,
+  fetchUserRepos,
 } from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
@@ -34,12 +35,24 @@ export const loadRepository = createServerFn({ method: 'GET' })
     }
 
     const fullName = `${data.owner}/${data.name}`
-    const repo = await fetchRepository(token, fullName)
+
+    // Fetch repo + user repos in parallel for consistent entanglement detection
+    const [repo, userRepos] = await Promise.all([
+      fetchRepository(token, fullName),
+      fetchUserRepos(token),
+    ])
+
+    const ecosystemRepoNames = userRepos.map((r) => r.full_name)
 
     // Classify and fetch structural signals in parallel
     const [ecology, signals] = await Promise.all([
       classifyRepository(token, repo),
-      fetchStructuralSignals(token, fullName, repo.default_branch),
+      fetchStructuralSignals(
+        token,
+        fullName,
+        repo.default_branch,
+        ecosystemRepoNames,
+      ),
     ])
 
     // Observe consolidation interval
