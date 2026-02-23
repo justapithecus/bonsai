@@ -1,6 +1,7 @@
 import {
   createRootRoute,
   HeadContent,
+  Link,
   Outlet,
   Scripts,
 } from '@tanstack/react-router'
@@ -76,13 +77,13 @@ function NotFoundPage() {
         >
           This path does not lead anywhere in the observatory.
         </p>
-        <a
-          href="/"
+        <Link
+          to="/"
           className="text-sm"
           style={{ color: 'var(--grove-accent)' }}
         >
           Return to Grove
-        </a>
+        </Link>
       </div>
     </div>
   )
