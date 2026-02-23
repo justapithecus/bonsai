@@ -6,7 +6,7 @@ import { ClimateDeclaration } from '../components/ClimateDeclaration'
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { RepoCard } from '../components/RepoCard'
-import { getAuthUrl, getSession, logout } from '../server/auth'
+import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
 
 export const Route = createFileRoute('/')({
@@ -25,21 +25,11 @@ function PortfolioPage() {
   const router = useRouter()
   const [showClimatePanel, setShowClimatePanel] = useState(false)
 
-  const handleConnect = async () => {
-    const url = await getAuthUrl()
-    window.location.href = url
-  }
-
-  const handleLogout = async () => {
-    await logout()
-    router.invalidate()
-  }
-
   if (!session.authenticated) {
     return (
       <div style={{ backgroundColor: 'var(--grove-bg)', minHeight: '100vh' }}>
         <Header />
-        <EmptyState onConnect={handleConnect} />
+        <EmptyState />
       </div>
     )
   }
@@ -52,7 +42,7 @@ function PortfolioPage() {
       data-season={seasonAttr}
       style={{ backgroundColor: 'var(--grove-bg)', minHeight: '100vh' }}
     >
-      <Header login={session.login} onLogout={handleLogout} />
+      <Header login={session.login} />
       <ClimateBand
         climate={portfolio.climate}
         onOpenDeclaration={() => setShowClimatePanel(true)}

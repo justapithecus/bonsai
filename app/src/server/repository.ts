@@ -20,7 +20,7 @@ import {
   recordSnapshot,
   upsertRepository,
 } from './db'
-import { useGroveSession } from './session'
+import { getToken } from './identity'
 
 export interface RepositoryDetail {
   ecology: RepositoryEcology
@@ -31,8 +31,7 @@ export interface RepositoryDetail {
 export const loadRepository = createServerFn({ method: 'GET' })
   .inputValidator((data: { owner: string; name: string }) => data)
   .handler(async ({ data }): Promise<RepositoryDetail> => {
-    const session = await useGroveSession()
-    const token = session.data.githubToken
+    const token = getToken()
 
     if (!token) {
       throw new Error('Not authenticated')

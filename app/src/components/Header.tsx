@@ -1,9 +1,8 @@
 interface HeaderProps {
   login?: string
-  onLogout?: () => void
 }
 
-export function Header({ login, onLogout }: HeaderProps) {
+export function Header({ login }: HeaderProps) {
   return (
     <header
       className="flex items-center justify-between px-8 py-6"
@@ -28,24 +27,12 @@ export function Header({ login, onLogout }: HeaderProps) {
         </p>
       </div>
       {login && (
-        <div className="flex items-center gap-4">
-          <span
-            className="text-sm"
-            style={{ color: 'var(--grove-text-muted)' }}
-          >
-            {login}
-          </span>
-          <button
-            onClick={onLogout}
-            className="text-sm px-3 py-1 rounded transition-colors cursor-pointer"
-            style={{
-              color: 'var(--grove-text-muted)',
-              border: '1px solid var(--grove-border)',
-            }}
-          >
-            Disconnect
-          </button>
-        </div>
+        <span
+          className="text-sm"
+          style={{ color: 'var(--grove-text-muted)' }}
+        >
+          {login}
+        </span>
       )}
     </header>
   )

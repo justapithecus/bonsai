@@ -21,7 +21,7 @@ import {
   recordSnapshotBatch,
   upsertRepositories,
 } from './db'
-import { isSessionConfigured, useGroveSession } from './session'
+import { getStewardIdentity, getToken, isConfigured } from './identity'
 
 const BATCH_SIZE = 10
 
@@ -32,12 +32,11 @@ const BATCH_SIZE = 10
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Portfolio> => {
-    if (!isSessionConfigured()) {
+    if (!isConfigured()) {
       return { repositories: [] }
     }
 
-    const session = await useGroveSession()
-    const token = session.data.githubToken
+    const token = getToken()
 
     if (!token) {
       return { repositories: [] }
@@ -139,11 +138,10 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       )
     }
 
+    const identity = await getStewardIdentity()
     return {
       repositories,
-      climate: session.data.githubId
-        ? getCurrentClimate(session.data.githubId)
-        : undefined,
+      climate: identity ? getCurrentClimate(identity.id) : undefined,
     }
   },
 )
