@@ -1,5 +1,6 @@
 import {
   observeConsolidationInterval,
+  observeStructuralDensity,
   surfaceRitualInvitations,
 } from '@grove/core'
 import type {
@@ -7,7 +8,11 @@ import type {
   RepositoryEcology,
   RitualInvitation,
 } from '@grove/core'
-import { classifyRepository, fetchRepository } from '@grove/github'
+import {
+  classifyRepository,
+  fetchRepository,
+  fetchStructuralSignals,
+} from '@grove/github'
 import { createServerFn } from '@tanstack/react-start'
 
 import { useGroveSession } from './session'
@@ -31,7 +36,11 @@ export const loadRepository = createServerFn({ method: 'GET' })
     const fullName = `${data.owner}/${data.name}`
     const repo = await fetchRepository(token, fullName)
 
-    const ecology = await classifyRepository(token, repo)
+    // Classify and fetch structural signals in parallel
+    const [ecology, signals] = await Promise.all([
+      classifyRepository(token, repo),
+      fetchStructuralSignals(token, fullName, repo.default_branch),
+    ])
 
     // Observe consolidation interval
     const lastActivityDate = repo.pushed_at
@@ -42,6 +51,9 @@ export const loadRepository = createServerFn({ method: 'GET' })
       lastActivityDate,
     )
 
+    // Derive density from structural signals
+    const density = observeStructuralDensity(signals, consolidation)
+
     // Surface ritual invitations
     const ritualInvitations = surfaceRitualInvitations(
       ecology.declaration,
@@ -49,7 +61,7 @@ export const loadRepository = createServerFn({ method: 'GET' })
     )
 
     return {
-      ecology,
+      ecology: { ...ecology, density },
       consolidation,
       ritualInvitations,
     }
