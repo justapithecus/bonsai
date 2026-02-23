@@ -109,10 +109,11 @@ export const getSession = createServerFn({ method: 'GET' }).handler(
     }
 
     const session = await useGroveSession()
+    const login = session.data.githubLogin
     return {
       authenticated: !!session.data.githubToken,
-      login: session.data.githubLogin,
-      climate: getCurrentClimate(),
+      login,
+      climate: login ? getCurrentClimate(login) : undefined,
     }
   },
 )

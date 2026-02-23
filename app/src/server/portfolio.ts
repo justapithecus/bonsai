@@ -132,18 +132,18 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
     )
 
     for (const ecology of repositories) {
-      if (ecology.classified) {
-        recordDeclarationIfChanged(
-          ecology.fullName,
-          ecology.declaration,
-          ecology.classified,
-        )
-      }
+      recordDeclarationIfChanged(
+        ecology.fullName,
+        ecology.declaration,
+        ecology.classified,
+      )
     }
 
     return {
       repositories,
-      climate: getCurrentClimate(),
+      climate: session.data.githubLogin
+        ? getCurrentClimate(session.data.githubLogin)
+        : undefined,
     }
   },
 )
