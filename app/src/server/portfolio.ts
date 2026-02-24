@@ -106,11 +106,14 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       }
     }
 
-    // Rebuild list in original order, spreading density onto classified repos
-    const repositories = classified.map((ecology) => {
+    // Rebuild list in original order, spreading density onto classified repos.
+    // Unclassified repos (no .grove.yaml) are persisted for ecosystem analysis
+    // but excluded from the portfolio view — stewardship is opt-in.
+    const allRepos = classified.map((ecology) => {
       const density = densityByName.get(ecology.fullName)
       return density ? { ...ecology, density } : ecology
     })
+    const repositories = allRepos.filter((r) => r.classified)
 
     // Phase 2: Persist observations to SQLite
     upsertRepositories(
@@ -124,14 +127,14 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
     )
 
     recordSnapshotBatch(
-      repositories.map((ecology) => ({
+      allRepos.map((ecology) => ({
         ecology,
         signals: signalsByName.get(ecology.fullName),
         density: densityByName.get(ecology.fullName),
       })),
     )
 
-    for (const ecology of repositories) {
+    for (const ecology of allRepos) {
       recordDeclarationIfChanged(
         ecology.fullName,
         ecology.declaration,

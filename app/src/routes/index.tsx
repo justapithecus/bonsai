@@ -65,7 +65,7 @@ function PortfolioPage() {
             className="text-center text-sm py-12"
             style={{ color: 'var(--grove-text-muted)' }}
           >
-            No repositories observed.
+            No repositories with <code>.grove.yaml</code> observed.
           </p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl">
