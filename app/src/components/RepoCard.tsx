@@ -13,16 +13,14 @@ export function RepoCard({ repo, climate }: RepoCardProps) {
   const hasTension =
     climate && repo.season && repo.season.season !== climate
 
-  return (
-    <Link
-      to="/repo/$owner/$name"
-      params={{ owner: owner!, name: name! }}
-      className="block p-6 rounded-lg transition-colors"
-      style={{
-        backgroundColor: 'var(--grove-surface)',
-        border: '1px solid var(--grove-border)',
-      }}
-    >
+  const cardClassName = 'block p-6 rounded-lg transition-colors'
+  const cardStyle = {
+    backgroundColor: 'var(--grove-surface)',
+    border: '1px solid var(--grove-border)',
+  }
+
+  const cardContent = (
+    <>
       <div className="flex items-start justify-between mb-3">
         <h3
           className="text-base font-medium"
@@ -90,6 +88,31 @@ export function RepoCard({ repo, climate }: RepoCardProps) {
           in tension with the declared climate ({climate}).
         </p>
       )}
+    </>
+  )
+
+  if (!repo.classified) {
+    return (
+      <a
+        href={repo.htmlUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cardClassName}
+        style={cardStyle}
+      >
+        {cardContent}
+      </a>
+    )
+  }
+
+  return (
+    <Link
+      to="/repo/$owner/$name"
+      params={{ owner: owner!, name: name! }}
+      className={cardClassName}
+      style={cardStyle}
+    >
+      {cardContent}
     </Link>
   )
 }

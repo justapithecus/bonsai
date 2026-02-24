@@ -81,6 +81,33 @@ function PortfolioPage() {
             ))}
           </div>
         )}
+
+        {portfolio.unclassified.length > 0 && (
+          <section className="mt-12 max-w-6xl">
+            <h2
+              className="text-sm font-medium mb-1"
+              style={{ color: 'var(--grove-text-muted)' }}
+            >
+              Unclassified repositories
+            </h2>
+            <p
+              className="text-xs mb-4"
+              style={{ color: 'var(--grove-text-muted)', opacity: 0.7 }}
+            >
+              These repositories have no <code>.grove.yaml</code>. They are
+              observed but not yet part of the declared ecosystem.
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {portfolio.unclassified.map((repo) => (
+                <RepoCard
+                  key={repo.fullName}
+                  repo={repo}
+                  climate={climate}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   )
