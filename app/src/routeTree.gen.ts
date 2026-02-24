@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoIndexRouteImport } from './routes/demo.index'
-import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as RepoOwnerNameRouteImport } from './routes/repo.$owner.$name'
 import { Route as DemoRepoOwnerNameRouteImport } from './routes/demo.repo.$owner.$name'
 
@@ -23,11 +22,6 @@ const IndexRoute = IndexRouteImport.update({
 const DemoIndexRoute = DemoIndexRouteImport.update({
   id: '/demo/',
   path: '/demo/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth/callback',
-  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RepoOwnerNameRoute = RepoOwnerNameRouteImport.update({
@@ -43,14 +37,12 @@ const DemoRepoOwnerNameRoute = DemoRepoOwnerNameRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/demo/': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
   '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/demo': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
   '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
@@ -58,30 +50,18 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/auth/callback': typeof AuthCallbackRoute
   '/demo/': typeof DemoIndexRoute
   '/repo/$owner/$name': typeof RepoOwnerNameRoute
   '/demo/repo/$owner/$name': typeof DemoRepoOwnerNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/auth/callback'
-    | '/demo/'
-    | '/repo/$owner/$name'
-    | '/demo/repo/$owner/$name'
+  fullPaths: '/' | '/demo/' | '/repo/$owner/$name' | '/demo/repo/$owner/$name'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/auth/callback'
-    | '/demo'
-    | '/repo/$owner/$name'
-    | '/demo/repo/$owner/$name'
+  to: '/' | '/demo' | '/repo/$owner/$name' | '/demo/repo/$owner/$name'
   id:
     | '__root__'
     | '/'
-    | '/auth/callback'
     | '/demo/'
     | '/repo/$owner/$name'
     | '/demo/repo/$owner/$name'
@@ -89,7 +69,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthCallbackRoute: typeof AuthCallbackRoute
   DemoIndexRoute: typeof DemoIndexRoute
   RepoOwnerNameRoute: typeof RepoOwnerNameRoute
   DemoRepoOwnerNameRoute: typeof DemoRepoOwnerNameRoute
@@ -111,13 +90,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/callback': {
-      id: '/auth/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/repo/$owner/$name': {
       id: '/repo/$owner/$name'
       path: '/repo/$owner/$name'
@@ -137,7 +109,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthCallbackRoute: AuthCallbackRoute,
   DemoIndexRoute: DemoIndexRoute,
   RepoOwnerNameRoute: RepoOwnerNameRoute,
   DemoRepoOwnerNameRoute: DemoRepoOwnerNameRoute,

@@ -5,7 +5,7 @@ import { DensityDisplay } from '../components/DensityDisplay'
 import { Header } from '../components/Header'
 import { PhaseIndicator } from '../components/PhaseIndicator'
 import { RitualInvitation } from '../components/RitualInvitation'
-import { getSession, logout } from '../server/auth'
+import { getSession } from '../server/auth'
 import { loadRepository } from '../server/repository'
 
 export const Route = createFileRoute('/repo/$owner/$name')({
@@ -27,17 +27,12 @@ function RepositoryDetailPage() {
 
   const seasonAttr = ecology.season?.season
 
-  const handleLogout = async () => {
-    await logout()
-    window.location.href = '/'
-  }
-
   return (
     <div
       data-season={seasonAttr}
       style={{ backgroundColor: 'var(--grove-bg)', minHeight: '100vh' }}
     >
-      <Header login={session.login} onLogout={handleLogout} />
+      <Header login={session.login} />
 
       <main className="px-8 py-8 max-w-3xl">
         <Link

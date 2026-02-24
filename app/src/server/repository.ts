@@ -20,7 +20,7 @@ import {
   recordSnapshot,
   upsertRepository,
 } from './db'
-import { useGroveSession } from './session'
+import { getStewardIdentity } from './identity'
 
 export interface RepositoryDetail {
   ecology: RepositoryEcology
@@ -31,12 +31,13 @@ export interface RepositoryDetail {
 export const loadRepository = createServerFn({ method: 'GET' })
   .inputValidator((data: { owner: string; name: string }) => data)
   .handler(async ({ data }): Promise<RepositoryDetail> => {
-    const session = await useGroveSession()
-    const token = session.data.githubToken
+    const identity = await getStewardIdentity()
 
-    if (!token) {
+    if (!identity) {
       throw new Error('Not authenticated')
     }
+
+    const token = identity.token
 
     const fullName = `${data.owner}/${data.name}`
     const repo = await fetchRepository(token, fullName)

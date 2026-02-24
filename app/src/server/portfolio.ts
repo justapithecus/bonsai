@@ -21,7 +21,7 @@ import {
   recordSnapshotBatch,
   upsertRepositories,
 } from './db'
-import { isSessionConfigured, useGroveSession } from './session'
+import { getStewardIdentity, isConfigured } from './identity'
 
 const BATCH_SIZE = 10
 
@@ -32,17 +32,17 @@ const BATCH_SIZE = 10
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Portfolio> => {
-    if (!isSessionConfigured()) {
+    if (!isConfigured()) {
       return { repositories: [] }
     }
 
-    const session = await useGroveSession()
-    const token = session.data.githubToken
-
-    if (!token) {
+    // Resolve identity first — degrades to empty portfolio on bad/expired token
+    const identity = await getStewardIdentity()
+    if (!identity) {
       return { repositories: [] }
     }
 
+    const token = identity.token
     const repos = await fetchUserRepos(token)
 
     // Phase 1: Classify in batches
@@ -106,11 +106,14 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       }
     }
 
-    // Rebuild list in original order, spreading density onto classified repos
-    const repositories = classified.map((ecology) => {
+    // Rebuild list in original order, spreading density onto classified repos.
+    // Unclassified repos (no .grove.yaml) are persisted for ecosystem analysis
+    // but excluded from the portfolio view — stewardship is opt-in.
+    const allRepos = classified.map((ecology) => {
       const density = densityByName.get(ecology.fullName)
       return density ? { ...ecology, density } : ecology
     })
+    const repositories = allRepos.filter((r) => r.classified)
 
     // Phase 2: Persist observations to SQLite
     upsertRepositories(
@@ -124,14 +127,14 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
     )
 
     recordSnapshotBatch(
-      repositories.map((ecology) => ({
+      allRepos.map((ecology) => ({
         ecology,
         signals: signalsByName.get(ecology.fullName),
         density: densityByName.get(ecology.fullName),
       })),
     )
 
-    for (const ecology of repositories) {
+    for (const ecology of allRepos) {
       recordDeclarationIfChanged(
         ecology.fullName,
         ecology.declaration,
@@ -141,9 +144,7 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
 
     return {
       repositories,
-      climate: session.data.githubId
-        ? getCurrentClimate(session.data.githubId)
-        : undefined,
+      climate: getCurrentClimate(identity.id),
     }
   },
 )

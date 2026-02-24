@@ -1,8 +1,4 @@
-interface EmptyStateProps {
-  onConnect: () => void
-}
-
-export function EmptyState({ onConnect }: EmptyStateProps) {
+export function EmptyState() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <div className="text-center max-w-md">
@@ -13,18 +9,15 @@ export function EmptyState({ onConnect }: EmptyStateProps) {
             color: 'var(--grove-text)',
           }}
         >
-          Select repositories to begin stewardship.
+          No token configured.
         </h2>
-        <button
-          onClick={onConnect}
-          className="px-6 py-2.5 rounded-lg text-sm cursor-pointer transition-colors"
-          style={{
-            backgroundColor: 'var(--grove-accent)',
-            color: 'var(--grove-surface)',
-          }}
+        <p
+          className="text-sm"
+          style={{ color: 'var(--grove-text-muted)' }}
         >
-          Connect GitHub
-        </button>
+          Set <code style={{ color: 'var(--grove-text)' }}>GROVE_GITHUB_TOKEN</code> in
+          your environment to begin observing repositories.
+        </p>
       </div>
     </div>
   )

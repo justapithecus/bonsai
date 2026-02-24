@@ -3,14 +3,13 @@ import type { Climate } from '@grove/core'
 import { createServerFn } from '@tanstack/react-start'
 
 import { getCurrentClimate, persistClimate } from './db'
-import { useGroveSession } from './session'
+import { getStewardIdentity } from './identity'
 
 export const getClimate = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Climate | undefined> => {
-    const session = await useGroveSession()
-    const userId = session.data.githubId
-    if (!userId) return undefined
-    return getCurrentClimate(userId)
+    const identity = await getStewardIdentity()
+    if (!identity) return undefined
+    return getCurrentClimate(identity.id)
   },
 )
 
@@ -22,15 +21,12 @@ export const declareClimate = createServerFn({ method: 'POST' })
     return data
   })
   .handler(async ({ data }) => {
-    const session = await useGroveSession()
-    const token = session.data.githubToken
-    const login = session.data.githubLogin
-    const userId = session.data.githubId
+    const identity = await getStewardIdentity()
 
-    if (!token || !login || !userId) {
+    if (!identity) {
       throw new Error('Not authenticated')
     }
 
-    persistClimate(data.climate, userId, login)
+    persistClimate(data.climate, identity.id, identity.login)
     return { climate: data.climate }
   })
