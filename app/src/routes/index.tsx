@@ -1,5 +1,5 @@
 import type { Climate } from '@grove/core'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
@@ -83,30 +83,19 @@ function PortfolioPage() {
         )}
 
         {portfolio.unclassified.length > 0 && (
-          <section className="mt-12 max-w-6xl">
-            <h2
-              className="text-sm font-medium mb-1"
+          <div className="mt-12 max-w-6xl">
+            <Link
+              to="/unclassified"
+              className="text-sm"
               style={{ color: 'var(--grove-text-muted)' }}
             >
-              Unclassified repositories
-            </h2>
-            <p
-              className="text-xs mb-4"
-              style={{ color: 'var(--grove-text-muted)', opacity: 0.7 }}
-            >
-              These repositories have no <code>.grove.yaml</code>. They are
-              observed but not yet part of the declared ecosystem.
-            </p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {portfolio.unclassified.map((repo) => (
-                <RepoCard
-                  key={repo.fullName}
-                  repo={repo}
-                  climate={climate}
-                />
-              ))}
-            </div>
-          </section>
+              {portfolio.unclassified.length} unclassified{' '}
+              {portfolio.unclassified.length === 1
+                ? 'repository'
+                : 'repositories'}{' '}
+              observed &rarr;
+            </Link>
+          </div>
         )}
       </main>
     </div>
