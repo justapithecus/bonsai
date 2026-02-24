@@ -33,13 +33,13 @@ const BATCH_SIZE = 10
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Portfolio> => {
     if (!isConfigured()) {
-      return { repositories: [] }
+      return { repositories: [], unclassified: [] }
     }
 
     // Resolve identity first — degrades to empty portfolio on bad/expired token
     const identity = await getStewardIdentity()
     if (!identity) {
-      return { repositories: [] }
+      return { repositories: [], unclassified: [] }
     }
 
     const token = identity.token
@@ -114,6 +114,7 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       return density ? { ...ecology, density } : ecology
     })
     const repositories = allRepos.filter((r) => r.classified)
+    const unclassified = allRepos.filter((r) => !r.classified)
 
     // Phase 2: Persist observations to SQLite
     upsertRepositories(
@@ -144,6 +145,7 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
 
     return {
       repositories,
+      unclassified,
       climate: getCurrentClimate(identity.id),
     }
   },

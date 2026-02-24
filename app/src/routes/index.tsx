@@ -1,12 +1,14 @@
 import type { Climate } from '@grove/core'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
 import { ClimateDeclaration } from '../components/ClimateDeclaration'
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
+import { PaginationControls } from '../components/PaginationControls'
 import { RepoCard } from '../components/RepoCard'
+import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
 
@@ -26,6 +28,9 @@ function PortfolioPage() {
   const [showClimatePanel, setShowClimatePanel] = useState(false)
   const [climate, setClimate] = useState<Climate | undefined>(
     portfolio.climate,
+  )
+  const { page, totalPages, paginated, setPage } = usePagination(
+    portfolio.repositories,
   )
 
   if (!session.authenticated) {
@@ -62,7 +67,7 @@ function PortfolioPage() {
         />
       )}
 
-      <main className="px-8 py-8">
+      <main className="px-8 py-6">
         {portfolio.repositories.length === 0 ? (
           <p
             className="text-center text-sm py-12"
@@ -71,14 +76,37 @@ function PortfolioPage() {
             No repositories with <code>.grove.yaml</code> observed.
           </p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl">
-            {portfolio.repositories.map((repo) => (
-              <RepoCard
-                key={repo.fullName}
-                repo={repo}
-                climate={climate}
-              />
-            ))}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {paginated.map((repo) => (
+                <RepoCard
+                  key={repo.fullName}
+                  repo={repo}
+                  climate={climate}
+                />
+              ))}
+            </div>
+            <PaginationControls
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        )}
+
+        {portfolio.unclassified.length > 0 && (
+          <div className="mt-12">
+            <Link
+              to="/unclassified"
+              className="text-sm"
+              style={{ color: 'var(--grove-text-muted)' }}
+            >
+              {portfolio.unclassified.length} unclassified{' '}
+              {portfolio.unclassified.length === 1
+                ? 'repository'
+                : 'repositories'}{' '}
+              observed &rarr;
+            </Link>
           </div>
         )}
       </main>

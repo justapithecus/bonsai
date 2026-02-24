@@ -5,7 +5,7 @@ interface HeaderProps {
 export function Header({ login }: HeaderProps) {
   return (
     <header
-      className="flex items-center justify-between px-8 py-6"
+      className="flex items-center justify-between px-8 py-4"
       style={{ borderBottom: '1px solid var(--grove-border)' }}
     >
       <div>

@@ -127,5 +127,6 @@ export interface RepositoryEcology {
 // Portfolio
 export interface Portfolio {
   repositories: RepositoryEcology[]
+  unclassified: RepositoryEcology[]
   climate?: Climate
 }
