@@ -1,7 +1,7 @@
 /**
  * Steward identity resolved from a GitHub Personal Access Token.
  *
- * Replaces the OAuth session stack with a single GITHUB_TOKEN env var.
+ * Replaces the OAuth session stack with a single GROVE_GITHUB_TOKEN env var.
  * Identity is fetched once from the GitHub API and cached in-memory
  * for the process lifetime.
  */
@@ -14,14 +14,14 @@ export interface StewardIdentity {
 
 let cached: StewardIdentity | undefined
 
-/** Read the GITHUB_TOKEN env var. */
+/** Read the GROVE_GITHUB_TOKEN env var. */
 export function getToken(): string | undefined {
-  return process.env.GITHUB_TOKEN
+  return process.env.GROVE_GITHUB_TOKEN
 }
 
-/** True when GITHUB_TOKEN is set in the environment. */
+/** True when GROVE_GITHUB_TOKEN is set in the environment. */
 export function isConfigured(): boolean {
-  return !!process.env.GITHUB_TOKEN
+  return !!process.env.GROVE_GITHUB_TOKEN
 }
 
 /**
@@ -51,7 +51,7 @@ export async function getStewardIdentity(): Promise<
 
     if (!response.ok) {
       console.warn(
-        `[grove] GitHub identity check failed (${response.status}). Check that GITHUB_TOKEN is valid.`,
+        `[grove] GitHub identity check failed (${response.status}). Check that GROVE_GITHUB_TOKEN is valid.`,
       )
       return undefined
     }

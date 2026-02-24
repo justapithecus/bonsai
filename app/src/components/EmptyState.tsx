@@ -15,7 +15,7 @@ export function EmptyState() {
           className="text-sm"
           style={{ color: 'var(--grove-text-muted)' }}
         >
-          Set <code style={{ color: 'var(--grove-text)' }}>GITHUB_TOKEN</code> in
+          Set <code style={{ color: 'var(--grove-text)' }}>GROVE_GITHUB_TOKEN</code> in
           your environment to begin observing repositories.
         </p>
       </div>
