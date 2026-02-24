@@ -1,4 +1,5 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import type { Climate } from '@grove/core'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
@@ -22,8 +23,10 @@ export const Route = createFileRoute('/')({
 
 function PortfolioPage() {
   const { session, portfolio } = Route.useLoaderData()
-  const router = useRouter()
   const [showClimatePanel, setShowClimatePanel] = useState(false)
+  const [climate, setClimate] = useState<Climate | undefined>(
+    portfolio.climate,
+  )
 
   if (!session.authenticated) {
     return (
@@ -35,7 +38,7 @@ function PortfolioPage() {
   }
 
   // Determine atmosphere from portfolio climate
-  const seasonAttr = portfolio.climate ?? undefined
+  const seasonAttr = climate ?? undefined
 
   return (
     <div
@@ -44,17 +47,17 @@ function PortfolioPage() {
     >
       <Header login={session.login} />
       <ClimateBand
-        climate={portfolio.climate}
+        climate={climate}
         onOpenDeclaration={() => setShowClimatePanel(true)}
       />
 
       {showClimatePanel && (
         <ClimateDeclaration
-          currentClimate={portfolio.climate}
+          currentClimate={climate}
           onClose={() => setShowClimatePanel(false)}
-          onDeclared={() => {
+          onDeclared={(declared) => {
+            setClimate(declared)
             setShowClimatePanel(false)
-            router.invalidate()
           }}
         />
       )}
@@ -73,7 +76,7 @@ function PortfolioPage() {
               <RepoCard
                 key={repo.fullName}
                 repo={repo}
-                climate={portfolio.climate}
+                climate={climate}
               />
             ))}
           </div>

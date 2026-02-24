@@ -7,7 +7,7 @@ import { declareClimate } from '../server/climate'
 interface ClimateDeclarationProps {
   currentClimate?: Climate
   onClose: () => void
-  onDeclared: () => void
+  onDeclared: (climate: Climate) => void
 }
 
 const CLIMATE_DESCRIPTIONS: Record<Climate, string> = {
@@ -38,7 +38,7 @@ export function ClimateDeclaration({
     if (!selected) return
     setSubmitting(true)
     await declareClimate({ data: { climate: selected } })
-    onDeclared()
+    onDeclared(selected)
   }
 
   const handleCancel = () => {
