@@ -44,7 +44,7 @@ function UnclassifiedPage() {
     >
       <Header login={session.login} />
 
-      <main className="px-8 py-8 max-w-6xl">
+      <main className="px-8 py-6">
         <Link
           to="/"
           className="text-sm mb-6 inline-block"
@@ -78,7 +78,7 @@ function UnclassifiedPage() {
             No unclassified repositories observed.
           </p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {paginated.map((repo) => (
               <RepoCard
                 key={repo.fullName}

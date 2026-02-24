@@ -67,7 +67,7 @@ function PortfolioPage() {
         />
       )}
 
-      <main className="px-8 py-8">
+      <main className="px-8 py-6">
         {portfolio.repositories.length === 0 ? (
           <p
             className="text-center text-sm py-12"
@@ -77,7 +77,7 @@ function PortfolioPage() {
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {paginated.map((repo) => (
                 <RepoCard
                   key={repo.fullName}
@@ -95,7 +95,7 @@ function PortfolioPage() {
         )}
 
         {portfolio.unclassified.length > 0 && (
-          <div className="mt-12 max-w-6xl">
+          <div className="mt-12">
             <Link
               to="/unclassified"
               className="text-sm"
