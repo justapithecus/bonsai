@@ -2,7 +2,9 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
+import { PaginationControls } from '../components/PaginationControls'
 import { RepoCard } from '../components/RepoCard'
+import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
 
@@ -19,6 +21,10 @@ export const Route = createFileRoute('/unclassified')({
 
 function UnclassifiedPage() {
   const { session, portfolio } = Route.useLoaderData()
+
+  const { page, totalPages, paginated, setPage } = usePagination(
+    portfolio.unclassified,
+  )
 
   if (!session.authenticated) {
     return (
@@ -73,7 +79,7 @@ function UnclassifiedPage() {
           </p>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {portfolio.unclassified.map((repo) => (
+            {paginated.map((repo) => (
               <RepoCard
                 key={repo.fullName}
                 repo={repo}
@@ -82,6 +88,12 @@ function UnclassifiedPage() {
             ))}
           </div>
         )}
+
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </main>
     </div>
   )

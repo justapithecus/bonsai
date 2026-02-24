@@ -6,7 +6,9 @@ import { ClimateBand } from '../components/ClimateBand'
 import { ClimateDeclaration } from '../components/ClimateDeclaration'
 import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
+import { PaginationControls } from '../components/PaginationControls'
 import { RepoCard } from '../components/RepoCard'
+import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
 
@@ -26,6 +28,9 @@ function PortfolioPage() {
   const [showClimatePanel, setShowClimatePanel] = useState(false)
   const [climate, setClimate] = useState<Climate | undefined>(
     portfolio.climate,
+  )
+  const { page, totalPages, paginated, setPage } = usePagination(
+    portfolio.repositories,
   )
 
   if (!session.authenticated) {
@@ -71,15 +76,22 @@ function PortfolioPage() {
             No repositories with <code>.grove.yaml</code> observed.
           </p>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl">
-            {portfolio.repositories.map((repo) => (
-              <RepoCard
-                key={repo.fullName}
-                repo={repo}
-                climate={climate}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl">
+              {paginated.map((repo) => (
+                <RepoCard
+                  key={repo.fullName}
+                  repo={repo}
+                  climate={climate}
+                />
+              ))}
+            </div>
+            <PaginationControls
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </>
         )}
 
         {portfolio.unclassified.length > 0 && (
