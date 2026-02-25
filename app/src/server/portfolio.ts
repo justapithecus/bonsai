@@ -2,13 +2,11 @@ import type {
   DensityObservation,
   Portfolio,
   RepositoryEcology,
-  RitualInvitation,
   StructuralSignals,
 } from '@grove/core'
 import {
   observeConsolidationInterval,
   observeStructuralDensity,
-  surfaceEcosystemInvitations,
 } from '@grove/core'
 import {
   classifyRepository,
@@ -25,10 +23,6 @@ import {
 } from './db'
 import { getStewardIdentity, isConfigured } from './identity'
 
-export interface PortfolioResult extends Portfolio {
-  ecosystemInvitations: RitualInvitation[]
-}
-
 const BATCH_SIZE = 10
 
 /**
@@ -37,15 +31,15 @@ const BATCH_SIZE = 10
  * classified repos with structural signals and density.
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<PortfolioResult> => {
+  async (): Promise<Portfolio> => {
     if (!isConfigured()) {
-      return { repositories: [], unclassified: [], ecosystemInvitations: [] }
+      return { repositories: [], unclassified: [] }
     }
 
     // Resolve identity first — degrades to empty portfolio on bad/expired token
     const identity = await getStewardIdentity()
     if (!identity) {
-      return { repositories: [], unclassified: [], ecosystemInvitations: [] }
+      return { repositories: [], unclassified: [] }
     }
 
     const token = identity.token
@@ -149,17 +143,10 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       )
     }
 
-    const climate = getCurrentClimate(identity.id)
-    const ecosystemInvitations = surfaceEcosystemInvitations(
-      climate,
-      repositories,
-    )
-
     return {
       repositories,
       unclassified,
-      climate,
-      ecosystemInvitations,
+      climate: getCurrentClimate(identity.id),
     }
   },
 )
