@@ -101,10 +101,14 @@ export const loadRepository = createServerFn({ method: 'GET' })
     const declarations = declarationRows.slice(0, HISTORY_LIMIT)
     const timeline = buildTimeline(snapshots, declarations, snapshotWasRecorded, historyComplete)
 
-    // Observe phase duration from declaration history (uses already-fetched rows)
+    // Observe phase duration from declaration history (uses already-fetched rows).
+    // If all fetched rows share the current phase, the true start may predate
+    // the fetch window — suppress the observation to avoid understating duration.
+    const declarationHistoryComplete = declarationRows.length <= HISTORY_LIMIT
     const phaseLastDeclaredAt = findPhaseDeclarationTimestamp(
       ecology.declaration?.phase,
       declarationRows,
+      declarationHistoryComplete,
     )
     const phaseDuration = observePhaseDuration(
       ecology.declaration?.phase,
@@ -132,23 +136,37 @@ export const loadRepository = createServerFn({ method: 'GET' })
  * Walk DESC-ordered declaration rows to find the oldest row in the
  * current consecutive run of the same phase value.
  * Returns the observedAt timestamp of that row, or undefined.
+ *
+ * When historyComplete is false (i.e. the fetch window was truncated)
+ * and every row matches the current phase, the true phase start may
+ * predate the window. Returns undefined in that case to avoid
+ * understating duration.
  */
 function findPhaseDeclarationTimestamp(
   currentPhase: string | undefined,
   declarationsDesc: { phase: string | null; observedAt: string }[],
+  historyComplete: boolean,
 ): string | undefined {
   if (!currentPhase || declarationsDesc.length === 0) {
     return undefined
   }
 
   let oldest: string | undefined
+  let allMatched = true
   for (const row of declarationsDesc) {
     if (row.phase === currentPhase) {
       oldest = row.observedAt
     } else {
       // Phase changed — the consecutive run from the top has ended
+      allMatched = false
       break
     }
+  }
+
+  // If every row matched and history was truncated, the real start
+  // is older than our window — suppress the observation.
+  if (allMatched && !historyComplete) {
+    return undefined
   }
 
   return oldest

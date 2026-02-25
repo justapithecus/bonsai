@@ -184,6 +184,16 @@ describe('suggestsReaffirmation', () => {
     expect(suggestsReaffirmation(at365)).toBe(true)
   })
 
+  it('never triggers for ephemeral horizon even in resting phase with consolidation interval', () => {
+    const obs: PhaseDurationObservation = {
+      phase: 'resting',
+      declaredAt: '2020-01-01T00:00:00Z',
+      daysSinceDeclared: 9999,
+      horizon: 'ephemeral',
+    }
+    expect(suggestsReaffirmation(obs, 30)).toBe(false)
+  })
+
   it('uses consolidation interval for resting phase', () => {
     const obs: PhaseDurationObservation = {
       phase: 'resting',

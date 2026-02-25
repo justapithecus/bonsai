@@ -86,33 +86,45 @@ export function surfaceEcosystemInvitations(
   const invitations: RitualInvitation[] = []
 
   if (tensionRatio >= 0.5) {
+    // Check for a dominant non-climate season (>= 60%) to provide a more
+    // specific observation when one season concentrates the tension.
+    const dominantObservation = findDominantSeasonObservation(
+      classifiedWithSeason,
+      climate,
+    )
+
     invitations.push({
       ritual: 'ecosystem_balance',
-      observation: `${tensionCount} of ${classifiedWithSeason.length} classified repositories have a derived season that diverges from the declared climate. The portfolio may be ready for an ecosystem balance review.`,
+      observation:
+        dominantObservation ??
+        `${tensionCount} of ${classifiedWithSeason.length} classified repositories have a derived season that diverges from the declared climate. The portfolio may be ready for an ecosystem balance review.`,
     })
   }
 
-  // Dominant-season climate review: eligible when >= 60% of classified repos
-  // share a single season that differs from declared climate.
-  // Only fires when the general tension check above did not already surface.
-  if (invitations.length === 0) {
-    const seasonCounts = new Map<Season, number>()
-    for (const repo of classifiedWithSeason) {
-      const s = repo.season!.season
-      seasonCounts.set(s, (seasonCounts.get(s) ?? 0) + 1)
-    }
+  return invitations
+}
 
-    for (const [season, count] of seasonCounts) {
-      const ratio = count / classifiedWithSeason.length
-      if (ratio >= 0.6 && season !== climate) {
-        invitations.push({
-          ritual: 'ecosystem_balance',
-          observation: `${count} of ${classifiedWithSeason.length} classified repositories share a ${season} season, which differs from the declared climate of ${climate}. This pattern may invite a climate review.`,
-        })
-        break // only one dominant-season invitation
-      }
+/**
+ * If a single non-climate season accounts for >= 60% of classified repos,
+ * return a more specific observation naming that season.
+ * Returns undefined if no single season is dominant at 60%.
+ */
+function findDominantSeasonObservation(
+  classifiedWithSeason: RepositoryEcology[],
+  climate: Climate,
+): string | undefined {
+  const seasonCounts = new Map<Season, number>()
+  for (const repo of classifiedWithSeason) {
+    const s = repo.season!.season
+    seasonCounts.set(s, (seasonCounts.get(s) ?? 0) + 1)
+  }
+
+  for (const [season, count] of seasonCounts) {
+    const ratio = count / classifiedWithSeason.length
+    if (ratio >= 0.6 && season !== climate) {
+      return `${count} of ${classifiedWithSeason.length} classified repositories share a ${season} season, which differs from the declared climate of ${climate}. This pattern may invite a climate review.`
     }
   }
 
-  return invitations
+  return undefined
 }

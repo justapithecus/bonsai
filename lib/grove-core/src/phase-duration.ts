@@ -58,6 +58,13 @@ export function suggestsReaffirmation(
   observation: PhaseDurationObservation,
   consolidationIntervalDays?: number,
 ): boolean {
+  // Ephemeral projects never trigger — no exceptions.
+  // Per rituals.md: "An ephemeral project may never encounter a
+  // Stewardship Reaffirmation ritual."
+  if (observation.horizon === 'ephemeral') {
+    return false
+  }
+
   // Special case: resting phase with consolidation interval
   if (
     observation.phase === 'resting' &&
@@ -71,7 +78,7 @@ export function suggestsReaffirmation(
     ? REAFFIRMATION_THRESHOLDS[observation.horizon]
     : DEFAULT_THRESHOLD_DAYS
 
-  // null threshold means never triggers (ephemeral)
+  // null threshold means never triggers (defensive — ephemeral already handled above)
   if (threshold === null) {
     return false
   }
