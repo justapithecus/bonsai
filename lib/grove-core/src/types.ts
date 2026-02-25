@@ -122,6 +122,31 @@ export interface DensityObservation {
   signals: StructuralSignals
 }
 
+/** Structural signals captured at reference time (subset of StructuralSignals) */
+export interface ReferenceSnapshot {
+  fileCount?: number
+  ecosystemDependencyCount?: number
+  densityTier?: DensityTier
+  observedAt: string // ISO 8601
+}
+
+/** Shape drift observation — factual structural comparison */
+export interface ShapeDriftObservation {
+  referenceSnapshot: ReferenceSnapshot
+  currentFileCount?: number
+  currentEcosystemDependencyCount?: number
+  currentDensityTier?: DensityTier
+  descriptions: string[] // 0–N observational sentences
+}
+
+/** Motion drift observation — tension between phase and cadence */
+export interface MotionDriftObservation {
+  phase: Phase
+  commitsLast30d?: number
+  commitsLast90d?: number
+  description: string // single observational sentence
+}
+
 // Classified repository
 export interface RepositoryEcology {
   fullName: string

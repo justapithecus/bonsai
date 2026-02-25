@@ -2,6 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { ConsolidationDisplay } from '../components/ConsolidationDisplay'
 import { DensityDisplay } from '../components/DensityDisplay'
+import { DriftDisplay } from '../components/DriftDisplay'
 import { Header } from '../components/Header'
 import { StructuralTimeline } from '../components/StructuralTimeline'
 import { PhaseIndicator } from '../components/PhaseIndicator'
@@ -24,7 +25,7 @@ export const Route = createFileRoute('/repo/$owner/$name')({
 
 function RepositoryDetailPage() {
   const { session, detail } = Route.useLoaderData()
-  const { ecology, consolidation, phaseDuration, ritualInvitations, timeline } = detail
+  const { ecology, consolidation, phaseDuration, shapeDrift, motionDrift, ritualInvitations, timeline } = detail
 
   const seasonAttr = ecology.season?.season
 
@@ -131,6 +132,9 @@ function RepositoryDetailPage() {
                 <DensityDisplay density={ecology.density} />
               </div>
             )}
+
+            {/* Drift observations */}
+            <DriftDisplay shapeDrift={shapeDrift} motionDrift={motionDrift} />
 
             {/* Ritual invitations */}
             {ritualInvitations.length > 0 && (

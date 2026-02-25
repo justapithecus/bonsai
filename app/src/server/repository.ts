@@ -1,14 +1,19 @@
 import {
+  findReferenceSnapshot,
   observeConsolidationInterval,
+  observeMotionDrift,
   observePhaseDuration,
+  observeShapeDrift,
   observeStructuralDensity,
   surfaceRitualInvitations,
 } from '@grove/core'
 import type {
   ConsolidationObservation,
+  MotionDriftObservation,
   PhaseDurationObservation,
   RepositoryEcology,
   RitualInvitation,
+  ShapeDriftObservation,
 } from '@grove/core'
 import {
   classifyRepository,
@@ -32,6 +37,8 @@ export interface RepositoryDetail {
   ecology: RepositoryEcology
   consolidation?: ConsolidationObservation
   phaseDuration?: PhaseDurationObservation
+  shapeDrift?: ShapeDriftObservation
+  motionDrift?: MotionDriftObservation
   ritualInvitations: RitualInvitation[]
   timeline: TimelineEntry[]
 }
@@ -116,6 +123,26 @@ export const loadRepository = createServerFn({ method: 'GET' })
       ecology.declaration?.horizon,
     )
 
+    // Observe shape and motion drift (uses already-fetched data).
+    // Pass full snapshotRows (pre-slice) so the +1 boundary row is
+    // available as a potential reference. Pass historyComplete to
+    // suppress when the phase baseline cannot be reliably established.
+    const referenceSnapshot = findReferenceSnapshot(
+      phaseLastDeclaredAt,
+      snapshotRows,
+      historyComplete,
+    )
+    const shapeDrift = referenceSnapshot
+      ? observeShapeDrift(referenceSnapshot, signals, density?.tier)
+      : undefined
+    const motionDrift = ecology.declaration?.phase
+      ? observeMotionDrift(
+          ecology.declaration.phase,
+          signals.commitsLast30d,
+          signals.commitsLast90d,
+        )
+      : undefined
+
     // Surface ritual invitations
     const ritualInvitations = surfaceRitualInvitations(
       ecology.declaration,
@@ -127,6 +154,8 @@ export const loadRepository = createServerFn({ method: 'GET' })
       ecology: enrichedEcology,
       consolidation,
       phaseDuration,
+      shapeDrift,
+      motionDrift,
       ritualInvitations,
       timeline,
     }
