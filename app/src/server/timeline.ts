@@ -17,6 +17,7 @@ export type TimelineEntry =
       tier: string
       spanEnd: string
       observationCount: number
+      freshlyRecorded?: boolean
     }
   | {
       kind: 'declaration_change'
@@ -29,29 +30,35 @@ export type TimelineEntry =
  *
  * Both inputs are expected in DESC order (most recent first) as returned
  * by the DB query functions. The output is also DESC (most recent first).
+ *
+ * @param historyComplete - true when the fetched window contains the full
+ *   history for this repo (i.e. rows returned < limit). When false, the
+ *   earliest entry in the window is not necessarily the first-ever
+ *   observation, so "first observed" framing is suppressed.
  */
 export function buildTimeline(
   snapshotsDesc: SnapshotRow[],
   declarationsDesc: DeclarationRow[],
   freshSnapshotRecorded: boolean,
+  historyComplete: boolean,
 ): TimelineEntry[] {
-  const densityEntries = buildDensityEntries(snapshotsDesc)
+  const densityEntries = buildDensityEntries(snapshotsDesc, historyComplete)
+
+  // Mark the most recent density entry as freshly recorded.
+  // This is the last entry in ascending build order (last element in the array).
+  if (freshSnapshotRecorded && densityEntries.length > 0) {
+    const last = densityEntries[densityEntries.length - 1]
+    if (last.kind === 'density_transition' || last.kind === 'density_span') {
+      last.freshlyRecorded = true
+    }
+  }
+
   const declarationEntries = buildDeclarationEntries(declarationsDesc)
 
   // Merge both lists chronologically DESC (most recent first)
   const merged = [...densityEntries, ...declarationEntries].sort(
     (a, b) => b.observedAt.localeCompare(a.observedAt),
   )
-
-  // Mark the most recent density entry as freshly recorded if applicable
-  if (freshSnapshotRecorded) {
-    const first = merged.find(
-      (e) => e.kind === 'density_transition' || e.kind === 'density_span',
-    )
-    if (first && first.kind === 'density_transition') {
-      first.freshlyRecorded = true
-    }
-  }
 
   return merged
 }
@@ -60,6 +67,7 @@ export function buildTimeline(
 
 function buildDensityEntries(
   snapshotsDesc: SnapshotRow[],
+  historyComplete: boolean,
 ): TimelineEntry[] {
   // Reverse to ascending order for walk
   const asc = [...snapshotsDesc].reverse()
@@ -78,13 +86,17 @@ function buildDensityEntries(
   let runCount = 1
   let prevTier: string | null = null
 
-  // Emit transition for the first observation
-  entries.push({
-    kind: 'density_transition',
-    observedAt: withTier[0].observedAt,
-    fromTier: null,
-    toTier: withTier[0].densityTier,
-  })
+  // Only emit "first observed" (fromTier: null) when the history window
+  // contains the complete record. When truncated, the earliest snapshot
+  // in the window is not the first-ever observation.
+  if (historyComplete) {
+    entries.push({
+      kind: 'density_transition',
+      observedAt: withTier[0].observedAt,
+      fromTier: null,
+      toTier: withTier[0].densityTier,
+    })
+  }
   prevTier = withTier[0].densityTier
 
   for (let i = 1; i < withTier.length; i++) {

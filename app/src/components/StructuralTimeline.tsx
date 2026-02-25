@@ -26,19 +26,23 @@ function describeDeclarationChange(change: {
   to: string | null
 }): string {
   const value = change.to
+  const cleared = value == null
+
   switch (change.field) {
     case 'phase':
-      return `Phase transitioned to ${value}`
+      return cleared ? 'Phase undeclared' : `Phase transitioned to ${value}`
     case 'intent':
-      return 'Intent re-declared'
+      return cleared ? 'Intent cleared' : 'Intent re-declared'
     case 'horizon':
-      return `Horizon shifted to ${value}`
+      return cleared ? 'Horizon undeclared' : `Horizon shifted to ${value}`
     case 'role':
-      return `Role changed to ${value}`
+      return cleared ? 'Role undeclared' : `Role changed to ${value}`
     case 'steward':
-      return `Stewardship transferred to ${value}`
+      return cleared ? 'Steward undeclared' : `Stewardship transferred to ${value}`
     case 'consolidationIntervalDays':
-      return `Consolidation interval adjusted to ${value} days`
+      return cleared
+        ? 'Consolidation interval removed'
+        : `Consolidation interval adjusted to ${value} days`
     default:
       return `${change.field} changed to ${value ?? 'undeclared'}`
   }
@@ -147,6 +151,11 @@ function DensitySpanView({
         {formatDate(entry.observedAt)} through {formatDate(entry.spanEnd)} (
         {entry.observationCount} observations)
       </div>
+      {entry.freshlyRecorded && (
+        <div className="text-xs" style={{ opacity: 0.5, color: 'var(--grove-text-muted)' }}>
+          Structural state recorded
+        </div>
+      )}
     </div>
   )
 }

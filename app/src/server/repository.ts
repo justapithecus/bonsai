@@ -95,9 +95,11 @@ export const loadRepository = createServerFn({ method: 'GET' })
     )
 
     // Build structural timeline from persisted history
-    const snapshots = getSnapshotHistory(fullName, 50)
-    const declarations = getDeclarationHistory(fullName, 50)
-    const timeline = buildTimeline(snapshots, declarations, snapshotWasRecorded)
+    const HISTORY_LIMIT = 50
+    const snapshots = getSnapshotHistory(fullName, HISTORY_LIMIT)
+    const declarations = getDeclarationHistory(fullName, HISTORY_LIMIT)
+    const historyComplete = snapshots.length < HISTORY_LIMIT
+    const timeline = buildTimeline(snapshots, declarations, snapshotWasRecorded, historyComplete)
 
     return {
       ecology: enrichedEcology,
