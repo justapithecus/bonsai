@@ -16,16 +16,21 @@ import {
 import { createServerFn } from '@tanstack/react-start'
 
 import {
+  getDeclarationHistory,
+  getSnapshotHistory,
   recordDeclarationIfChanged,
   recordSnapshot,
   upsertRepository,
 } from './db'
 import { getStewardIdentity } from './identity'
+import type { TimelineEntry } from './timeline'
+import { buildTimeline } from './timeline'
 
 export interface RepositoryDetail {
   ecology: RepositoryEcology
   consolidation?: ConsolidationObservation
   ritualInvitations: RitualInvitation[]
+  timeline: TimelineEntry[]
 }
 
 export const loadRepository = createServerFn({ method: 'GET' })
@@ -82,16 +87,22 @@ export const loadRepository = createServerFn({ method: 'GET' })
     })
 
     const enrichedEcology = { ...ecology, density }
-    recordSnapshot(enrichedEcology, signals, density)
+    const snapshotWasRecorded = recordSnapshot(enrichedEcology, signals, density)
     recordDeclarationIfChanged(
       ecology.fullName,
       ecology.declaration,
       ecology.classified,
     )
 
+    // Build structural timeline from persisted history
+    const snapshots = getSnapshotHistory(fullName, 50)
+    const declarations = getDeclarationHistory(fullName, 50)
+    const timeline = buildTimeline(snapshots, declarations, snapshotWasRecorded)
+
     return {
       ecology: enrichedEcology,
       consolidation,
       ritualInvitations,
+      timeline,
     }
   })
