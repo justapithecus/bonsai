@@ -1,6 +1,7 @@
 import type { Climate } from '@grove/core'
+import { surfaceEcosystemInvitations } from '@grove/core'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
 import { ClimateDeclaration } from '../components/ClimateDeclaration'
@@ -8,6 +9,7 @@ import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { PaginationControls } from '../components/PaginationControls'
 import { RepoCard } from '../components/RepoCard'
+import { RitualInvitation } from '../components/RitualInvitation'
 import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
@@ -31,6 +33,13 @@ function PortfolioPage() {
   )
   const { page, totalPages, paginated, setPage } = usePagination(
     portfolio.repositories,
+  )
+
+  // Derive ecosystem invitations from current climate state so they
+  // stay consistent after an inline climate declaration change.
+  const ecosystemInvitations = useMemo(
+    () => surfaceEcosystemInvitations(climate, portfolio.repositories),
+    [climate, portfolio.repositories],
   )
 
   if (!session.authenticated) {
@@ -92,6 +101,25 @@ function PortfolioPage() {
               onPageChange={setPage}
             />
           </>
+        )}
+
+        {ecosystemInvitations.length > 0 && (
+          <div className="mt-8">
+            <h3
+              className="text-sm mb-4 tracking-wide uppercase opacity-60"
+              style={{ color: 'var(--grove-text-muted)' }}
+            >
+              Ritual Invitations
+            </h3>
+            <div className="space-y-3">
+              {ecosystemInvitations.map((invitation) => (
+                <RitualInvitation
+                  key={invitation.ritual}
+                  invitation={invitation}
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         {portfolio.unclassified.length > 0 && (

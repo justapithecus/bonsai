@@ -24,7 +24,7 @@ export const Route = createFileRoute('/repo/$owner/$name')({
 
 function RepositoryDetailPage() {
   const { session, detail } = Route.useLoaderData()
-  const { ecology, consolidation, ritualInvitations, timeline } = detail
+  const { ecology, consolidation, phaseDuration, ritualInvitations, timeline } = detail
 
   const seasonAttr = ecology.season?.season
 
@@ -85,6 +85,7 @@ function RepositoryDetailPage() {
             <PhaseIndicator
               phase={ecology.declaration.phase}
               season={ecology.season}
+              phaseDuration={phaseDuration}
             />
 
             {/* Horizon */}

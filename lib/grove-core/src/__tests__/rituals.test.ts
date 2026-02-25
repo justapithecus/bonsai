@@ -7,6 +7,7 @@ import {
 import type {
   ConsolidationObservation,
   GroveDeclaration,
+  PhaseDurationObservation,
   RepositoryEcology,
 } from '../types'
 
@@ -112,6 +113,60 @@ describe('surfaceRitualInvitations', () => {
       assertObservationalLanguage(invitation.observation)
     }
   })
+
+  it('surfaces stewardship reaffirmation when phaseDuration suggests it', () => {
+    const declaration: GroveDeclaration = {
+      intent: 'Test',
+      horizon: 'perennial',
+      role: 'library',
+      phase: 'consolidating',
+      steward: 'Andrew',
+      consolidation_interval_days: 180,
+    }
+    const phaseDuration: PhaseDurationObservation = {
+      phase: 'consolidating',
+      declaredAt: '2024-01-01T00:00:00Z',
+      daysSinceDeclared: 400,
+      horizon: 'perennial',
+    }
+    const result = surfaceRitualInvitations(declaration, undefined, phaseDuration)
+    const reaffirmation = result.find(
+      (r) => r.ritual === 'stewardship_reaffirmation',
+    )
+    expect(reaffirmation).toBeDefined()
+    assertObservationalLanguage(reaffirmation!.observation)
+    expect(reaffirmation!.observation).toContain('consolidating')
+    expect(reaffirmation!.observation).toContain('400 days')
+  })
+
+  it('does not surface stewardship reaffirmation when phaseDuration is undefined', () => {
+    const declaration: GroveDeclaration = {
+      intent: 'Test',
+      horizon: 'perennial',
+      role: 'library',
+      phase: 'consolidating',
+      steward: 'Andrew',
+    }
+    const result = surfaceRitualInvitations(declaration, undefined, undefined)
+    expect(result.some((r) => r.ritual === 'stewardship_reaffirmation')).toBe(
+      false,
+    )
+  })
+
+  it('backward compatible — works without third argument', () => {
+    const declaration: GroveDeclaration = {
+      intent: 'Test',
+      horizon: 'perennial',
+      role: 'library',
+      phase: 'consolidating',
+      steward: 'Andrew',
+    }
+    // Calling with 2 args (original signature) still works
+    const result = surfaceRitualInvitations(declaration, undefined)
+    expect(result.some((r) => r.ritual === 'stewardship_reaffirmation')).toBe(
+      false,
+    )
+  })
 })
 
 describe('surfaceEcosystemInvitations', () => {
@@ -183,5 +238,51 @@ describe('surfaceEcosystemInvitations', () => {
     const repos = [makeRepo('a/b'), makeRepo('c/d')]
     const result = surfaceEcosystemInvitations('expansion', repos)
     expect(result).toHaveLength(0)
+  })
+
+  it('uses dominant-season message when single non-climate season >= 60%', () => {
+    // 3 of 5 are expansion (60%), climate is dormancy
+    // Tension is 4/5 = 80% >= 50%, so ecosystem balance fires.
+    // Dominant: expansion at 3/5 = 60% — uses specific message.
+    const repos = [
+      makeRepo('a/1', 'expansion'),
+      makeRepo('a/2', 'expansion'),
+      makeRepo('a/3', 'expansion'),
+      makeRepo('a/4', 'consolidation'),
+      makeRepo('a/5', 'dormancy'),
+    ]
+    const result = surfaceEcosystemInvitations('dormancy', repos)
+    expect(result).toHaveLength(1)
+    expect(result[0].observation).toContain('share a expansion season')
+    expect(result[0].observation).toContain('declared climate of dormancy')
+    assertObservationalLanguage(result[0].observation)
+  })
+
+  it('uses generic tension message when no single season >= 60%', () => {
+    // 2 expansion + 2 consolidation + 1 dormancy. Climate = dormancy.
+    // Tension = 4/5 = 80% >= 50%. But no non-climate season >= 60%.
+    const repos = [
+      makeRepo('a/1', 'expansion'),
+      makeRepo('a/2', 'expansion'),
+      makeRepo('a/3', 'consolidation'),
+      makeRepo('a/4', 'consolidation'),
+      makeRepo('a/5', 'dormancy'),
+    ]
+    const result = surfaceEcosystemInvitations('dormancy', repos)
+    expect(result).toHaveLength(1)
+    expect(result[0].observation).toContain('diverges from the declared climate')
+    assertObservationalLanguage(result[0].observation)
+  })
+
+  it('emits only one invitation even with dominant season', () => {
+    // 3/4 = 75% tension AND 3/4 = 75% dominant expansion
+    const repos = [
+      makeRepo('a/1', 'expansion'),
+      makeRepo('a/2', 'expansion'),
+      makeRepo('a/3', 'expansion'),
+      makeRepo('a/4', 'dormancy'),
+    ]
+    const result = surfaceEcosystemInvitations('dormancy', repos)
+    expect(result).toHaveLength(1)
   })
 })

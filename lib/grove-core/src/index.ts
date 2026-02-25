@@ -1,4 +1,5 @@
 export { observeConsolidationInterval } from './consolidation'
+export { observePhaseDuration, suggestsReaffirmation } from './phase-duration'
 export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
 export type { ParseResult } from './parser'
@@ -19,6 +20,7 @@ export type {
   GroveDeclaration,
   Horizon,
   Phase,
+  PhaseDurationObservation,
   Portfolio,
   RepositoryEcology,
   Ritual,
