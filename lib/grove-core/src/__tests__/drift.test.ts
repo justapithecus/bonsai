@@ -117,6 +117,99 @@ describe('findReferenceSnapshot', () => {
     expect(result!).not.toHaveProperty('ecosystemDependencyCount')
     expect(result!).not.toHaveProperty('densityTier')
   })
+
+  it('suppresses when history is truncated and phase predates snapshot window', () => {
+    const rows = [
+      {
+        fileCount: 200,
+        ecosystemDependencyCount: 20,
+        densityTier: 'thickening',
+        observedAt: '2025-06-10T00:00:00Z',
+      },
+      {
+        fileCount: 150,
+        ecosystemDependencyCount: 15,
+        densityTier: 'rooting',
+        observedAt: '2025-06-01T00:00:00Z',
+      },
+    ]
+    // Phase declared May 1 — predates all snapshots; history truncated
+    const result = findReferenceSnapshot(
+      '2025-05-01T00:00:00Z',
+      rows,
+      false, // historyComplete = false
+    )
+    expect(result).toBeUndefined()
+  })
+
+  it('returns reference when history is truncated but phase is within snapshot window', () => {
+    const rows = [
+      {
+        fileCount: 200,
+        ecosystemDependencyCount: 20,
+        densityTier: 'thickening',
+        observedAt: '2025-06-10T00:00:00Z',
+      },
+      {
+        fileCount: 150,
+        ecosystemDependencyCount: 15,
+        densityTier: 'rooting',
+        observedAt: '2025-06-01T00:00:00Z',
+      },
+    ]
+    // Phase declared June 5 — within window even though history is truncated
+    const result = findReferenceSnapshot(
+      '2025-06-05T00:00:00Z',
+      rows,
+      false, // historyComplete = false
+    )
+    expect(result).toBeDefined()
+    expect(result!.observedAt).toBe('2025-06-10T00:00:00Z')
+  })
+
+  it('returns reference when history is complete even if phase predates all snapshots', () => {
+    const rows = [
+      {
+        fileCount: 100,
+        ecosystemDependencyCount: 10,
+        densityTier: 'rooting',
+        observedAt: '2025-06-01T00:00:00Z',
+      },
+    ]
+    // Phase predates window, but history IS complete — this is all the data
+    const result = findReferenceSnapshot(
+      '2025-05-01T00:00:00Z',
+      rows,
+      true, // historyComplete = true
+    )
+    expect(result).toBeDefined()
+    expect(result!.observedAt).toBe('2025-06-01T00:00:00Z')
+  })
+
+  it('returns reference when phase timestamp equals oldest snapshot in truncated history', () => {
+    const rows = [
+      {
+        fileCount: 200,
+        ecosystemDependencyCount: 20,
+        densityTier: 'thickening',
+        observedAt: '2025-06-10T00:00:00Z',
+      },
+      {
+        fileCount: 100,
+        ecosystemDependencyCount: 10,
+        densityTier: 'rooting',
+        observedAt: '2025-06-01T00:00:00Z',
+      },
+    ]
+    // Phase timestamp exactly matches oldest row — not strictly before
+    const result = findReferenceSnapshot(
+      '2025-06-01T00:00:00Z',
+      rows,
+      false,
+    )
+    expect(result).toBeDefined()
+    expect(result!.observedAt).toBe('2025-06-01T00:00:00Z')
+  })
 })
 
 // ── observeShapeDrift ─────────────────────────────────────────────

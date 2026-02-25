@@ -24,13 +24,32 @@ interface SnapshotRow {
  * Walks DESC-ordered rows to find the one closest to (but not before)
  * phaseTimestamp. If none is at-or-after, takes the nearest before it.
  * Returns undefined if snapshotsDesc is empty or phaseTimestamp is undefined.
+ *
+ * When historyComplete is false (snapshot window is truncated) and the
+ * phase timestamp predates the oldest available snapshot, the true
+ * reference may lie outside the retained window. Returns undefined in
+ * that case to avoid asserting an unreliable baseline — consistent
+ * with the phase duration suppression pattern.
  */
 export function findReferenceSnapshot(
   phaseTimestamp: string | undefined,
   snapshotsDesc: SnapshotRow[],
+  historyComplete = true,
 ): ReferenceSnapshot | undefined {
   if (!phaseTimestamp || snapshotsDesc.length === 0) {
     return undefined
+  }
+
+  // When the snapshot window is truncated and the phase declaration
+  // predates the oldest available snapshot, the true reference may
+  // be a snapshot we no longer have. Suppress to avoid claiming
+  // changes "since the current phase was declared" against an
+  // unreliable baseline.
+  if (!historyComplete) {
+    const oldestSnapshot = snapshotsDesc[snapshotsDesc.length - 1]!
+    if (phaseTimestamp < oldestSnapshot.observedAt) {
+      return undefined
+    }
   }
 
   // Walk DESC-ordered rows. All rows with observedAt >= phaseTimestamp

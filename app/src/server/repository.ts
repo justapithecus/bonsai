@@ -123,10 +123,14 @@ export const loadRepository = createServerFn({ method: 'GET' })
       ecology.declaration?.horizon,
     )
 
-    // Observe shape and motion drift (uses already-fetched data)
+    // Observe shape and motion drift (uses already-fetched data).
+    // Pass full snapshotRows (pre-slice) so the +1 boundary row is
+    // available as a potential reference. Pass historyComplete to
+    // suppress when the phase baseline cannot be reliably established.
     const referenceSnapshot = findReferenceSnapshot(
       phaseLastDeclaredAt,
-      snapshots,
+      snapshotRows,
+      historyComplete,
     )
     const shapeDrift = referenceSnapshot
       ? observeShapeDrift(referenceSnapshot, signals, density?.tier)
