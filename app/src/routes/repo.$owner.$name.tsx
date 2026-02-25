@@ -35,7 +35,7 @@ function RepositoryDetailPage() {
     >
       <Header login={session.login} />
 
-      <main className="px-8 py-8 max-w-3xl">
+      <main className="px-8 py-8">
         <Link
           to="/"
           className="text-sm mb-6 inline-block"
@@ -63,94 +63,101 @@ function RepositoryDetailPage() {
           </p>
         )}
 
-        {ecology.declaration && (
-          <div className="space-y-6 mt-6">
-            {/* Intent */}
-            <div>
-              <div
-                className="text-sm"
-                style={{ color: 'var(--grove-text)' }}
-              >
-                <span
-                  className="opacity-60"
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,20rem)] gap-x-12 gap-y-8 mt-6">
+          {/* Left column — ecology details + ritual invitations */}
+          <div className="max-w-xl">
+            {ecology.declaration && (
+              <div className="space-y-6">
+                {/* Intent */}
+                <div>
+                  <div
+                    className="text-sm"
+                    style={{ color: 'var(--grove-text)' }}
+                  >
+                    <span
+                      className="opacity-60"
+                      style={{ color: 'var(--grove-text-muted)' }}
+                    >
+                      Intent:
+                    </span>{' '}
+                    {ecology.declaration.intent}
+                  </div>
+                </div>
+
+                {/* Phase + Season */}
+                <PhaseIndicator
+                  phase={ecology.declaration.phase}
+                  season={ecology.season}
+                  phaseDuration={phaseDuration}
+                />
+
+                {/* Horizon */}
+                <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
+                  <span
+                    className="opacity-60"
+                    style={{ color: 'var(--grove-text-muted)' }}
+                  >
+                    Horizon:
+                  </span>{' '}
+                  {ecology.declaration.horizon ?? 'undeclared'}
+                </div>
+
+                {/* Role */}
+                <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
+                  <span
+                    className="opacity-60"
+                    style={{ color: 'var(--grove-text-muted)' }}
+                  >
+                    Role:
+                  </span>{' '}
+                  {ecology.declaration.role ?? 'undeclared'}
+                </div>
+
+                {/* Steward */}
+                <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
+                  <span
+                    className="opacity-60"
+                    style={{ color: 'var(--grove-text-muted)' }}
+                  >
+                    Steward:
+                  </span>{' '}
+                  {ecology.declaration.steward ?? 'undeclared'}
+                </div>
+
+                {/* Consolidation */}
+                <ConsolidationDisplay consolidation={consolidation} />
+
+                {/* Structural density */}
+                <DensityDisplay density={ecology.density} />
+              </div>
+            )}
+
+            {/* Ritual invitations */}
+            {ritualInvitations.length > 0 && (
+              <div className="mt-8">
+                <h3
+                  className="text-sm mb-4 tracking-wide uppercase opacity-60"
                   style={{ color: 'var(--grove-text-muted)' }}
                 >
-                  Intent:
-                </span>{' '}
-                {ecology.declaration.intent}
+                  Ritual Invitations
+                </h3>
+                <div className="space-y-3">
+                  {ritualInvitations.map((invitation) => (
+                    <RitualInvitation
+                      key={invitation.ritual}
+                      invitation={invitation}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-
-            {/* Phase + Season */}
-            <PhaseIndicator
-              phase={ecology.declaration.phase}
-              season={ecology.season}
-              phaseDuration={phaseDuration}
-            />
-
-            {/* Horizon */}
-            <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
-              <span
-                className="opacity-60"
-                style={{ color: 'var(--grove-text-muted)' }}
-              >
-                Horizon:
-              </span>{' '}
-              {ecology.declaration.horizon ?? 'undeclared'}
-            </div>
-
-            {/* Role */}
-            <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
-              <span
-                className="opacity-60"
-                style={{ color: 'var(--grove-text-muted)' }}
-              >
-                Role:
-              </span>{' '}
-              {ecology.declaration.role ?? 'undeclared'}
-            </div>
-
-            {/* Steward */}
-            <div className="text-sm" style={{ color: 'var(--grove-text)' }}>
-              <span
-                className="opacity-60"
-                style={{ color: 'var(--grove-text-muted)' }}
-              >
-                Steward:
-              </span>{' '}
-              {ecology.declaration.steward ?? 'undeclared'}
-            </div>
-
-            {/* Consolidation */}
-            <ConsolidationDisplay consolidation={consolidation} />
-
-            {/* Structural density */}
-            <DensityDisplay density={ecology.density} />
+            )}
           </div>
-        )}
 
-        {/* Structural timeline */}
-        <StructuralTimeline timeline={timeline} />
-
-        {/* Ritual invitations */}
-        {ritualInvitations.length > 0 && (
-          <div className="mt-8">
-            <h3
-              className="text-sm mb-4 tracking-wide uppercase opacity-60"
-              style={{ color: 'var(--grove-text-muted)' }}
-            >
-              Ritual Invitations
-            </h3>
-            <div className="space-y-3">
-              {ritualInvitations.map((invitation) => (
-                <RitualInvitation
-                  key={invitation.ritual}
-                  invitation={invitation}
-                />
-              ))}
-            </div>
+          {/* Right column — structural timeline */}
+          <div>
+            <StructuralTimeline timeline={timeline} />
           </div>
-        )}
+        </div>
       </main>
     </div>
   )

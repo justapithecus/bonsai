@@ -16,8 +16,18 @@ function formatDate(iso: string): string {
   return dateFormat.format(new Date(iso))
 }
 
+const TIER_EMOJI: Record<string, string> = {
+  sparse: '🌱',
+  rooting: '🌿',
+  thickening: '🌳',
+  dense_canopy: '🌲',
+  tangled_thicket: '🪴',
+}
+
 function formatTierName(tier: string): string {
-  return tier.replace(/_/g, ' ')
+  const emoji = TIER_EMOJI[tier] ?? ''
+  const label = tier.replace(/_/g, ' ')
+  return emoji ? `${emoji} ${label}` : label
 }
 
 function describeDeclarationChange(change: {
@@ -55,7 +65,7 @@ export function StructuralTimeline({ timeline }: StructuralTimelineProps) {
   const hiddenCount = timeline.length - visible.length
 
   return (
-    <div className="mt-8">
+    <div>
       <h3
         className="text-sm mb-4 tracking-wide uppercase opacity-60"
         style={{ color: 'var(--grove-text-muted)' }}
