@@ -1,9 +1,12 @@
+import { suggestsReaffirmation } from './phase-duration'
 import type {
   Climate,
   ConsolidationObservation,
   GroveDeclaration,
+  PhaseDurationObservation,
   RepositoryEcology,
   RitualInvitation,
+  Season,
 } from './types'
 
 /**
@@ -13,6 +16,7 @@ import type {
 export function surfaceRitualInvitations(
   declaration: GroveDeclaration | undefined,
   consolidation: ConsolidationObservation | undefined,
+  phaseDuration?: PhaseDurationObservation,
 ): RitualInvitation[] {
   const invitations: RitualInvitation[] = []
 
@@ -21,6 +25,20 @@ export function surfaceRitualInvitations(
     invitations.push({
       ritual: 'consolidation',
       observation: `The declared consolidation interval of ${consolidation.intervalDays} days has elapsed. This project may be ready for a consolidation review.`,
+    })
+  }
+
+  // Stewardship reaffirmation: eligible when phase duration exceeds horizon threshold
+  if (
+    phaseDuration &&
+    suggestsReaffirmation(
+      phaseDuration,
+      declaration?.consolidation_interval_days,
+    )
+  ) {
+    invitations.push({
+      ritual: 'stewardship_reaffirmation',
+      observation: `The current phase "${phaseDuration.phase}" has been declared for ${phaseDuration.daysSinceDeclared} days. This duration may invite reflection on the stewardship relationship with this project.`,
     })
   }
 
@@ -72,6 +90,28 @@ export function surfaceEcosystemInvitations(
       ritual: 'ecosystem_balance',
       observation: `${tensionCount} of ${classifiedWithSeason.length} classified repositories have a derived season that diverges from the declared climate. The portfolio may be ready for an ecosystem balance review.`,
     })
+  }
+
+  // Dominant-season climate review: eligible when >= 60% of classified repos
+  // share a single season that differs from declared climate.
+  // Only fires when the general tension check above did not already surface.
+  if (invitations.length === 0) {
+    const seasonCounts = new Map<Season, number>()
+    for (const repo of classifiedWithSeason) {
+      const s = repo.season!.season
+      seasonCounts.set(s, (seasonCounts.get(s) ?? 0) + 1)
+    }
+
+    for (const [season, count] of seasonCounts) {
+      const ratio = count / classifiedWithSeason.length
+      if (ratio >= 0.6 && season !== climate) {
+        invitations.push({
+          ritual: 'ecosystem_balance',
+          observation: `${count} of ${classifiedWithSeason.length} classified repositories share a ${season} season, which differs from the declared climate of ${climate}. This pattern may invite a climate review.`,
+        })
+        break // only one dominant-season invitation
+      }
+    }
   }
 
   return invitations

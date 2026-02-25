@@ -8,6 +8,7 @@ import { EmptyState } from '../components/EmptyState'
 import { Header } from '../components/Header'
 import { PaginationControls } from '../components/PaginationControls'
 import { RepoCard } from '../components/RepoCard'
+import { RitualInvitation } from '../components/RitualInvitation'
 import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
 import { loadPortfolio } from '../server/portfolio'
@@ -92,6 +93,25 @@ function PortfolioPage() {
               onPageChange={setPage}
             />
           </>
+        )}
+
+        {portfolio.ecosystemInvitations.length > 0 && (
+          <div className="mt-8">
+            <h3
+              className="text-sm mb-4 tracking-wide uppercase opacity-60"
+              style={{ color: 'var(--grove-text-muted)' }}
+            >
+              Ritual Invitations
+            </h3>
+            <div className="space-y-3">
+              {portfolio.ecosystemInvitations.map((invitation) => (
+                <RitualInvitation
+                  key={invitation.ritual}
+                  invitation={invitation}
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         {portfolio.unclassified.length > 0 && (

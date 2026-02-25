@@ -80,6 +80,14 @@ export interface RitualInvitation {
   observation: string
 }
 
+// Phase duration observation
+export interface PhaseDurationObservation {
+  phase: Phase
+  declaredAt: string // ISO 8601
+  daysSinceDeclared: number
+  horizon?: Horizon // context for threshold interpretation
+}
+
 // Climate/season tension
 export interface ClimateTension {
   fullName: string

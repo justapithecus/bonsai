@@ -1,11 +1,12 @@
-import type { SeasonDerivation } from '@grove/core'
+import type { PhaseDurationObservation, SeasonDerivation } from '@grove/core'
 
 interface PhaseIndicatorProps {
   phase?: string
   season?: SeasonDerivation
+  phaseDuration?: PhaseDurationObservation
 }
 
-export function PhaseIndicator({ phase, season }: PhaseIndicatorProps) {
+export function PhaseIndicator({ phase, season, phaseDuration }: PhaseIndicatorProps) {
   if (!phase) {
     return (
       <div className="text-sm" style={{ color: 'var(--grove-text-muted)' }}>
@@ -33,6 +34,14 @@ export function PhaseIndicator({ phase, season }: PhaseIndicatorProps) {
           Season: {season.season}
           {season.dormancyMode && ` (${season.dormancyMode})`} — derived from
           phase &ldquo;{season.sourcePhase}&rdquo;
+        </div>
+      )}
+      {phaseDuration && (
+        <div
+          className="text-xs mt-1"
+          style={{ color: 'var(--grove-text-muted)' }}
+        >
+          Phase declared {phaseDuration.daysSinceDeclared} days ago
         </div>
       )}
     </div>
