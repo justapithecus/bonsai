@@ -94,11 +94,14 @@ export const loadRepository = createServerFn({ method: 'GET' })
       ecology.classified,
     )
 
-    // Build structural timeline from persisted history
+    // Build structural timeline from persisted history.
+    // Fetch one extra row to distinguish "exactly at limit" from "truncated".
     const HISTORY_LIMIT = 50
-    const snapshots = getSnapshotHistory(fullName, HISTORY_LIMIT)
-    const declarations = getDeclarationHistory(fullName, HISTORY_LIMIT)
-    const historyComplete = snapshots.length < HISTORY_LIMIT
+    const snapshotRows = getSnapshotHistory(fullName, HISTORY_LIMIT + 1)
+    const declarationRows = getDeclarationHistory(fullName, HISTORY_LIMIT + 1)
+    const historyComplete = snapshotRows.length <= HISTORY_LIMIT
+    const snapshots = snapshotRows.slice(0, HISTORY_LIMIT)
+    const declarations = declarationRows.slice(0, HISTORY_LIMIT)
     const timeline = buildTimeline(snapshots, declarations, snapshotWasRecorded, historyComplete)
 
     return {

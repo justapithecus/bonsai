@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
+import type { declarationChanges, ecologySnapshots } from '../db/schema'
 import { buildTimeline, type TimelineEntry } from '../timeline'
+
+type SnapshotRow = typeof ecologySnapshots.$inferSelect
+type DeclarationRow = typeof declarationChanges.$inferSelect
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -10,7 +14,7 @@ function makeSnapshot(overrides: {
   observedAt: string
   densityTier?: string | null
   fullName?: string
-}) {
+}): SnapshotRow {
   return {
     id: ++idCounter,
     fullName: overrides.fullName ?? 'owner/repo',
@@ -27,9 +31,9 @@ function makeSnapshot(overrides: {
     commitsLast90d: 15,
     dependencyManifestsObserved: null,
     ecosystemDependencyCount: null,
-    densityTier: 'densityTier' in overrides ? overrides.densityTier : 'thickening',
+    densityTier: overrides.densityTier !== undefined ? overrides.densityTier : 'thickening',
     densityDescription: 'test description',
-  } as const
+  }
 }
 
 function makeDeclaration(overrides: {
@@ -42,22 +46,22 @@ function makeDeclaration(overrides: {
   consolidationIntervalDays?: number | null
   fullName?: string
   classified?: boolean
-}) {
+}): DeclarationRow {
   return {
     id: ++idCounter,
     fullName: overrides.fullName ?? 'owner/repo',
     observedAt: overrides.observedAt,
     classified: overrides.classified ?? true,
-    intent: 'intent' in overrides ? overrides.intent : 'test',
-    horizon: 'horizon' in overrides ? overrides.horizon : 'perennial',
-    role: 'role' in overrides ? overrides.role : 'library',
-    phase: 'phase' in overrides ? overrides.phase : 'consolidating',
-    steward: 'steward' in overrides ? overrides.steward : 'alice',
+    intent: overrides.intent !== undefined ? overrides.intent : 'test',
+    horizon: overrides.horizon !== undefined ? overrides.horizon : 'perennial',
+    role: overrides.role !== undefined ? overrides.role : 'library',
+    phase: overrides.phase !== undefined ? overrides.phase : 'consolidating',
+    steward: overrides.steward !== undefined ? overrides.steward : 'alice',
     consolidationIntervalDays:
-      'consolidationIntervalDays' in overrides
+      overrides.consolidationIntervalDays !== undefined
         ? overrides.consolidationIntervalDays
         : 90,
-  } as const
+  }
 }
 
 // ── Tests ────────────────────────────────────────────────────────
