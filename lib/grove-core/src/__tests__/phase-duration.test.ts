@@ -92,6 +92,17 @@ describe('observePhaseDuration', () => {
     expect(result!).not.toHaveProperty('horizon')
   })
 
+  it('clamps to 0 when declaredAt is in the future', () => {
+    const result = observePhaseDuration(
+      'consolidating',
+      '2025-12-01T00:00:00Z', // future relative to now
+      'perennial',
+      now,
+    )
+    expect(result).toBeDefined()
+    expect(result!.daysSinceDeclared).toBe(0)
+  })
+
   it('returns 0 days when declared today', () => {
     const result = observePhaseDuration(
       'emerging',

@@ -21,8 +21,9 @@ export function observePhaseDuration(
   }
 
   const msPerDay = 1000 * 60 * 60 * 24
-  const daysSinceDeclared = Math.floor(
-    (now.getTime() - declaredDate.getTime()) / msPerDay,
+  const daysSinceDeclared = Math.max(
+    0,
+    Math.floor((now.getTime() - declaredDate.getTime()) / msPerDay),
   )
 
   return {

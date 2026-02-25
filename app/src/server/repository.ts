@@ -142,7 +142,7 @@ export const loadRepository = createServerFn({ method: 'GET' })
  * predate the window. Returns undefined in that case to avoid
  * understating duration.
  */
-function findPhaseDeclarationTimestamp(
+export function findPhaseDeclarationTimestamp(
   currentPhase: string | undefined,
   declarationsDesc: { phase: string | null; observedAt: string }[],
   historyComplete: boolean,

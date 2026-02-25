@@ -1,6 +1,7 @@
 import type { Climate } from '@grove/core'
+import { surfaceEcosystemInvitations } from '@grove/core'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
 import { ClimateDeclaration } from '../components/ClimateDeclaration'
@@ -32,6 +33,13 @@ function PortfolioPage() {
   )
   const { page, totalPages, paginated, setPage } = usePagination(
     portfolio.repositories,
+  )
+
+  // Derive ecosystem invitations from current climate state so they
+  // stay consistent after an inline climate declaration change.
+  const ecosystemInvitations = useMemo(
+    () => surfaceEcosystemInvitations(climate, portfolio.repositories),
+    [climate, portfolio.repositories],
   )
 
   if (!session.authenticated) {
@@ -95,7 +103,7 @@ function PortfolioPage() {
           </>
         )}
 
-        {portfolio.ecosystemInvitations.length > 0 && (
+        {ecosystemInvitations.length > 0 && (
           <div className="mt-8">
             <h3
               className="text-sm mb-4 tracking-wide uppercase opacity-60"
@@ -104,7 +112,7 @@ function PortfolioPage() {
               Ritual Invitations
             </h3>
             <div className="space-y-3">
-              {portfolio.ecosystemInvitations.map((invitation) => (
+              {ecosystemInvitations.map((invitation) => (
                 <RitualInvitation
                   key={invitation.ritual}
                   invitation={invitation}
