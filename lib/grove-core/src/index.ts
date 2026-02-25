@@ -1,4 +1,9 @@
 export { observeConsolidationInterval } from './consolidation'
+export {
+  findReferenceSnapshot,
+  observeMotionDrift,
+  observeShapeDrift,
+} from './drift'
 export { observePhaseDuration, suggestsReaffirmation } from './phase-duration'
 export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
@@ -19,15 +24,18 @@ export type {
   DormancyMode,
   GroveDeclaration,
   Horizon,
+  MotionDriftObservation,
   Phase,
   PhaseDurationObservation,
   Portfolio,
+  ReferenceSnapshot,
   RepositoryEcology,
   Ritual,
   RitualInvitation,
   Role,
   Season,
   SeasonDerivation,
+  ShapeDriftObservation,
   StructuralSignals,
 } from './types'
 export {
