@@ -176,9 +176,10 @@ describe('classifyRepository', () => {
     })
   })
 
-  it('returns undefined for seasonal horizon', () => {
+  it('returns roleClass without stratum for seasonal horizon', () => {
     const result = classifyRepository(makeRepo('seasonal', 'library'))
-    expect(result).toBeUndefined()
+    expect(result).toEqual({ roleClass: 'system' })
+    expect(result?.stratum).toBeUndefined()
   })
 
   it('returns undefined when horizon is missing', () => {

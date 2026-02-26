@@ -85,17 +85,18 @@ export function classifyStratum(
 /**
  * Convenience: classify a repository into roleClass and stratum.
  * Returns undefined if horizon or role is undeclared (§3 Unclassified).
+ * Seasonal repos return { roleClass } with no stratum — observed but
+ * non-triggering per §3.
  */
 export function classifyRepository(
   repo: RepositoryEcology,
-): { roleClass: RoleClass; stratum: Stratum } | undefined {
+): { roleClass: RoleClass; stratum?: Stratum } | undefined {
   const horizon = repo.declaration?.horizon
   const role = repo.declaration?.role
   if (!horizon || !role) return undefined
 
   const roleClass = deriveRoleClass(role)
   const stratum = classifyStratum(horizon, roleClass)
-  if (!stratum) return undefined
 
-  return { roleClass, stratum }
+  return stratum ? { roleClass, stratum } : { roleClass }
 }
