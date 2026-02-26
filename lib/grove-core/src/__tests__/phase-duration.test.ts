@@ -161,12 +161,12 @@ describe('suggestsReaffirmation', () => {
     expect(suggestsReaffirmation(at365)).toBe(true)
   })
 
-  it('triggers at 730 days for civilizational horizon', () => {
+  it('triggers at 730 days for generational horizon', () => {
     const at729: PhaseDurationObservation = {
       phase: 'consolidating',
       declaredAt: '2023-01-01T00:00:00Z',
       daysSinceDeclared: 729,
-      horizon: 'civilizational',
+      horizon: 'generational',
     }
     expect(suggestsReaffirmation(at729)).toBe(false)
 
@@ -174,7 +174,7 @@ describe('suggestsReaffirmation', () => {
       phase: 'consolidating',
       declaredAt: '2023-01-01T00:00:00Z',
       daysSinceDeclared: 730,
-      horizon: 'civilizational',
+      horizon: 'generational',
     }
     expect(suggestsReaffirmation(at730)).toBe(true)
   })

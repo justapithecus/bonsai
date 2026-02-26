@@ -88,7 +88,7 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
     declaration: {
       intent:
         'A foundational infrastructure layer for long-lived configuration and dependency management.',
-      horizon: 'civilizational',
+      horizon: 'generational',
       role: 'infrastructure',
       phase: 'consolidating',
       steward: 'Andrew',

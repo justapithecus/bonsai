@@ -20,7 +20,7 @@ describe('parseGroveYaml', () => {
     const yaml = `
 grove:
   intent: "Embeddable storage substrate."
-  horizon: civilizational
+  horizon: generational
   role: infrastructure
   phase: consolidating
   steward: Andrew
@@ -31,7 +31,7 @@ grove:
     if (result.ok) {
       expect(result.declaration).toEqual({
         intent: 'Embeddable storage substrate.',
-        horizon: 'civilizational',
+        horizon: 'generational',
         role: 'infrastructure',
         phase: 'consolidating',
         steward: 'Andrew',

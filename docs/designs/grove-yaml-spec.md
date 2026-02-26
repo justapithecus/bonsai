@@ -23,7 +23,7 @@ YAML. Single top-level `grove` key.
 ```yaml
 grove:
   intent: "Embeddable storage substrate for future systems."
-  horizon: "civilizational"
+  horizon: "generational"
   role: "infrastructure"
   phase: "consolidating"
   steward: "Andrew"
@@ -48,7 +48,7 @@ Declared temporal scope. One of:
 - `ephemeral`
 - `seasonal`
 - `perennial`
-- `civilizational`
+- `generational`
 
 See [Horizon](../ecology.md#horizon) in ecology primitives.
 
@@ -61,6 +61,7 @@ Declared function within a portfolio. One of:
 - `experiment`
 - `documentation`
 - `stewardship`
+- `civilizational`
 
 See [Role](../ecology.md#role) in ecology primitives.
 
