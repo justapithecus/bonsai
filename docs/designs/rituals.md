@@ -241,7 +241,7 @@ The Consolidation ritual aligns naturally with the existing `consolidation_inter
 
 ### Horizon
 
-Horizon influences which rituals feel relevant. An `ephemeral` project may never encounter a Stewardship Reaffirmation ritual. A `civilizational` project may encounter one frequently. This is contextual, not enforced.
+Horizon influences which rituals feel relevant. An `ephemeral` project may never encounter a Stewardship Reaffirmation ritual. A `generational` project may encounter one frequently. This is contextual, not enforced.
 
 ### Fit
 

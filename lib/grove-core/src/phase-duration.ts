@@ -43,7 +43,7 @@ const REAFFIRMATION_THRESHOLDS: Record<Horizon, number | null> = {
   ephemeral: null, // never triggers
   seasonal: 180,
   perennial: 365,
-  civilizational: 730,
+  generational: 730,
 }
 
 const DEFAULT_THRESHOLD_DAYS = 365

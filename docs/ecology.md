@@ -15,7 +15,7 @@ The declared temporal scope of a project.
 | `ephemeral` | Expected to exist briefly. Experiments, spikes, throwaway prototypes. |
 | `seasonal` | Tied to a bounded period. Conference demos, course projects, contract work. |
 | `perennial` | Intended to persist and evolve across years. Libraries, tools, infrastructure. |
-| `civilizational` | Intended to outlast its creator. Standards, protocols, foundational substrates. |
+| `generational` | Intended to span beyond one steward's active tenure. Long-arc systems, enduring substrates. |
 
 Horizon is declared by the steward. It may change over time. Changes should be deliberate and recorded.
 
@@ -50,6 +50,7 @@ The declared function of a project within a portfolio.
 | `experiment` | Exploratory work. May not persist. |
 | `documentation` | Knowledge artifact. Guides, references, specifications. |
 | `stewardship` | Meta-observational system. Observes other projects or the ecosystem itself. |
+| `civilizational` | Foundational in character and ambition. Load-bearing, designed for deep structural permanence. |
 
 ---
 

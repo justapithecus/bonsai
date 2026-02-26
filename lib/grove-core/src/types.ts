@@ -4,7 +4,7 @@ export const HORIZONS = [
   'ephemeral',
   'seasonal',
   'perennial',
-  'civilizational',
+  'generational',
 ] as const
 export type Horizon = (typeof HORIZONS)[number]
 
@@ -25,6 +25,7 @@ export const ROLES = [
   'experiment',
   'documentation',
   'stewardship',
+  'civilizational',
 ] as const
 export type Role = (typeof ROLES)[number]
 
