@@ -51,6 +51,34 @@ export const RITUALS = [
 ] as const
 export type Ritual = (typeof RITUALS)[number]
 
+// §1.1 — derived from declared Role
+export const ROLE_CLASSES = ['foundational', 'system', 'domain'] as const
+export type RoleClass = (typeof ROLE_CLASSES)[number]
+
+// §1.2 — categorical relation between season and climate
+export const CLIMATE_RELATIONS = ['aligned', 'divergent', 'orthogonal'] as const
+export type ClimateRelation = (typeof CLIMATE_RELATIONS)[number]
+
+// §3 — structural strata
+export const STRATA = ['structural_core', 'long_arc_domain', 'ephemeral_field'] as const
+export type Stratum = (typeof STRATA)[number]
+
+// §2.2 — categorical reason for climate proposal
+export const PROPOSAL_BASES = [
+  'sustained_core_divergence',
+  'long_arc_alignment',
+  'density_drift_upward',
+  'density_drift_downward',
+  'mixed_transition',
+] as const
+export type ProposalBasis = (typeof PROPOSAL_BASES)[number]
+
+// §2.1 — climate state union
+export type ClimateState =
+  | { kind: 'undefined' }
+  | { kind: 'declared'; climate: Climate }
+  | { kind: 'proposed'; climate: Climate; basis: ProposalBasis }
+
 // Parsed .grove.yaml — missing optionals are undefined ("unknown")
 export interface GroveDeclaration {
   intent: string
