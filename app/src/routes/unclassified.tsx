@@ -24,6 +24,7 @@ function UnclassifiedPage() {
 
   const { page, totalPages, paginated, setPage } = usePagination(
     portfolio.unclassified,
+    12,
   )
 
   if (!session.authenticated) {

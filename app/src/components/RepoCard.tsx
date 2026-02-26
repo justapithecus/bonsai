@@ -23,7 +23,7 @@ export function RepoCard({ repo, climate }: RepoCardProps) {
     <>
       <div className="flex items-start justify-between mb-3">
         <h3
-          className="text-base font-medium"
+          className="text-sm font-medium"
           style={{ color: 'var(--grove-text)' }}
         >
           {repo.fullName}
@@ -43,7 +43,7 @@ export function RepoCard({ repo, climate }: RepoCardProps) {
 
       {repo.declaration && (
         <p
-          className="text-sm mb-4 leading-relaxed"
+          className="text-xs mb-4 leading-relaxed"
           style={{ color: 'var(--grove-text-muted)' }}
         >
           {repo.declaration.intent}
