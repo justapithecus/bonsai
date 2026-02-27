@@ -42,8 +42,9 @@ export function deriveSnapshotRelation(
  * §4.2/§4.3 — Assess persistence of climate relations across a snapshot window.
  *
  * Counts aligned, divergent, orthogonal, and undetermined entries.
- * A relation is persistent when its count meets PERSISTENCE_THRESHOLD (9).
- * Sparse windows (fewer than threshold snapshots) can never reach persistence.
+ * A relation is persistent only when the window contains at least
+ * PERSISTENCE_WINDOW_SIZE (14) snapshots AND the count meets
+ * PERSISTENCE_THRESHOLD (9). Incomplete windows never yield persistence.
  */
 export function assessPersistence(
   relations: ReadonlyArray<ClimateRelation | undefined>,
@@ -76,7 +77,11 @@ export function assessPersistence(
     orthogonalCount,
     undeterminedCount,
     totalSnapshots: relations.length,
-    persistentlyAligned: alignedCount >= PERSISTENCE_THRESHOLD,
-    persistentlyDivergent: divergentCount >= PERSISTENCE_THRESHOLD,
+    persistentlyAligned:
+      relations.length >= PERSISTENCE_WINDOW_SIZE &&
+      alignedCount >= PERSISTENCE_THRESHOLD,
+    persistentlyDivergent:
+      relations.length >= PERSISTENCE_WINDOW_SIZE &&
+      divergentCount >= PERSISTENCE_THRESHOLD,
   }
 }

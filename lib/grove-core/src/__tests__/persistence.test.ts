@@ -153,6 +153,27 @@ describe('assessPersistence', () => {
     expect(result.divergentCount).toBe(5)
     expect(result.totalSnapshots).toBe(5)
   })
+
+  it('incomplete window (9 aligned, total=9) → persistentlyAligned: false', () => {
+    const result = assessPersistence(fill('aligned', 9))
+    expect(result.persistentlyAligned).toBe(false)
+    expect(result.alignedCount).toBe(9)
+    expect(result.totalSnapshots).toBe(9)
+  })
+
+  it('incomplete window (13 divergent, total=13) → persistentlyDivergent: false', () => {
+    const result = assessPersistence(fill('divergent', 13))
+    expect(result.persistentlyDivergent).toBe(false)
+    expect(result.divergentCount).toBe(13)
+    expect(result.totalSnapshots).toBe(13)
+  })
+
+  it('incomplete window (10 aligned + 2 orthogonal, total=12) → persistentlyAligned: false', () => {
+    const relations = [...fill('aligned', 10), ...fill('orthogonal', 2)]
+    const result = assessPersistence(relations)
+    expect(result.persistentlyAligned).toBe(false)
+    expect(result.totalSnapshots).toBe(12)
+  })
 })
 
 describe('constants', () => {
