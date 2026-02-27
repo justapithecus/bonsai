@@ -6,6 +6,7 @@ import { createDb, type GroveDb } from '../client'
 import { ecologySnapshots, repositories } from '../schema'
 import {
   getLatestSnapshot,
+  getPortfolioSnapshotWindow,
   getSnapshotHistory,
   recordSnapshot,
   recordSnapshotBatch,
@@ -208,5 +209,83 @@ describe('getSnapshotHistory', () => {
 
     const limited = getSnapshotHistory('owner/repo', 2, db)
     expect(limited).toHaveLength(2)
+  })
+})
+
+describe('getPortfolioSnapshotWindow', () => {
+  it('returns empty map for empty fullNames', () => {
+    const result = getPortfolioSnapshotWindow([], 14, db)
+    expect(result.size).toBe(0)
+  })
+
+  it('returns correct rows per repo', () => {
+    const repos = ['a/one', 'b/two']
+    upsertRepositories(repos.map(makeRepo), db)
+
+    // Insert 3 snapshots for a/one, 2 for b/two
+    for (let i = 0; i < 3; i++) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'a/one',
+          observedAt: `2025-01-${String(10 + i).padStart(2, '0')}T00:00:00Z`,
+          classified: true,
+          phase: 'emerging',
+        })
+        .run()
+    }
+    for (let i = 0; i < 2; i++) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'b/two',
+          observedAt: `2025-01-${String(10 + i).padStart(2, '0')}T00:00:00Z`,
+          classified: true,
+          phase: 'consolidating',
+        })
+        .run()
+    }
+
+    const result = getPortfolioSnapshotWindow(repos, 14, db)
+    expect(result.get('a/one')).toHaveLength(3)
+    expect(result.get('b/two')).toHaveLength(2)
+  })
+
+  it('returns empty array for repos with no snapshots', () => {
+    upsertRepository(makeRepo('a/one'), db)
+    const result = getPortfolioSnapshotWindow(['a/one'], 14, db)
+    expect(result.get('a/one')).toHaveLength(0)
+  })
+
+  it('returns rows ordered DESC per repo', () => {
+    upsertRepository(makeRepo(), db)
+    for (let i = 0; i < 3; i++) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'owner/repo',
+          observedAt: `2025-01-${String(10 + i).padStart(2, '0')}T00:00:00Z`,
+          classified: true,
+        })
+        .run()
+    }
+
+    const result = getPortfolioSnapshotWindow(['owner/repo'], 14, db)
+    const rows = result.get('owner/repo')!
+    expect(rows[0]!.observedAt).toBe('2025-01-12T00:00:00Z')
+    expect(rows[2]!.observedAt).toBe('2025-01-10T00:00:00Z')
+  })
+
+  it('respects windowSize (20 inserted, 14 returned)', () => {
+    upsertRepository(makeRepo(), db)
+    for (let i = 0; i < 20; i++) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'owner/repo',
+          observedAt: `2025-01-${String(10 + i).padStart(2, '0')}T00:00:00Z`,
+          classified: true,
+        })
+        .run()
+    }
+
+    const result = getPortfolioSnapshotWindow(['owner/repo'], 14, db)
+    expect(result.get('owner/repo')).toHaveLength(14)
   })
 })

@@ -15,6 +15,7 @@ export {
 
 export {
   getLatestSnapshot,
+  getPortfolioSnapshotWindow,
   getSnapshotHistory,
   recordSnapshot,
   recordSnapshotBatch,

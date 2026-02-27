@@ -212,4 +212,23 @@ function buildSnapshotValues(
   }
 }
 
+/**
+ * Fetch the last N snapshots for each repository in a portfolio.
+ * Returns a Map keyed by fullName with snapshot rows ordered DESC.
+ *
+ * Delegates to getSnapshotHistory per repo — portfolio sizes are small
+ * (typically <30 repos), so sequential indexed lookups are efficient.
+ */
+export function getPortfolioSnapshotWindow(
+  fullNames: string[],
+  windowSize = 14,
+  db: GroveDb = getDb(),
+): Map<string, ReturnType<typeof getSnapshotHistory>> {
+  const result = new Map<string, ReturnType<typeof getSnapshotHistory>>()
+  for (const name of fullNames) {
+    result.set(name, getSnapshotHistory(name, windowSize, db))
+  }
+  return result
+}
+
 export { MIN_SNAPSHOT_INTERVAL_MS }

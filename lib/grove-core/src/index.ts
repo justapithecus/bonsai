@@ -10,6 +10,13 @@ export {
   observeMotionDrift,
   observeShapeDrift,
 } from './drift'
+export {
+  assessPersistence,
+  deriveSnapshotRelation,
+  PERSISTENCE_THRESHOLD,
+  PERSISTENCE_WINDOW_SIZE,
+} from './persistence'
+export type { PersistenceAssessment } from './persistence'
 export { observePhaseDuration, suggestsReaffirmation } from './phase-duration'
 export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
