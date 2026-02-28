@@ -213,8 +213,20 @@ function buildSnapshotValues(
 }
 
 /**
- * Fetch the last N snapshots for each repository in a portfolio.
- * Returns a Map keyed by fullName with snapshot rows ordered DESC.
+ * Maximum snapshots per day given MIN_SNAPSHOT_INTERVAL_MS of 1 hour.
+ * Used to over-fetch from getSnapshotHistory so day-deduplication
+ * covers the full window even when multiple snapshots exist per day.
+ */
+const MAX_SNAPSHOTS_PER_DAY = 24
+
+/**
+ * Fetch the last N *daily* snapshots for each repository in a portfolio.
+ * Returns a Map keyed by fullName with one snapshot per calendar day (UTC),
+ * most-recent-per-day, ordered DESC.
+ *
+ * The contract defines persistence as "in the last 14 daily snapshots"
+ * (§4.2/§4.3), so intra-day duplicates are collapsed — the most recent
+ * snapshot per UTC day is retained.
  *
  * Delegates to getSnapshotHistory per repo — portfolio sizes are small
  * (typically <30 repos), so sequential indexed lookups are efficient.
@@ -224,9 +236,34 @@ export function getPortfolioSnapshotWindow(
   windowSize = 14,
   db: GroveDb = getDb(),
 ): Map<string, ReturnType<typeof getSnapshotHistory>> {
+  const safeWindowSize = Math.max(0, Math.floor(windowSize))
   const result = new Map<string, ReturnType<typeof getSnapshotHistory>>()
   for (const name of fullNames) {
-    result.set(name, getSnapshotHistory(name, windowSize, db))
+    // Over-fetch to account for multiple snapshots per day, then deduplicate.
+    const rows = getSnapshotHistory(name, safeWindowSize * MAX_SNAPSHOTS_PER_DAY, db)
+    result.set(name, deduplicateByDay(rows, safeWindowSize))
+  }
+  return result
+}
+
+/**
+ * Deduplicate snapshot rows to one per UTC calendar day.
+ * Rows must be ordered DESC (most recent first) — the first row
+ * encountered for each day is kept.
+ */
+function deduplicateByDay<T extends { observedAt: string }>(
+  rows: T[],
+  limit: number,
+): T[] {
+  if (limit <= 0) return []
+  const seen = new Set<string>()
+  const result: T[] = []
+  for (const row of rows) {
+    const day = row.observedAt.slice(0, 10) // 'YYYY-MM-DD' from ISO 8601
+    if (seen.has(day)) continue
+    seen.add(day)
+    result.push(row)
+    if (result.length >= limit) break
   }
   return result
 }

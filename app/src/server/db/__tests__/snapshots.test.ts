@@ -273,7 +273,7 @@ describe('getPortfolioSnapshotWindow', () => {
     expect(rows[2]!.observedAt).toBe('2025-01-10T00:00:00Z')
   })
 
-  it('respects windowSize (20 inserted, 14 returned)', () => {
+  it('respects windowSize (20 days inserted, 14 returned)', () => {
     upsertRepository(makeRepo(), db)
     for (let i = 0; i < 20; i++) {
       db.insert(ecologySnapshots)
@@ -287,5 +287,50 @@ describe('getPortfolioSnapshotWindow', () => {
 
     const result = getPortfolioSnapshotWindow(['owner/repo'], 14, db)
     expect(result.get('owner/repo')).toHaveLength(14)
+  })
+
+  it('deduplicates multiple snapshots per day to one per day', () => {
+    upsertRepository(makeRepo(), db)
+
+    // 3 snapshots on day 1, 2 on day 2
+    for (const time of ['08:00:00', '12:00:00', '16:00:00']) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'owner/repo',
+          observedAt: `2025-01-10T${time}Z`,
+          classified: true,
+        })
+        .run()
+    }
+    for (const time of ['09:00:00', '15:00:00']) {
+      db.insert(ecologySnapshots)
+        .values({
+          fullName: 'owner/repo',
+          observedAt: `2025-01-11T${time}Z`,
+          classified: true,
+        })
+        .run()
+    }
+
+    const result = getPortfolioSnapshotWindow(['owner/repo'], 14, db)
+    const rows = result.get('owner/repo')!
+    expect(rows).toHaveLength(2) // one per day
+    // Most recent per day, ordered DESC
+    expect(rows[0]!.observedAt).toBe('2025-01-11T15:00:00Z')
+    expect(rows[1]!.observedAt).toBe('2025-01-10T16:00:00Z')
+  })
+
+  it('negative windowSize → empty arrays', () => {
+    upsertRepository(makeRepo(), db)
+    db.insert(ecologySnapshots)
+      .values({
+        fullName: 'owner/repo',
+        observedAt: '2025-01-10T00:00:00Z',
+        classified: true,
+      })
+      .run()
+
+    const result = getPortfolioSnapshotWindow(['owner/repo'], -5, db)
+    expect(result.get('owner/repo')).toHaveLength(0)
   })
 })

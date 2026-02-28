@@ -174,6 +174,30 @@ describe('assessPersistence', () => {
     expect(result.persistentlyAligned).toBe(false)
     expect(result.totalSnapshots).toBe(12)
   })
+
+  it('>14 relations → only first 14 evaluated', () => {
+    // 9 aligned + 5 orthogonal + 6 divergent (20 total)
+    // Only the first 14 are evaluated: 9 aligned + 5 orthogonal
+    const relations = [...fill('aligned', 9), ...fill('orthogonal', 5), ...fill('divergent', 6)]
+    const result = assessPersistence(relations)
+    expect(result.persistentlyAligned).toBe(true)
+    expect(result.alignedCount).toBe(9)
+    expect(result.orthogonalCount).toBe(5)
+    expect(result.divergentCount).toBe(0)
+    expect(result.totalSnapshots).toBe(14)
+  })
+
+  it('>14 relations — entries beyond window do not count', () => {
+    // 8 aligned + 6 orthogonal + 8 divergent (22 total)
+    // Only first 14 evaluated: 8 aligned + 6 orthogonal → not persistent
+    // The 8 divergent beyond the window are ignored
+    const relations = [...fill('aligned', 8), ...fill('orthogonal', 6), ...fill('divergent', 8)]
+    const result = assessPersistence(relations)
+    expect(result.persistentlyAligned).toBe(false)
+    expect(result.persistentlyDivergent).toBe(false)
+    expect(result.divergentCount).toBe(0)
+    expect(result.totalSnapshots).toBe(14)
+  })
 })
 
 describe('constants', () => {

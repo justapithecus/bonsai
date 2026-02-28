@@ -41,20 +41,29 @@ export function deriveSnapshotRelation(
 /**
  * §4.2/§4.3 — Assess persistence of climate relations across a snapshot window.
  *
- * Counts aligned, divergent, orthogonal, and undetermined entries.
- * A relation is persistent only when the window contains at least
+ * Evaluates the first PERSISTENCE_WINDOW_SIZE entries (assumed most-recent-first).
+ * If more than 14 entries are provided, only the first 14 are evaluated —
+ * the contract defines persistence as "in the last 14 daily snapshots."
+ *
+ * A relation is persistent only when the window contains exactly
  * PERSISTENCE_WINDOW_SIZE (14) snapshots AND the count meets
  * PERSISTENCE_THRESHOLD (9). Incomplete windows never yield persistence.
  */
 export function assessPersistence(
   relations: ReadonlyArray<ClimateRelation | undefined>,
 ): PersistenceAssessment {
+  // §4.2/§4.3 — evaluate only the most recent 14 snapshots
+  const window =
+    relations.length > PERSISTENCE_WINDOW_SIZE
+      ? relations.slice(0, PERSISTENCE_WINDOW_SIZE)
+      : relations
+
   let alignedCount = 0
   let divergentCount = 0
   let orthogonalCount = 0
   let undeterminedCount = 0
 
-  for (const relation of relations) {
+  for (const relation of window) {
     switch (relation) {
       case 'aligned':
         alignedCount++
@@ -76,12 +85,12 @@ export function assessPersistence(
     divergentCount,
     orthogonalCount,
     undeterminedCount,
-    totalSnapshots: relations.length,
+    totalSnapshots: window.length,
     persistentlyAligned:
-      relations.length >= PERSISTENCE_WINDOW_SIZE &&
+      window.length >= PERSISTENCE_WINDOW_SIZE &&
       alignedCount >= PERSISTENCE_THRESHOLD,
     persistentlyDivergent:
-      relations.length >= PERSISTENCE_WINDOW_SIZE &&
+      window.length >= PERSISTENCE_WINDOW_SIZE &&
       divergentCount >= PERSISTENCE_THRESHOLD,
   }
 }
