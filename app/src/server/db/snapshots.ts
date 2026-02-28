@@ -213,11 +213,14 @@ function buildSnapshotValues(
 }
 
 /**
- * Maximum snapshots per day given MIN_SNAPSHOT_INTERVAL_MS of 1 hour.
+ * Maximum snapshots per day, derived from MIN_SNAPSHOT_INTERVAL_MS.
  * Used to over-fetch from getSnapshotHistory so day-deduplication
  * covers the full window even when multiple snapshots exist per day.
+ * Derived rather than hardcoded so changes to the interval policy
+ * automatically adjust the fetch multiplier.
  */
-const MAX_SNAPSHOTS_PER_DAY = 24
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const MAX_SNAPSHOTS_PER_DAY = Math.ceil(MS_PER_DAY / MIN_SNAPSHOT_INTERVAL_MS)
 
 /**
  * Fetch the last N *daily* snapshots for each repository in a portfolio.
