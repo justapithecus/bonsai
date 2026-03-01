@@ -176,6 +176,41 @@ export interface MotionDriftObservation {
   description: string // single observational sentence
 }
 
+export interface PersistenceAssessment {
+  alignedCount: number
+  divergentCount: number
+  orthogonalCount: number
+  undeterminedCount: number
+  totalSnapshots: number
+  persistentlyAligned: boolean
+  persistentlyDivergent: boolean
+}
+
+/** Individual repo persistence context for trigger evaluation */
+export interface RepoPersistenceContext {
+  fullName: string
+  stratum: Stratum | undefined
+  persistence: PersistenceAssessment
+  /** The divergent season, if persistently divergent. Needed for §5.3 coherence check. */
+  divergentSeason?: Season
+}
+
+/** §5 trigger evaluation result */
+export interface EcosystemTriggerResult {
+  /** §5.1 — Set A repos that are persistently divergent */
+  coreDivergence: RepoPersistenceContext[]
+  /** §5.2 — true if Set A has both persistently aligned and persistently divergent repos */
+  coreSplit: boolean
+  /** §5.3 — Set B repos that are persistently divergent in the same direction */
+  longArcDrift: {
+    repos: RepoPersistenceContext[]
+    /** The shared divergent season, if coherent */
+    coherentSeason?: Season
+  }
+  /** Whether any trigger fired */
+  triggered: boolean
+}
+
 // Classified repository
 export interface RepositoryEcology {
   fullName: string

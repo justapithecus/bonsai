@@ -1,23 +1,15 @@
-import type { Climate, ClimateRelation, Phase } from './types'
+import type { Climate, ClimateRelation, PersistenceAssessment, Phase } from './types'
 import { PHASES } from './types'
 import { deriveClimateRelation } from './ecosystem-balance'
 import { deriveSeason } from './season'
+
+export type { PersistenceAssessment } from './types'
 
 // §4.1 — 14 daily snapshots
 export const PERSISTENCE_WINDOW_SIZE = 14
 
 // §4.2/§4.3 — 9 of 14 establishes consistency
 export const PERSISTENCE_THRESHOLD = 9
-
-export interface PersistenceAssessment {
-  alignedCount: number
-  divergentCount: number
-  orthogonalCount: number
-  undeterminedCount: number
-  totalSnapshots: number
-  persistentlyAligned: boolean
-  persistentlyDivergent: boolean
-}
 
 /**
  * §1.3 — Derive ClimateRelation from a snapshot's stored phase string and the declared climate.

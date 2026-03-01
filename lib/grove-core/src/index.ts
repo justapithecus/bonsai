@@ -16,7 +16,6 @@ export {
   PERSISTENCE_THRESHOLD,
   PERSISTENCE_WINDOW_SIZE,
 } from './persistence'
-export type { PersistenceAssessment } from './persistence'
 export { observePhaseDuration, suggestsReaffirmation } from './phase-duration'
 export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
@@ -28,6 +27,10 @@ export {
 export { groveYamlSchema } from './schema'
 export { deriveSeason } from './season'
 export { observeClimateTension } from './tension'
+export {
+  buildRepoPersistenceContext,
+  evaluateEcosystemTriggers,
+} from './triggers'
 export type {
   Climate,
   ClimateRelation,
@@ -37,14 +40,17 @@ export type {
   DensityObservation,
   DensityTier,
   DormancyMode,
+  EcosystemTriggerResult,
   GroveDeclaration,
   Horizon,
   MotionDriftObservation,
+  PersistenceAssessment,
   Phase,
   PhaseDurationObservation,
   Portfolio,
   ProposalBasis,
   ReferenceSnapshot,
+  RepoPersistenceContext,
   RepositoryEcology,
   Ritual,
   RitualInvitation,
