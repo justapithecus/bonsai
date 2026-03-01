@@ -6,7 +6,8 @@ import type {
   RepositoryEcology,
   Season,
 } from './types'
-import { classifyRepository } from './ecosystem-balance'
+import { classifyRepository, deriveClimateRelation } from './ecosystem-balance'
+import { PERSISTENCE_WINDOW_SIZE } from './persistence'
 
 /**
  * Build a RepoPersistenceContext from a repository, its persistence assessment,
@@ -15,17 +16,26 @@ import { classifyRepository } from './ecosystem-balance'
  * Returns undefined if the repo is unclassified (missing horizon or role).
  * Seasonal repos return a context with stratum = undefined — observed but
  * non-triggering per §3.
+ *
+ * divergentSeason is only set when persistence flags divergent AND the repo's
+ * current season actually diverges from the declared climate. This prevents
+ * stale or inconsistent persistence data from producing false direction claims.
  */
 export function buildRepoPersistenceContext(
   repo: RepositoryEcology,
   persistence: PersistenceAssessment,
-  _climate: Climate,
+  climate: Climate,
 ): RepoPersistenceContext | undefined {
   const classification = classifyRepository(repo)
   if (!classification) return undefined
 
-  const divergentSeason: Season | undefined =
-    persistence.persistentlyDivergent ? repo.season?.season : undefined
+  let divergentSeason: Season | undefined
+  if (persistence.persistentlyDivergent && repo.season) {
+    const relation = deriveClimateRelation(repo.season.season, climate)
+    if (relation === 'divergent') {
+      divergentSeason = repo.season.season
+    }
+  }
 
   return {
     fullName: repo.fullName,
@@ -49,11 +59,19 @@ export function buildRepoPersistenceContext(
 export function evaluateEcosystemTriggers(
   contexts: RepoPersistenceContext[],
 ): EcosystemTriggerResult {
+  // Defense-in-depth: only contexts with a complete persistence window
+  // participate in trigger evaluation. Incomplete windows should never
+  // have persistentlyAligned/Divergent set (assessPersistence guards this),
+  // but we enforce it here to prevent malformed contexts from triggering.
+  const valid = contexts.filter(
+    (ctx) => ctx.persistence.totalSnapshots >= PERSISTENCE_WINDOW_SIZE,
+  )
+
   // Partition by stratum
   const setA: RepoPersistenceContext[] = []
   const setB: RepoPersistenceContext[] = []
 
-  for (const ctx of contexts) {
+  for (const ctx of valid) {
     if (ctx.stratum === 'structural_core') setA.push(ctx)
     else if (ctx.stratum === 'long_arc_domain') setB.push(ctx)
     // ephemeral_field (Set C) and undefined (seasonal) — collected but non-triggering
@@ -88,7 +106,8 @@ export function evaluateEcosystemTriggers(
  *
  * Filters for persistently divergent repos, then checks if ≥2 share the same
  * divergent season (directional coherence). When multiple seasons have ≥2 repos,
- * takes the largest coherent group.
+ * takes the largest coherent group. Ties are broken alphabetically by season
+ * name for deterministic output regardless of input ordering.
  */
 function evaluateLongArcDrift(setB: RepoPersistenceContext[]): {
   repos: RepoPersistenceContext[]
@@ -112,12 +131,19 @@ function evaluateLongArcDrift(setB: RepoPersistenceContext[]): {
     }
   }
 
-  // Find the largest coherent group with ≥2 repos
+  // Find the largest coherent group with ≥2 repos.
+  // Ties broken alphabetically by season for deterministic output.
   let bestGroup: RepoPersistenceContext[] = []
   let bestSeason: Season | undefined
 
   for (const [season, group] of byDirection) {
-    if (group.length >= 2 && group.length > bestGroup.length) {
+    if (
+      group.length >= 2 &&
+      (group.length > bestGroup.length ||
+        (group.length === bestGroup.length &&
+          bestSeason !== undefined &&
+          season < bestSeason))
+    ) {
       bestGroup = group
       bestSeason = season
     }

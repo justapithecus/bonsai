@@ -164,7 +164,7 @@ describe('buildRepoPersistenceContext', () => {
     expect(result!.stratum).toBeUndefined()
   })
 
-  it('sets divergentSeason from repo.season when persistently divergent', () => {
+  it('sets divergentSeason when persistently divergent and season diverges from climate', () => {
     const repo = makeRepo('org/drift', {
       horizon: 'perennial',
       role: 'application',
@@ -174,6 +174,7 @@ describe('buildRepoPersistenceContext', () => {
       persistentlyDivergent: true,
       divergentCount: 12,
     })
+    // expansion season vs dormancy climate → divergent relation
     const result = buildRepoPersistenceContext(repo, persistence, 'dormancy')
 
     expect(result).toBeDefined()
@@ -188,6 +189,41 @@ describe('buildRepoPersistenceContext', () => {
     })
     const persistence = makePersistence({ persistentlyAligned: false })
     const result = buildRepoPersistenceContext(repo, persistence, 'expansion')
+
+    expect(result).toBeDefined()
+    expect(result!.divergentSeason).toBeUndefined()
+  })
+
+  it('does not set divergentSeason when persistently divergent but season is aligned with climate', () => {
+    // Stale/inconsistent persistence flag — season is expansion, climate is expansion (aligned),
+    // but persistence claims divergent. divergentSeason should not be set.
+    const repo = makeRepo('org/stale', {
+      horizon: 'perennial',
+      role: 'application',
+      phase: 'expanding',
+    })
+    const persistence = makePersistence({
+      persistentlyDivergent: true,
+      divergentCount: 10,
+    })
+    const result = buildRepoPersistenceContext(repo, persistence, 'expansion')
+
+    expect(result).toBeDefined()
+    expect(result!.divergentSeason).toBeUndefined()
+  })
+
+  it('does not set divergentSeason when persistently divergent but season is orthogonal to climate', () => {
+    // expansion season vs consolidation climate → orthogonal, not divergent
+    const repo = makeRepo('org/ortho', {
+      horizon: 'perennial',
+      role: 'application',
+      phase: 'expanding',
+    })
+    const persistence = makePersistence({
+      persistentlyDivergent: true,
+      divergentCount: 10,
+    })
+    const result = buildRepoPersistenceContext(repo, persistence, 'consolidation')
 
     expect(result).toBeDefined()
     expect(result!.divergentSeason).toBeUndefined()
@@ -328,6 +364,31 @@ describe('evaluateEcosystemTriggers — §5.3 Long-Arc Drift', () => {
     expect(result.longArcDrift.repos).toHaveLength(0)
   })
 
+  it('equal-size tied groups → deterministic tie-break by alphabetical season', () => {
+    // 2 repos diverging toward "dormancy", 2 toward "expansion"
+    // Alphabetically: "dormancy" < "expansion", so dormancy group wins
+    const b1 = makeContext('org/app1', 'long_arc_domain', {
+      persistentlyDivergent: true,
+    }, 'expansion')
+    const b2 = makeContext('org/app2', 'long_arc_domain', {
+      persistentlyDivergent: true,
+    }, 'expansion')
+    const b3 = makeContext('org/app3', 'long_arc_domain', {
+      persistentlyDivergent: true,
+    }, 'dormancy')
+    const b4 = makeContext('org/app4', 'long_arc_domain', {
+      persistentlyDivergent: true,
+    }, 'dormancy')
+    const result = evaluateEcosystemTriggers([b1, b2, b3, b4])
+
+    expect(result.longArcDrift.repos).toHaveLength(2)
+    expect(result.longArcDrift.coherentSeason).toBe('dormancy')
+    expect(result.longArcDrift.repos.map((r) => r.fullName)).toEqual([
+      'org/app3',
+      'org/app4',
+    ])
+  })
+
   it('3 Set B repos: 2 share season, 1 differs → triggered with the 2 coherent repos', () => {
     const b1 = makeContext('org/app1', 'long_arc_domain', {
       persistentlyDivergent: true,
@@ -403,6 +464,47 @@ describe('evaluateEcosystemTriggers — strata exclusion', () => {
 
     expect(result.coreDivergence).toHaveLength(0)
     expect(result.coreSplit).toBe(false)
+    expect(result.longArcDrift.repos).toHaveLength(0)
+    expect(result.triggered).toBe(false)
+  })
+
+  it('incomplete window (totalSnapshots < 14) does not trigger even with divergent flag', () => {
+    const ctx = makeContext('org/core', 'structural_core', {
+      persistentlyDivergent: true,
+      divergentCount: 5,
+      totalSnapshots: 5,
+    }, 'expansion')
+    const result = evaluateEcosystemTriggers([ctx])
+
+    expect(result.coreDivergence).toHaveLength(0)
+    expect(result.triggered).toBe(false)
+  })
+
+  it('incomplete window does not contribute to §5.2 split', () => {
+    const aligned = makeContext('org/core-a', 'structural_core', {
+      persistentlyAligned: true,
+      alignedCount: 14,
+    })
+    const incomplete = makeContext('org/core-b', 'structural_core', {
+      persistentlyDivergent: true,
+      totalSnapshots: 7,
+    }, 'expansion')
+    const result = evaluateEcosystemTriggers([aligned, incomplete])
+
+    expect(result.coreSplit).toBe(false)
+  })
+
+  it('incomplete window does not contribute to §5.3 drift', () => {
+    const b1 = makeContext('org/app1', 'long_arc_domain', {
+      persistentlyDivergent: true,
+      totalSnapshots: 10,
+    }, 'expansion')
+    const b2 = makeContext('org/app2', 'long_arc_domain', {
+      persistentlyDivergent: true,
+      totalSnapshots: 10,
+    }, 'expansion')
+    const result = evaluateEcosystemTriggers([b1, b2])
+
     expect(result.longArcDrift.repos).toHaveLength(0)
     expect(result.triggered).toBe(false)
   })
