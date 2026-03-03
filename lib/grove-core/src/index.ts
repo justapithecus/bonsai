@@ -21,8 +21,9 @@ export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
 export type { ParseResult } from './parser'
 export {
-  surfaceEcosystemInvitations,
+  formatRepoList,
   surfaceRitualInvitations,
+  surfaceTriggeredEcosystemInvitations,
 } from './rituals'
 export { groveYamlSchema } from './schema'
 export { deriveSeason } from './season'

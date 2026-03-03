@@ -1,5 +1,5 @@
 import type { Climate } from '@grove/core'
-import { surfaceEcosystemInvitations } from '@grove/core'
+import { surfaceTriggeredEcosystemInvitations } from '@grove/core'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 
@@ -35,12 +35,20 @@ function PortfolioPage() {
     portfolio.repositories,
   )
 
-  // Derive ecosystem invitations from current climate state so they
-  // stay consistent after an inline climate declaration change.
-  const ecosystemInvitations = useMemo(
-    () => surfaceEcosystemInvitations(climate, portfolio.repositories),
-    [climate, portfolio.repositories],
-  )
+  // Ecosystem balance invitations are derived exclusively from the
+  // persistence-based trigger pipeline (§4/§5). No heuristic fallback —
+  // §7 prohibits quantitative framing in ecosystem balance outputs.
+  // When triggers are undefined (no climate, no classified repos, or
+  // insufficient snapshot history), no ecosystem balance invitations
+  // are surfaced. When the steward changes climate client-side, trigger
+  // data is stale — no invitations until next page load.
+  const ecosystemInvitations = useMemo(() => {
+    const triggers = portfolio.ecosystemTriggers
+    if (triggers && climate === portfolio.climate && climate) {
+      return surfaceTriggeredEcosystemInvitations(triggers, climate)
+    }
+    return []
+  }, [climate, portfolio.climate, portfolio.ecosystemTriggers])
 
   if (!session.authenticated) {
     return (
@@ -112,9 +120,9 @@ function PortfolioPage() {
               Ritual Invitations
             </h3>
             <div className="space-y-3">
-              {ecosystemInvitations.map((invitation) => (
+              {ecosystemInvitations.map((invitation, index) => (
                 <RitualInvitation
-                  key={invitation.ritual}
+                  key={`${invitation.ritual}-${index}`}
                   invitation={invitation}
                 />
               ))}

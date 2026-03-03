@@ -1,5 +1,6 @@
 import type {
   DensityObservation,
+  EcosystemTriggerResult,
   Portfolio,
   RepositoryEcology,
   StructuralSignals,
@@ -21,6 +22,7 @@ import {
   recordSnapshotBatch,
   upsertRepositories,
 } from './db'
+import { evaluatePortfolioEcosystemTriggers } from './ecosystem-triggers'
 import { getStewardIdentity, isConfigured } from './identity'
 
 const BATCH_SIZE = 10
@@ -31,7 +33,9 @@ const BATCH_SIZE = 10
  * classified repos with structural signals and density.
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<Portfolio> => {
+  async (): Promise<
+    Portfolio & { ecosystemTriggers?: EcosystemTriggerResult }
+  > => {
     if (!isConfigured()) {
       return { repositories: [], unclassified: [] }
     }
@@ -143,10 +147,17 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       )
     }
 
+    const climate = getCurrentClimate(identity.id)
+    const ecosystemTriggers = evaluatePortfolioEcosystemTriggers(
+      climate,
+      repositories,
+    )
+
     return {
       repositories,
       unclassified,
-      climate: getCurrentClimate(identity.id),
+      climate,
+      ecosystemTriggers,
     }
   },
 )
