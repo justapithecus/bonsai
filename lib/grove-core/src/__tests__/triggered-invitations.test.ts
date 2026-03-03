@@ -114,6 +114,32 @@ describe('surfaceTriggeredEcosystemInvitations', () => {
     expect(result[0]!.observation).toContain('observation window')
   })
 
+  // §5.1 — single repo, undefined divergentSeason
+  it('§5.1 single repo without divergentSeason: uses season-agnostic phrasing', () => {
+    const ctx = makeContext(
+      'org/core',
+      'structural_core',
+      { persistentlyDivergent: true, divergentCount: 12 },
+      // no divergentSeason — can happen when current season is orthogonal
+    )
+    const result = surfaceTriggeredEcosystemInvitations(
+      {
+        coreDivergence: [ctx],
+        coreSplit: false,
+        longArcDrift: { repos: [] },
+        triggered: true,
+      },
+      'dormancy',
+    )
+
+    expect(result).toHaveLength(1)
+    expect(result[0]!.observation).toContain('org/core')
+    expect(result[0]!.observation).toContain('dormancy')
+    expect(result[0]!.observation).toContain('persistently diverged')
+    // Must not interpolate "undefined" as text
+    expect(result[0]!.observation).not.toContain('undefined')
+  })
+
   // §5.1 — multiple repos
   it('§5.1 multiple repos: lists all repo names', () => {
     const ctx1 = makeContext(

@@ -43,9 +43,13 @@ function PortfolioPage() {
   // Triggers were evaluated server-side against portfolio.climate.
   // If the steward changed climate client-side, triggers are stale —
   // fall back to the pre-persistence heuristic until next page load.
+  // When ecosystemTriggers is undefined (no climate, no classified repos,
+  // or insufficient snapshot history), the heuristic is the only source.
+  // When defined, the trigger result is authoritative — even triggered: false
+  // means "pipeline ran, no triggers" (i.e., no invitations).
   const ecosystemInvitations = useMemo(() => {
     const triggers = portfolio.ecosystemTriggers
-    if (triggers?.triggered && climate === portfolio.climate && climate) {
+    if (triggers && climate === portfolio.climate && climate) {
       return surfaceTriggeredEcosystemInvitations(triggers, climate)
     }
     return surfaceEcosystemInvitations(climate, portfolio.repositories)

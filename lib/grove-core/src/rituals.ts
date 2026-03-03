@@ -171,10 +171,15 @@ export function surfaceTriggeredEcosystemInvitations(
     const names = result.coreDivergence.map((ctx) => ctx.fullName)
     const season = result.coreDivergence[0]?.divergentSeason
 
-    if (names.length === 1) {
+    if (names.length === 1 && season) {
       invitations.push({
         ritual: 'ecosystem_balance',
         observation: `${names[0]} in the structural core has maintained a ${season} season over the observation window, diverging from the declared ${climate} climate.`,
+      })
+    } else if (names.length === 1) {
+      invitations.push({
+        ritual: 'ecosystem_balance',
+        observation: `${names[0]} in the structural core has persistently diverged from the declared ${climate} climate over the observation window.`,
       })
     } else {
       invitations.push({

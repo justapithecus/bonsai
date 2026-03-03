@@ -8,6 +8,7 @@ import {
   buildRepoPersistenceContext,
   deriveSnapshotRelation,
   evaluateEcosystemTriggers,
+  PERSISTENCE_WINDOW_SIZE,
 } from '@grove/core'
 
 import { getPortfolioSnapshotWindow } from './db'
@@ -15,11 +16,14 @@ import { getPortfolioSnapshotWindow } from './db'
 /**
  * Orchestrate the full snapshot → trigger pipeline for a portfolio.
  *
- * Returns undefined when triggers cannot be evaluated (no declared climate,
- * no classified repos). When snapshot history is insufficient (<14 daily
- * snapshots per repo), assessPersistence never sets persistent flags and
- * triggers return { triggered: false } — the caller falls back to the
- * pre-persistence heuristic.
+ * Returns undefined when triggers cannot be meaningfully evaluated:
+ * - No declared climate (§5 requires it)
+ * - No classified repos
+ * - No repo has a complete persistence window (insufficient snapshot history)
+ *
+ * When undefined is returned, the caller falls back to the pre-persistence
+ * heuristic. A defined result (even with triggered: false) means the pipeline
+ * ran with sufficient data and its outcome is authoritative.
  */
 export function evaluatePortfolioEcosystemTriggers(
   climate: Climate | undefined,
@@ -53,6 +57,15 @@ export function evaluatePortfolioEcosystemTriggers(
       return buildRepoPersistenceContext(repo, persistence, climate)
     })
     .filter((ctx): ctx is NonNullable<typeof ctx> => ctx !== undefined)
+
+  // If no repo has a complete persistence window, the pipeline cannot
+  // produce meaningful results. Return undefined so the caller falls
+  // back to the pre-persistence heuristic (graceful degradation for
+  // the first 14 days after deployment).
+  const hasSufficientData = contexts.some(
+    (ctx) => ctx.persistence.totalSnapshots >= PERSISTENCE_WINDOW_SIZE,
+  )
+  if (!hasSufficientData) return undefined
 
   return evaluateEcosystemTriggers(contexts)
 }
