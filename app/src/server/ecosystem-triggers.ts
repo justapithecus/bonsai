@@ -11,6 +11,7 @@ import {
   PERSISTENCE_WINDOW_SIZE,
 } from '@grove/core'
 
+import type { GroveDb } from './db'
 import { getPortfolioSnapshotWindow } from './db'
 
 /**
@@ -21,13 +22,14 @@ import { getPortfolioSnapshotWindow } from './db'
  * - No classified repos
  * - No repo has a complete persistence window (insufficient snapshot history)
  *
- * When undefined is returned, the caller falls back to the pre-persistence
- * heuristic. A defined result (even with triggered: false) means the pipeline
- * ran with sufficient data and its outcome is authoritative.
+ * A defined result (even with triggered: false) means the pipeline
+ * ran with sufficient data and its outcome is authoritative — no
+ * fallback to heuristic paths.
  */
 export function evaluatePortfolioEcosystemTriggers(
   climate: Climate | undefined,
   repositories: RepositoryEcology[],
+  db?: GroveDb,
 ): EcosystemTriggerResult | undefined {
   // §5 requires declared climate
   if (!climate) return undefined
@@ -39,7 +41,9 @@ export function evaluatePortfolioEcosystemTriggers(
   const classifiedNames = classified.map((r) => r.fullName)
 
   // Fetch 14-day snapshot windows from SQLite (sync — better-sqlite3)
-  const snapshotWindows = getPortfolioSnapshotWindow(classifiedNames)
+  const snapshotWindows = db
+    ? getPortfolioSnapshotWindow(classifiedNames, 14, db)
+    : getPortfolioSnapshotWindow(classifiedNames)
 
   // Build persistence contexts for each repo
   const repoByName = new Map(classified.map((r) => [r.fullName, r]))
@@ -59,9 +63,8 @@ export function evaluatePortfolioEcosystemTriggers(
     .filter((ctx): ctx is NonNullable<typeof ctx> => ctx !== undefined)
 
   // If no repo has a complete persistence window, the pipeline cannot
-  // produce meaningful results. Return undefined so the caller falls
-  // back to the pre-persistence heuristic (graceful degradation for
-  // the first 14 days after deployment).
+  // produce meaningful results. Return undefined — the caller surfaces
+  // no ecosystem balance invitations (§7 prohibits heuristic fallback).
   const hasSufficientData = contexts.some(
     (ctx) => ctx.persistence.totalSnapshots >= PERSISTENCE_WINDOW_SIZE,
   )

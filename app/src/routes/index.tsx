@@ -1,8 +1,5 @@
 import type { Climate } from '@grove/core'
-import {
-  surfaceEcosystemInvitations,
-  surfaceTriggeredEcosystemInvitations,
-} from '@grove/core'
+import { surfaceTriggeredEcosystemInvitations } from '@grove/core'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 
@@ -38,22 +35,20 @@ function PortfolioPage() {
     portfolio.repositories,
   )
 
-  // Derive ecosystem invitations from current climate state so they
-  // stay consistent after an inline climate declaration change.
-  // Triggers were evaluated server-side against portfolio.climate.
-  // If the steward changed climate client-side, triggers are stale —
-  // fall back to the pre-persistence heuristic until next page load.
-  // When ecosystemTriggers is undefined (no climate, no classified repos,
-  // or insufficient snapshot history), the heuristic is the only source.
-  // When defined, the trigger result is authoritative — even triggered: false
-  // means "pipeline ran, no triggers" (i.e., no invitations).
+  // Ecosystem balance invitations are derived exclusively from the
+  // persistence-based trigger pipeline (§4/§5). No heuristic fallback —
+  // §7 prohibits quantitative framing in ecosystem balance outputs.
+  // When triggers are undefined (no climate, no classified repos, or
+  // insufficient snapshot history), no ecosystem balance invitations
+  // are surfaced. When the steward changes climate client-side, trigger
+  // data is stale — no invitations until next page load.
   const ecosystemInvitations = useMemo(() => {
     const triggers = portfolio.ecosystemTriggers
     if (triggers && climate === portfolio.climate && climate) {
       return surfaceTriggeredEcosystemInvitations(triggers, climate)
     }
-    return surfaceEcosystemInvitations(climate, portfolio.repositories)
-  }, [climate, portfolio.climate, portfolio.repositories, portfolio.ecosystemTriggers])
+    return []
+  }, [climate, portfolio.climate, portfolio.ecosystemTriggers])
 
   if (!session.authenticated) {
     return (
