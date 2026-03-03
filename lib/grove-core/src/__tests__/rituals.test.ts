@@ -1,14 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  surfaceEcosystemInvitations,
-  surfaceRitualInvitations,
-} from '../rituals'
+import { surfaceRitualInvitations } from '../rituals'
 import type {
   ConsolidationObservation,
   GroveDeclaration,
   PhaseDurationObservation,
-  RepositoryEcology,
 } from '../types'
 
 // Forbidden vocabulary per CLAUDE.md
@@ -166,123 +162,5 @@ describe('surfaceRitualInvitations', () => {
     expect(result.some((r) => r.ritual === 'stewardship_reaffirmation')).toBe(
       false,
     )
-  })
-})
-
-describe('surfaceEcosystemInvitations', () => {
-  const makeRepo = (
-    fullName: string,
-    season?: string,
-  ): RepositoryEcology => ({
-    fullName,
-    htmlUrl: `https://github.com/${fullName}`,
-    classified: season !== undefined,
-    season: season
-      ? {
-          season: season as 'expansion' | 'consolidation' | 'pruning' | 'dormancy',
-          sourcePhase: 'expanding',
-        }
-      : undefined,
-  })
-
-  it('returns empty when no climate declared', () => {
-    const repos = [makeRepo('a/b', 'expansion')]
-    const result = surfaceEcosystemInvitations(undefined, repos)
-    expect(result).toHaveLength(0)
-  })
-
-  it('returns empty when all repos match climate', () => {
-    const repos = [
-      makeRepo('a/b', 'consolidation'),
-      makeRepo('c/d', 'consolidation'),
-    ]
-    const result = surfaceEcosystemInvitations('consolidation', repos)
-    expect(result).toHaveLength(0)
-  })
-
-  it('returns empty when tension is below 50%', () => {
-    const repos = [
-      makeRepo('a/b', 'consolidation'),
-      makeRepo('c/d', 'consolidation'),
-      makeRepo('e/f', 'expansion'), // 1 of 3 = 33%
-    ]
-    const result = surfaceEcosystemInvitations('consolidation', repos)
-    expect(result).toHaveLength(0)
-  })
-
-  it('surfaces ecosystem balance when tension >= 50%', () => {
-    const repos = [
-      makeRepo('a/b', 'expansion'),
-      makeRepo('c/d', 'expansion'),
-      makeRepo('e/f', 'consolidation'),
-      makeRepo('g/h', 'pruning'),
-    ]
-    // 3 of 4 diverge from 'dormancy'
-    const result = surfaceEcosystemInvitations('dormancy', repos)
-    expect(result).toHaveLength(1)
-    expect(result[0].ritual).toBe('ecosystem_balance')
-    assertObservationalLanguage(result[0].observation)
-  })
-
-  it('ignores repos without derived season', () => {
-    const repos = [
-      makeRepo('a/b', undefined), // unclassified
-      makeRepo('c/d', 'expansion'),
-    ]
-    // 1 of 1 classified diverges = 100%
-    const result = surfaceEcosystemInvitations('dormancy', repos)
-    expect(result).toHaveLength(1)
-  })
-
-  it('returns empty when no classified repos exist', () => {
-    const repos = [makeRepo('a/b'), makeRepo('c/d')]
-    const result = surfaceEcosystemInvitations('expansion', repos)
-    expect(result).toHaveLength(0)
-  })
-
-  it('uses dominant-season message when single non-climate season >= 60%', () => {
-    // 3 of 5 are expansion (60%), climate is dormancy
-    // Tension is 4/5 = 80% >= 50%, so ecosystem balance fires.
-    // Dominant: expansion at 3/5 = 60% — uses specific message.
-    const repos = [
-      makeRepo('a/1', 'expansion'),
-      makeRepo('a/2', 'expansion'),
-      makeRepo('a/3', 'expansion'),
-      makeRepo('a/4', 'consolidation'),
-      makeRepo('a/5', 'dormancy'),
-    ]
-    const result = surfaceEcosystemInvitations('dormancy', repos)
-    expect(result).toHaveLength(1)
-    expect(result[0].observation).toContain('share a expansion season')
-    expect(result[0].observation).toContain('declared climate of dormancy')
-    assertObservationalLanguage(result[0].observation)
-  })
-
-  it('uses generic tension message when no single season >= 60%', () => {
-    // 2 expansion + 2 consolidation + 1 dormancy. Climate = dormancy.
-    // Tension = 4/5 = 80% >= 50%. But no non-climate season >= 60%.
-    const repos = [
-      makeRepo('a/1', 'expansion'),
-      makeRepo('a/2', 'expansion'),
-      makeRepo('a/3', 'consolidation'),
-      makeRepo('a/4', 'consolidation'),
-      makeRepo('a/5', 'dormancy'),
-    ]
-    const result = surfaceEcosystemInvitations('dormancy', repos)
-    expect(result).toHaveLength(1)
-    expect(result[0].observation).toContain('diverges from the declared climate')
-    assertObservationalLanguage(result[0].observation)
-  })
-
-  it('emits only one invitation even with dominant season', () => {
-    // 3/4 = 75% tension AND 3/4 = 75% dominant expansion
-    const repos = [
-      makeRepo('a/1', 'expansion'),
-      makeRepo('a/2', 'expansion'),
-      makeRepo('a/3', 'expansion'),
-      makeRepo('a/4', 'dormancy'),
-    ]
-    const result = surfaceEcosystemInvitations('dormancy', repos)
-    expect(result).toHaveLength(1)
   })
 })

@@ -22,7 +22,6 @@ export { parseGroveYaml } from './parser'
 export type { ParseResult } from './parser'
 export {
   formatRepoList,
-  surfaceEcosystemInvitations,
   surfaceRitualInvitations,
   surfaceTriggeredEcosystemInvitations,
 } from './rituals'
