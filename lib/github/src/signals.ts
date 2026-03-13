@@ -65,6 +65,12 @@ export async function fetchStructuralSignals(
     commitsLast90d: commits?.commitsLast90d,
     dependencyManifestsObserved: tree?.manifests,
     ecosystemDependencyCount,
+    readmePresent: tree?.readmePresent,
+    contributingPresent: tree?.contributingPresent,
+    licensePresent: tree?.licensePresent,
+    docsDirectoryPresent: tree?.docsDirectoryPresent,
+    ciConfigPresent: tree?.ciConfigPresent,
+    testDirectoryPresent: tree?.testDirectoryPresent,
     observedAt,
   }
 }
@@ -73,6 +79,12 @@ interface TreeSignals {
   fileCount: number | undefined
   manifests: string[]
   hasRootPackageJson: boolean
+  readmePresent: boolean
+  contributingPresent: boolean
+  licensePresent: boolean
+  docsDirectoryPresent: boolean
+  ciConfigPresent: boolean
+  testDirectoryPresent: boolean
 }
 
 async function fetchTreeSignals(
@@ -100,6 +112,12 @@ async function fetchTreeSignals(
   let fileCount = 0
   const manifests: string[] = []
   let hasRootPackageJson = false
+  let readmePresent = false
+  let contributingPresent = false
+  let licensePresent = false
+  let docsDirectoryPresent = false
+  let ciConfigPresent = false
+  let testDirectoryPresent = false
 
   for (const entry of tree) {
     if (entry.type === 'blob') {
@@ -116,6 +134,43 @@ async function fetchTreeSignals(
           hasRootPackageJson = true
         }
       }
+
+      // Documentation artifacts (root-level, case-insensitive)
+      if (fileName) {
+        const lower = fileName.toLowerCase()
+        if (lower.startsWith('readme')) readmePresent = true
+        if (lower.startsWith('contributing')) contributingPresent = true
+        if (lower.startsWith('license') || lower === 'licence' || lower === 'licence.md') {
+          licensePresent = true
+        }
+      }
+
+      // CI config files (any depth)
+      const path = entry.path.toLowerCase()
+      if (
+        path.startsWith('.github/workflows/') ||
+        path === '.gitlab-ci.yml' ||
+        path === '.travis.yml' ||
+        path === 'jenkinsfile' ||
+        path === '.circleci/config.yml'
+      ) {
+        ciConfigPresent = true
+      }
+    }
+
+    // Directory-level checks (trees + blobs under known paths)
+    const topDir = entry.path.split('/')[0]?.toLowerCase()
+    if (topDir === 'docs' || topDir === 'doc' || topDir === 'documentation') {
+      docsDirectoryPresent = true
+    }
+    if (
+      topDir === 'test' ||
+      topDir === 'tests' ||
+      topDir === '__tests__' ||
+      topDir === 'spec' ||
+      topDir === 'specs'
+    ) {
+      testDirectoryPresent = true
     }
   }
 
@@ -123,6 +178,12 @@ async function fetchTreeSignals(
     fileCount: truncated ? undefined : fileCount,
     manifests,
     hasRootPackageJson,
+    readmePresent,
+    contributingPresent,
+    licensePresent,
+    docsDirectoryPresent,
+    ciConfigPresent,
+    testDirectoryPresent,
   }
 }
 
