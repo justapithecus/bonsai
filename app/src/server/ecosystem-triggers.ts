@@ -126,11 +126,10 @@ export function evaluatePortfolioProposals(
     // Not enough history for escalation — check existing proposal for withdrawal
     const currentTriggers = evaluatePortfolioEcosystemTriggers(climate, repositories, db)
     if (currentTriggers) {
-      handleProposalWithdrawal(currentTriggers, resolvedDb)
+      handleProposalWithdrawal(currentTriggers, stewardId, resolvedDb)
     }
-    return getActiveProposal(resolvedDb)?.climate
-      ? toClimateProposal(getActiveProposal(resolvedDb)!)
-      : undefined
+    const existing = getActiveProposal(stewardId, resolvedDb)
+    return existing ? toClimateProposal(existing) : undefined
   }
 
   const repoByName = new Map(classified.map((r) => [r.fullName, r]))
@@ -174,19 +173,18 @@ export function evaluatePortfolioProposals(
   )
 
   if (!currentHasData || !priorHasData) {
-    return getActiveProposal(resolvedDb)?.climate
-      ? toClimateProposal(getActiveProposal(resolvedDb)!)
-      : undefined
+    const existing = getActiveProposal(stewardId, resolvedDb)
+    return existing ? toClimateProposal(existing) : undefined
   }
 
   const currentTriggers = evaluateEcosystemTriggers(currentContexts)
   const priorTriggers = evaluateEcosystemTriggers(priorContexts)
 
   // Handle existing proposal lifecycle
-  handleProposalWithdrawal(currentTriggers, resolvedDb)
+  handleProposalWithdrawal(currentTriggers, stewardId, resolvedDb)
 
   // Check if there's already an active proposal
-  const existing = getActiveProposal(resolvedDb)
+  const existing = getActiveProposal(stewardId, resolvedDb)
   if (existing) return toClimateProposal(existing)
 
   // Check §2.3 constraints
@@ -215,14 +213,15 @@ export function evaluatePortfolioProposals(
  */
 function handleProposalWithdrawal(
   currentTriggers: EcosystemTriggerResult,
+  stewardId: number,
   db?: GroveDb,
 ) {
-  const active = getActiveProposal(db)
+  const active = getActiveProposal(stewardId, db)
   if (!active) return
 
   const proposal = toClimateProposal(active)
   if (shouldWithdrawProposal(proposal, currentTriggers)) {
-    withdrawActiveProposal(db)
+    withdrawActiveProposal(stewardId, db)
   }
 }
 

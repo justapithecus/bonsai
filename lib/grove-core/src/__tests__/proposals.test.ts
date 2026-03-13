@@ -225,6 +225,73 @@ describe('evaluateClimateProposal', () => {
     ).toBeUndefined()
   })
 
+  it('returns undefined when core divergence direction changed between windows', () => {
+    const currentCtx = makePersistenceContext('org/core', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    const priorCtx = makePersistenceContext('org/core', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'pruning',
+    })
+    const currentTriggers = makeTriggered({ coreDivergence: [currentCtx] })
+    const priorTriggers = makeTriggered({ coreDivergence: [priorCtx] })
+
+    expect(
+      evaluateClimateProposal(currentTriggers, priorTriggers, VALID_CONSTRAINTS),
+    ).toBeUndefined()
+  })
+
+  it('returns undefined when long-arc drift direction changed between windows', () => {
+    const currentCtx = makePersistenceContext('org/app1', {
+      stratum: 'long_arc_domain',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    const priorCtx = makePersistenceContext('org/app1', {
+      stratum: 'long_arc_domain',
+      persistentlyDivergent: true,
+      divergentSeason: 'dormancy',
+    })
+    const currentTriggers = makeTriggered({
+      longArcDrift: { repos: [currentCtx, currentCtx], coherentSeason: 'expansion' },
+    })
+    const priorTriggers = makeTriggered({
+      longArcDrift: { repos: [priorCtx, priorCtx], coherentSeason: 'dormancy' },
+    })
+
+    expect(
+      evaluateClimateProposal(currentTriggers, priorTriggers, VALID_CONSTRAINTS),
+    ).toBeUndefined()
+  })
+
+  it('returns undefined when prior window core divergence has no coherent season', () => {
+    const currentCtx = makePersistenceContext('org/core', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    const priorCtx1 = makePersistenceContext('org/core', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    const priorCtx2 = makePersistenceContext('org/core2', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'pruning',
+    })
+    const currentTriggers = makeTriggered({ coreDivergence: [currentCtx] })
+    const priorTriggers = makeTriggered({ coreDivergence: [priorCtx1, priorCtx2] })
+
+    // Prior window has mixed directions → no coherent prior season → no proposal
+    expect(
+      evaluateClimateProposal(currentTriggers, priorTriggers, VALID_CONSTRAINTS),
+    ).toBeUndefined()
+  })
+
   it('prefers core divergence over long-arc drift', () => {
     const coreCtx = makePersistenceContext('org/core', {
       stratum: 'structural_core',
@@ -272,10 +339,11 @@ describe('shouldWithdrawProposal', () => {
     ).toBe(true)
   })
 
-  it('keeps proposal when core divergence persists', () => {
+  it('keeps proposal when core divergence persists in same direction', () => {
     const ctx = makePersistenceContext('org/core', {
       stratum: 'structural_core',
       persistentlyDivergent: true,
+      divergentSeason: 'expansion',
     })
     expect(
       shouldWithdrawProposal(
@@ -283,6 +351,40 @@ describe('shouldWithdrawProposal', () => {
         makeTriggered({ coreDivergence: [ctx] }),
       ),
     ).toBe(false)
+  })
+
+  it('withdraws when core divergence direction changes', () => {
+    const ctx = makePersistenceContext('org/core', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'pruning', // proposal was for 'expansion'
+    })
+    expect(
+      shouldWithdrawProposal(
+        coreProposal,
+        makeTriggered({ coreDivergence: [ctx] }),
+      ),
+    ).toBe(true)
+  })
+
+  it('withdraws when core divergence loses coherent direction', () => {
+    const ctx1 = makePersistenceContext('org/core1', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    const ctx2 = makePersistenceContext('org/core2', {
+      stratum: 'structural_core',
+      persistentlyDivergent: true,
+      divergentSeason: 'pruning',
+    })
+    // Mixed directions → no coherent season → withdraw
+    expect(
+      shouldWithdrawProposal(
+        coreProposal,
+        makeTriggered({ coreDivergence: [ctx1, ctx2] }),
+      ),
+    ).toBe(true)
   })
 
   it('withdraws long-arc drift proposal when drift stops', () => {
@@ -298,6 +400,50 @@ describe('shouldWithdrawProposal', () => {
         makeTriggered({ longArcDrift: { repos: [] } }),
       ),
     ).toBe(true)
+  })
+
+  it('withdraws long-arc drift proposal when direction changes', () => {
+    const driftProposal: ClimateProposal = {
+      climate: 'pruning',
+      basis: 'long_arc_alignment',
+      triggerType: 'long_arc_drift',
+      observedSeason: 'pruning',
+    }
+    const ctx = makePersistenceContext('org/app', {
+      stratum: 'long_arc_domain',
+      persistentlyDivergent: true,
+      divergentSeason: 'expansion',
+    })
+    expect(
+      shouldWithdrawProposal(
+        driftProposal,
+        makeTriggered({
+          longArcDrift: { repos: [ctx, ctx], coherentSeason: 'expansion' },
+        }),
+      ),
+    ).toBe(true)
+  })
+
+  it('keeps long-arc drift proposal when direction persists', () => {
+    const driftProposal: ClimateProposal = {
+      climate: 'pruning',
+      basis: 'long_arc_alignment',
+      triggerType: 'long_arc_drift',
+      observedSeason: 'pruning',
+    }
+    const ctx = makePersistenceContext('org/app', {
+      stratum: 'long_arc_domain',
+      persistentlyDivergent: true,
+      divergentSeason: 'pruning',
+    })
+    expect(
+      shouldWithdrawProposal(
+        driftProposal,
+        makeTriggered({
+          longArcDrift: { repos: [ctx, ctx], coherentSeason: 'pruning' },
+        }),
+      ),
+    ).toBe(false)
   })
 })
 

@@ -39,19 +39,19 @@ export const declareClimate = createServerFn({ method: 'POST' })
 
 /**
  * Accept a climate proposal — confirms the proposed climate as a declaration.
- * Accepts the proposal record and persists the climate declaration atomically.
+ * Atomically marks the proposal as accepted and persists the climate
+ * declaration in a single transaction within the proposal store.
  */
 export const acceptClimateProposal = createServerFn({ method: 'POST' })
   .handler(async () => {
     const identity = await getStewardIdentity()
     if (!identity) throw new Error('Not authenticated')
 
-    const active = getActiveProposal()
+    const active = getActiveProposal(identity.id)
     if (!active) throw new Error('No active proposal')
 
-    // Accept proposal and persist climate declaration
-    acceptProposalDb(active.id)
-    persistClimate(active.climate as Climate, identity.id, identity.login)
+    // Atomic: marks proposal accepted + inserts climate declaration
+    acceptProposalDb(active.id, identity.id, identity.login)
 
     return { climate: active.climate as Climate }
   })
@@ -65,9 +65,9 @@ export const dismissClimateProposal = createServerFn({ method: 'POST' })
     const identity = await getStewardIdentity()
     if (!identity) throw new Error('Not authenticated')
 
-    const active = getActiveProposal()
+    const active = getActiveProposal(identity.id)
     if (!active) throw new Error('No active proposal')
 
-    dismissProposalDb(active.id)
+    dismissProposalDb(active.id, identity.id)
     return { dismissed: true }
   })

@@ -46,36 +46,39 @@ export function evaluateClimateProposal(
     return undefined
   }
 
-  // §5.1 — Core Divergence persists across both windows
+  // §5.1 — Core Divergence persists across both windows in the same direction
   if (
     currentTriggers.coreDivergence.length > 0 &&
     priorTriggers.coreDivergence.length > 0
   ) {
-    const season = findCoherentDivergentSeason(currentTriggers.coreDivergence)
-    if (season) {
+    const currentSeason = findCoherentDivergentSeason(currentTriggers.coreDivergence)
+    const priorSeason = findCoherentDivergentSeason(priorTriggers.coreDivergence)
+    // Both windows must have a coherent season AND they must match —
+    // a shift from pruning to expansion between windows is not persistence.
+    if (currentSeason && priorSeason && currentSeason === priorSeason) {
       return {
-        climate: season as Climate,
+        climate: currentSeason as Climate,
         basis: 'sustained_core_divergence',
         triggerType: 'core_divergence',
-        observedSeason: season,
+        observedSeason: currentSeason,
       }
     }
   }
 
-  // §5.3 — Long-Arc Drift persists across both windows
+  // §5.3 — Long-Arc Drift persists across both windows in the same direction
   if (
     currentTriggers.longArcDrift.repos.length > 0 &&
     priorTriggers.longArcDrift.repos.length > 0
   ) {
-    const season =
-      currentTriggers.longArcDrift.coherentSeason ??
-      priorTriggers.longArcDrift.coherentSeason
-    if (season) {
+    const currentSeason = currentTriggers.longArcDrift.coherentSeason
+    const priorSeason = priorTriggers.longArcDrift.coherentSeason
+    // Both windows must have a coherent season AND they must match.
+    if (currentSeason && priorSeason && currentSeason === priorSeason) {
       return {
-        climate: season as Climate,
+        climate: currentSeason as Climate,
         basis: 'long_arc_alignment',
         triggerType: 'long_arc_drift',
-        observedSeason: season,
+        observedSeason: currentSeason,
       }
     }
   }
@@ -148,8 +151,10 @@ export function escalatedObservation(
  * Determine whether an existing proposal should be withdrawn.
  *
  * §2.3 — Grove must withdraw a proposal if the underlying pattern reverses.
- * A pattern has reversed when the current trigger evaluation no longer fires
- * the same trigger type that generated the proposal.
+ * A pattern has reversed when:
+ * - The trigger type that generated the proposal no longer fires, OR
+ * - The trigger still fires but the observed direction has changed
+ *   (e.g., divergence shifted from pruning to expansion)
  */
 export function shouldWithdrawProposal(
   proposal: ClimateProposal,
@@ -158,11 +163,31 @@ export function shouldWithdrawProposal(
   if (!currentTriggers.triggered) return true
 
   switch (proposal.triggerType) {
-    case 'core_divergence':
-      return currentTriggers.coreDivergence.length === 0
+    case 'core_divergence': {
+      if (currentTriggers.coreDivergence.length === 0) return true
+      // Withdraw if the divergent direction has changed
+      if (proposal.observedSeason) {
+        const currentSeason = findCoherentDivergentSeason(
+          currentTriggers.coreDivergence,
+        )
+        if (currentSeason !== proposal.observedSeason) return true
+      }
+      return false
+    }
     case 'core_split':
       return !currentTriggers.coreSplit
-    case 'long_arc_drift':
-      return currentTriggers.longArcDrift.repos.length === 0
+    case 'long_arc_drift': {
+      if (currentTriggers.longArcDrift.repos.length === 0) return true
+      // Withdraw if the coherent drift direction has changed
+      if (proposal.observedSeason) {
+        if (
+          currentTriggers.longArcDrift.coherentSeason !==
+          proposal.observedSeason
+        ) {
+          return true
+        }
+      }
+      return false
+    }
   }
 }
