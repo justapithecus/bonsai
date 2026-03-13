@@ -116,7 +116,8 @@ describe('observeCapability', () => {
 
     expect(
       result!.descriptions.some((d) =>
-        d.includes('declares a library role'),
+        d.includes('declares a library role') &&
+        d.includes('co-located tests would not be detected'),
       ),
     ).toBe(true)
   })

@@ -1,6 +1,4 @@
 import type {
-  AccessibilityObservation,
-  CapabilityObservation,
   DensityObservation,
   RepositoryEcology,
 } from '@grove/core'

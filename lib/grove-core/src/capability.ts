@@ -75,11 +75,13 @@ export function observeCapability(
     )
   }
 
-  // Surface tension between declared role and observed infrastructure
+  // Surface tension between declared role and observed infrastructure.
+  // Note: detection is limited to top-level test directories. Co-located
+  // test files (e.g. *.test.ts alongside source) are not detected.
   if (declaration?.role === 'library') {
-    if (!signals.testDirectoryPresent) {
+    if (signals.testDirectoryPresent === false) {
       descriptions.push(
-        'This project declares a library role. No test directory was observed.',
+        'This project declares a library role. No top-level test directory was observed (co-located tests would not be detected).',
       )
     }
   }

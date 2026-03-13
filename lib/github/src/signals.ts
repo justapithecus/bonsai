@@ -79,12 +79,12 @@ interface TreeSignals {
   fileCount: number | undefined
   manifests: string[]
   hasRootPackageJson: boolean
-  readmePresent: boolean
-  contributingPresent: boolean
-  licensePresent: boolean
-  docsDirectoryPresent: boolean
-  ciConfigPresent: boolean
-  testDirectoryPresent: boolean
+  readmePresent: boolean | undefined
+  contributingPresent: boolean | undefined
+  licensePresent: boolean | undefined
+  docsDirectoryPresent: boolean | undefined
+  ciConfigPresent: boolean | undefined
+  testDirectoryPresent: boolean | undefined
 }
 
 async function fetchTreeSignals(
@@ -174,16 +174,23 @@ async function fetchTreeSignals(
     }
   }
 
+  // When truncated, only positive observations are reliable — absence
+  // cannot be confirmed because the tree is incomplete. Return undefined
+  // (not observed) instead of false (observed as absent) for any signal
+  // that was not positively detected.
+  const guard = (observed: boolean): boolean | undefined =>
+    truncated ? (observed || undefined) : observed
+
   return {
     fileCount: truncated ? undefined : fileCount,
     manifests,
     hasRootPackageJson,
-    readmePresent,
-    contributingPresent,
-    licensePresent,
-    docsDirectoryPresent,
-    ciConfigPresent,
-    testDirectoryPresent,
+    readmePresent: guard(readmePresent),
+    contributingPresent: guard(contributingPresent),
+    licensePresent: guard(licensePresent),
+    docsDirectoryPresent: guard(docsDirectoryPresent),
+    ciConfigPresent: guard(ciConfigPresent),
+    testDirectoryPresent: guard(testDirectoryPresent),
   }
 }
 
