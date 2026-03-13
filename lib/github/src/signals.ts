@@ -126,21 +126,23 @@ async function fetchTreeSignals(
     if (entry.type === 'blob') {
       fileCount++
 
-      // Check root-level manifests only (no / in path)
-      const fileName = entry.path.includes('/')
-        ? undefined
-        : entry.path
+      // Extract the filename (last segment of path)
+      const baseName = entry.path.split('/').pop() ?? entry.path
+      const isRootLevel = !entry.path.includes('/')
 
-      if (fileName && KNOWN_MANIFESTS.has(fileName)) {
-        manifests.push(fileName)
-        if (fileName === 'package.json') {
-          hasRootPackageJson = true
-        }
+      // Detect manifests at any depth — a go.mod implies Go toolchain
+      // whether it lives at root or in a monorepo subdirectory.
+      // Deduplicate by manifest name (only record each type once).
+      if (KNOWN_MANIFESTS.has(baseName) && !manifests.includes(baseName)) {
+        manifests.push(baseName)
+      }
+      if (isRootLevel && baseName === 'package.json') {
+        hasRootPackageJson = true
       }
 
       // Documentation artifacts (root-level, case-insensitive)
-      if (fileName) {
-        const lower = fileName.toLowerCase()
+      if (isRootLevel) {
+        const lower = baseName.toLowerCase()
         if (lower.startsWith('readme')) readmePresent = true
         if (lower.startsWith('contributing')) contributingPresent = true
         if (lower.startsWith('license') || lower === 'licence' || lower === 'licence.md') {
@@ -162,20 +164,20 @@ async function fetchTreeSignals(
 
       // Co-located test file patterns (any depth)
       if (!testFilePatternsObserved) {
-        const base = path.split('/').pop() ?? ''
+        const lowerBase = baseName.toLowerCase()
         if (
-          base.endsWith('_test.go') ||               // Go
-          base.endsWith('.test.ts') ||                // TypeScript
-          base.endsWith('.test.js') ||                // JavaScript
-          base.endsWith('.test.tsx') ||               // React/TSX
-          base.endsWith('.test.jsx') ||               // React/JSX
-          base.endsWith('.spec.ts') ||                // TypeScript spec
-          base.endsWith('.spec.js') ||                // JavaScript spec
-          base.endsWith('.spec.tsx') ||               // React/TSX spec
-          base.endsWith('.spec.jsx') ||               // React/JSX spec
-          base.endsWith('_test.py') ||                // Python (suffix)
-          base.startsWith('test_') ||                 // Python (prefix)
-          base.endsWith('_test.rs')                   // Rust
+          lowerBase.endsWith('_test.go') ||               // Go
+          lowerBase.endsWith('.test.ts') ||                // TypeScript
+          lowerBase.endsWith('.test.js') ||                // JavaScript
+          lowerBase.endsWith('.test.tsx') ||               // React/TSX
+          lowerBase.endsWith('.test.jsx') ||               // React/JSX
+          lowerBase.endsWith('.spec.ts') ||                // TypeScript spec
+          lowerBase.endsWith('.spec.js') ||                // JavaScript spec
+          lowerBase.endsWith('.spec.tsx') ||               // React/TSX spec
+          lowerBase.endsWith('.spec.jsx') ||               // React/JSX spec
+          lowerBase.endsWith('_test.py') ||                // Python (suffix)
+          (lowerBase.startsWith('test_') && lowerBase.endsWith('.py')) || // Python (prefix)
+          lowerBase.endsWith('_test.rs')                   // Rust
         ) {
           testFilePatternsObserved = true
         }
