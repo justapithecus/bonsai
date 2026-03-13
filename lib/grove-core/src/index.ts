@@ -1,3 +1,5 @@
+export { observeAccessibility } from './accessibility'
+export { observeCapability } from './capability'
 export { observeConsolidationInterval } from './consolidation'
 export {
   classifyRepository,
@@ -42,6 +44,8 @@ export {
   evaluateEcosystemTriggers,
 } from './triggers'
 export type {
+  AccessibilityObservation,
+  CapabilityObservation,
   Climate,
   ClimateRelation,
   ClimateProposal,

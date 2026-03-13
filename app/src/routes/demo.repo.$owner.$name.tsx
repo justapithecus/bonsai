@@ -1,10 +1,17 @@
-import type { DensityObservation, RepositoryEcology } from '@grove/core'
+import type {
+  DensityObservation,
+  RepositoryEcology,
+} from '@grove/core'
 import {
+  observeAccessibility,
+  observeCapability,
   observeConsolidationInterval,
   surfaceRitualInvitations,
 } from '@grove/core'
 import { Link, createFileRoute } from '@tanstack/react-router'
 
+import { AccessibilityDisplay } from '../components/AccessibilityDisplay'
+import { CapabilityDisplay } from '../components/CapabilityDisplay'
 import { ConsolidationDisplay } from '../components/ConsolidationDisplay'
 import { DensityDisplay } from '../components/DensityDisplay'
 import { Header } from '../components/Header'
@@ -24,6 +31,12 @@ const DEMO_DENSITY: Record<string, DensityObservation> = {
       commitsLast90d: 45,
       dependencyManifestsObserved: ['package.json'],
       ecosystemDependencyCount: 1,
+      readmePresent: true,
+      contributingPresent: false,
+      licensePresent: true,
+      docsDirectoryPresent: true,
+      ciConfigPresent: true,
+      testDirectoryPresent: true,
       observedAt: '2026-02-23T00:00:00Z',
     },
   },
@@ -36,6 +49,12 @@ const DEMO_DENSITY: Record<string, DensityObservation> = {
       commitsLast30d: 12,
       commitsLast90d: 58,
       dependencyManifestsObserved: ['package.json'],
+      readmePresent: true,
+      contributingPresent: true,
+      licensePresent: true,
+      docsDirectoryPresent: true,
+      ciConfigPresent: true,
+      testDirectoryPresent: true,
       observedAt: '2026-02-23T00:00:00Z',
     },
   },
@@ -47,6 +66,12 @@ const DEMO_DENSITY: Record<string, DensityObservation> = {
       fileCount: 34,
       commitsLast30d: 7,
       commitsLast90d: 12,
+      readmePresent: false,
+      contributingPresent: false,
+      licensePresent: false,
+      docsDirectoryPresent: false,
+      ciConfigPresent: false,
+      testDirectoryPresent: false,
       observedAt: '2026-02-23T00:00:00Z',
     },
   },
@@ -59,6 +84,12 @@ const DEMO_DENSITY: Record<string, DensityObservation> = {
       commitsLast30d: 0,
       commitsLast90d: 1,
       dependencyManifestsObserved: ['package.json'],
+      readmePresent: true,
+      contributingPresent: false,
+      licensePresent: true,
+      docsDirectoryPresent: false,
+      ciConfigPresent: false,
+      testDirectoryPresent: false,
       observedAt: '2026-02-23T00:00:00Z',
     },
   },
@@ -182,11 +213,19 @@ function DemoRepositoryDetailPage() {
     )
   }
 
-  // Compute consolidation + rituals using grove-core
+  // Compute observations using grove-core
   const consolidation = observeConsolidationInterval(
     ecology.declaration?.consolidation_interval_days,
     DEMO_LAST_ACTIVITY[fullName],
   )
+
+  const signals = ecology.density?.signals
+  const accessibility = signals
+    ? observeAccessibility(signals, ecology.declaration)
+    : undefined
+  const capability = signals
+    ? observeCapability(signals, ecology.declaration)
+    : undefined
 
   const ritualInvitations = surfaceRitualInvitations(
     ecology.declaration,
@@ -292,6 +331,12 @@ function DemoRepositoryDetailPage() {
 
             {/* Structural density */}
             <DensityDisplay density={ecology.density} />
+
+            {/* Accessibility */}
+            <AccessibilityDisplay accessibility={accessibility} />
+
+            {/* Capability infrastructure */}
+            <CapabilityDisplay capability={capability} />
           </div>
         )}
 

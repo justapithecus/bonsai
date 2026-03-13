@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
+import { AccessibilityDisplay } from '../components/AccessibilityDisplay'
+import { CapabilityDisplay } from '../components/CapabilityDisplay'
 import { ConsolidationDisplay } from '../components/ConsolidationDisplay'
 import { DensityDisplay } from '../components/DensityDisplay'
 import { DriftDisplay } from '../components/DriftDisplay'
@@ -25,18 +27,19 @@ export const Route = createFileRoute('/repo/$owner/$name')({
 
 function RepositoryDetailPage() {
   const { session, detail } = Route.useLoaderData()
-  const { ecology, consolidation, phaseDuration, shapeDrift, motionDrift, ritualInvitations, timeline } = detail
+  const { ecology, consolidation, phaseDuration, shapeDrift, motionDrift, accessibility, capability, ritualInvitations, timeline } = detail
 
   const seasonAttr = ecology.season?.season
 
   return (
     <div
       data-season={seasonAttr}
-      style={{ backgroundColor: 'var(--grove-bg)', minHeight: '100vh' }}
+      className="flex flex-col h-screen"
+      style={{ backgroundColor: 'var(--grove-bg)' }}
     >
       <Header login={session.login} />
 
-      <main className="px-8 py-8">
+      <main className="flex-1 min-h-0 flex flex-col px-8 py-8">
         <Link
           to="/"
           className="text-sm mb-6 inline-block"
@@ -64,9 +67,9 @@ function RepositoryDetailPage() {
           </p>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,20rem)] gap-x-12 gap-y-8 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,20rem)] gap-x-12 gap-y-8 mt-6 flex-1 min-h-0">
           {/* Left column — ecology details + ritual invitations */}
-          <div className="max-w-xl">
+          <div className="max-w-xl overflow-y-auto">
             {ecology.declaration && (
               <div className="space-y-6">
                 {/* Intent */}
@@ -130,6 +133,12 @@ function RepositoryDetailPage() {
 
                 {/* Structural density */}
                 <DensityDisplay density={ecology.density} />
+
+                {/* Accessibility */}
+                <AccessibilityDisplay accessibility={accessibility} />
+
+                {/* Capability infrastructure */}
+                <CapabilityDisplay capability={capability} />
               </div>
             )}
 
@@ -158,7 +167,7 @@ function RepositoryDetailPage() {
           </div>
 
           {/* Right column — structural timeline */}
-          <div>
+          <div className="overflow-y-auto">
             <StructuralTimeline timeline={timeline} />
           </div>
         </div>

@@ -65,6 +65,12 @@ export async function fetchStructuralSignals(
     commitsLast90d: commits?.commitsLast90d,
     dependencyManifestsObserved: tree?.manifests,
     ecosystemDependencyCount,
+    readmePresent: tree?.readmePresent,
+    contributingPresent: tree?.contributingPresent,
+    licensePresent: tree?.licensePresent,
+    docsDirectoryPresent: tree?.docsDirectoryPresent,
+    ciConfigPresent: tree?.ciConfigPresent,
+    testDirectoryPresent: tree?.testDirectoryPresent,
     observedAt,
   }
 }
@@ -73,6 +79,12 @@ interface TreeSignals {
   fileCount: number | undefined
   manifests: string[]
   hasRootPackageJson: boolean
+  readmePresent: boolean | undefined
+  contributingPresent: boolean | undefined
+  licensePresent: boolean | undefined
+  docsDirectoryPresent: boolean | undefined
+  ciConfigPresent: boolean | undefined
+  testDirectoryPresent: boolean | undefined
 }
 
 async function fetchTreeSignals(
@@ -100,6 +112,12 @@ async function fetchTreeSignals(
   let fileCount = 0
   const manifests: string[] = []
   let hasRootPackageJson = false
+  let readmePresent = false
+  let contributingPresent = false
+  let licensePresent = false
+  let docsDirectoryPresent = false
+  let ciConfigPresent = false
+  let testDirectoryPresent = false
 
   for (const entry of tree) {
     if (entry.type === 'blob') {
@@ -116,13 +134,63 @@ async function fetchTreeSignals(
           hasRootPackageJson = true
         }
       }
+
+      // Documentation artifacts (root-level, case-insensitive)
+      if (fileName) {
+        const lower = fileName.toLowerCase()
+        if (lower.startsWith('readme')) readmePresent = true
+        if (lower.startsWith('contributing')) contributingPresent = true
+        if (lower.startsWith('license') || lower === 'licence' || lower === 'licence.md') {
+          licensePresent = true
+        }
+      }
+
+      // CI config files (any depth)
+      const path = entry.path.toLowerCase()
+      if (
+        path.startsWith('.github/workflows/') ||
+        path === '.gitlab-ci.yml' ||
+        path === '.travis.yml' ||
+        path === 'jenkinsfile' ||
+        path === '.circleci/config.yml'
+      ) {
+        ciConfigPresent = true
+      }
+    }
+
+    // Directory-level checks (trees + blobs under known paths)
+    const topDir = entry.path.split('/')[0]?.toLowerCase()
+    if (topDir === 'docs' || topDir === 'doc' || topDir === 'documentation') {
+      docsDirectoryPresent = true
+    }
+    if (
+      topDir === 'test' ||
+      topDir === 'tests' ||
+      topDir === '__tests__' ||
+      topDir === 'spec' ||
+      topDir === 'specs'
+    ) {
+      testDirectoryPresent = true
     }
   }
+
+  // When truncated, only positive observations are reliable — absence
+  // cannot be confirmed because the tree is incomplete. Return undefined
+  // (not observed) instead of false (observed as absent) for any signal
+  // that was not positively detected.
+  const guard = (observed: boolean): boolean | undefined =>
+    truncated ? (observed || undefined) : observed
 
   return {
     fileCount: truncated ? undefined : fileCount,
     manifests,
     hasRootPackageJson,
+    readmePresent: guard(readmePresent),
+    contributingPresent: guard(contributingPresent),
+    licensePresent: guard(licensePresent),
+    docsDirectoryPresent: guard(docsDirectoryPresent),
+    ciConfigPresent: guard(ciConfigPresent),
+    testDirectoryPresent: guard(testDirectoryPresent),
   }
 }
 

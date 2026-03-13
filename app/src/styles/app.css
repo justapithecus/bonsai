@@ -16,3 +16,22 @@ body {
   background-color: var(--grove-bg);
   color: var(--grove-text);
 }
+
+/* Subtle scrollbar styling — calm, unobtrusive */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--grove-border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--grove-border);
+  border-radius: 3px;
+}

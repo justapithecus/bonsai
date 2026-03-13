@@ -1,5 +1,7 @@
 import {
   findReferenceSnapshot,
+  observeAccessibility,
+  observeCapability,
   observeConsolidationInterval,
   observeMotionDrift,
   observePhaseDuration,
@@ -8,6 +10,8 @@ import {
   surfaceRitualInvitations,
 } from '@grove/core'
 import type {
+  AccessibilityObservation,
+  CapabilityObservation,
   ConsolidationObservation,
   MotionDriftObservation,
   PhaseDurationObservation,
@@ -39,6 +43,8 @@ export interface RepositoryDetail {
   phaseDuration?: PhaseDurationObservation
   shapeDrift?: ShapeDriftObservation
   motionDrift?: MotionDriftObservation
+  accessibility?: AccessibilityObservation
+  capability?: CapabilityObservation
   ritualInvitations: RitualInvitation[]
   timeline: TimelineEntry[]
 }
@@ -143,6 +149,10 @@ export const loadRepository = createServerFn({ method: 'GET' })
         )
       : undefined
 
+    // Observe accessibility and capability
+    const accessibility = observeAccessibility(signals, ecology.declaration)
+    const capability = observeCapability(signals, ecology.declaration)
+
     // Surface ritual invitations
     const ritualInvitations = surfaceRitualInvitations(
       ecology.declaration,
@@ -156,6 +166,8 @@ export const loadRepository = createServerFn({ method: 'GET' })
       phaseDuration,
       shapeDrift,
       motionDrift,
+      accessibility,
+      capability,
       ritualInvitations,
       timeline,
     }
