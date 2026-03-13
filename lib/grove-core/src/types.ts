@@ -149,6 +149,8 @@ export interface StructuralSignals {
   /** CI/CD and testing infrastructure observed in the tree */
   ciConfigPresent?: boolean
   testDirectoryPresent?: boolean
+  /** Co-located test file patterns observed (e.g. *_test.go, *.test.ts) */
+  testFilePatternsObserved?: boolean
   observedAt: string // ISO 8601
 }
 

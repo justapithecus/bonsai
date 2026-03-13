@@ -31,9 +31,12 @@ export function observeCapability(
     observedInfrastructure.push('CI/CD configuration')
   }
 
-  // Test infrastructure
+  // Test infrastructure — dedicated directory or co-located file patterns
   if (signals.testDirectoryPresent === true) {
     observedInfrastructure.push('Test directory')
+  }
+  if (signals.testFilePatternsObserved === true) {
+    observedInfrastructure.push('Co-located test files')
   }
 
   // Dependency manifests imply build/install paths
@@ -50,38 +53,50 @@ export function observeCapability(
   }
 
   // Build observational descriptions
-  if (signals.ciConfigPresent && signals.testDirectoryPresent) {
+  const hasTestInfrastructure =
+    signals.testDirectoryPresent === true ||
+    signals.testFilePatternsObserved === true
+
+  if (signals.ciConfigPresent && hasTestInfrastructure) {
     descriptions.push(
-      'Both CI configuration and a test directory are present, suggesting an automated verification path exists.',
+      'Both CI configuration and test infrastructure are present, suggesting an automated verification path exists.',
     )
   } else if (signals.ciConfigPresent) {
     descriptions.push(
-      'CI configuration is present. No dedicated test directory was observed.',
+      'CI configuration is present. No test infrastructure was observed.',
     )
-  } else if (signals.testDirectoryPresent) {
-    descriptions.push(
-      'A test directory is present. No CI configuration was observed.',
-    )
+  } else if (hasTestInfrastructure) {
+    if (signals.testDirectoryPresent && signals.testFilePatternsObserved) {
+      descriptions.push(
+        'Both a test directory and co-located test files are present. No CI configuration was observed.',
+      )
+    } else if (signals.testFilePatternsObserved) {
+      descriptions.push(
+        'Co-located test files are present. No CI configuration was observed.',
+      )
+    } else {
+      descriptions.push(
+        'A test directory is present. No CI configuration was observed.',
+      )
+    }
   }
 
   if (
     signals.dependencyManifestsObserved &&
     signals.dependencyManifestsObserved.length > 0 &&
     !signals.ciConfigPresent &&
-    !signals.testDirectoryPresent
+    !hasTestInfrastructure
   ) {
     descriptions.push(
       'Dependency manifests are present but no CI or test infrastructure was observed.',
     )
   }
 
-  // Surface tension between declared role and observed infrastructure.
-  // Note: detection is limited to top-level test directories. Co-located
-  // test files (e.g. *.test.ts alongside source) are not detected.
+  // Surface tension between declared role and observed infrastructure
   if (declaration?.role === 'library') {
-    if (signals.testDirectoryPresent === false) {
+    if (!hasTestInfrastructure) {
       descriptions.push(
-        'This project declares a library role. No top-level test directory was observed (co-located tests would not be detected).',
+        'This project declares a library role. No test infrastructure was observed.',
       )
     }
   }

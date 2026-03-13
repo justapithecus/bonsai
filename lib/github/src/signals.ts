@@ -71,6 +71,7 @@ export async function fetchStructuralSignals(
     docsDirectoryPresent: tree?.docsDirectoryPresent,
     ciConfigPresent: tree?.ciConfigPresent,
     testDirectoryPresent: tree?.testDirectoryPresent,
+    testFilePatternsObserved: tree?.testFilePatternsObserved,
     observedAt,
   }
 }
@@ -85,6 +86,7 @@ interface TreeSignals {
   docsDirectoryPresent: boolean | undefined
   ciConfigPresent: boolean | undefined
   testDirectoryPresent: boolean | undefined
+  testFilePatternsObserved: boolean | undefined
 }
 
 async function fetchTreeSignals(
@@ -118,6 +120,7 @@ async function fetchTreeSignals(
   let docsDirectoryPresent = false
   let ciConfigPresent = false
   let testDirectoryPresent = false
+  let testFilePatternsObserved = false
 
   for (const entry of tree) {
     if (entry.type === 'blob') {
@@ -156,6 +159,27 @@ async function fetchTreeSignals(
       ) {
         ciConfigPresent = true
       }
+
+      // Co-located test file patterns (any depth)
+      if (!testFilePatternsObserved) {
+        const base = path.split('/').pop() ?? ''
+        if (
+          base.endsWith('_test.go') ||               // Go
+          base.endsWith('.test.ts') ||                // TypeScript
+          base.endsWith('.test.js') ||                // JavaScript
+          base.endsWith('.test.tsx') ||               // React/TSX
+          base.endsWith('.test.jsx') ||               // React/JSX
+          base.endsWith('.spec.ts') ||                // TypeScript spec
+          base.endsWith('.spec.js') ||                // JavaScript spec
+          base.endsWith('.spec.tsx') ||               // React/TSX spec
+          base.endsWith('.spec.jsx') ||               // React/JSX spec
+          base.endsWith('_test.py') ||                // Python (suffix)
+          base.startsWith('test_') ||                 // Python (prefix)
+          base.endsWith('_test.rs')                   // Rust
+        ) {
+          testFilePatternsObserved = true
+        }
+      }
     }
 
     // Directory-level checks (trees + blobs under known paths)
@@ -191,6 +215,7 @@ async function fetchTreeSignals(
     docsDirectoryPresent: guard(docsDirectoryPresent),
     ciConfigPresent: guard(ciConfigPresent),
     testDirectoryPresent: guard(testDirectoryPresent),
+    testFilePatternsObserved: guard(testFilePatternsObserved),
   }
 }
 
