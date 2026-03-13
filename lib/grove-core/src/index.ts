@@ -17,6 +17,15 @@ export {
   PERSISTENCE_WINDOW_SIZE,
 } from './persistence'
 export { observePhaseDuration, suggestsReaffirmation } from './phase-duration'
+export {
+  escalatedObservation,
+  evaluateClimateProposal,
+  meetsProposalConstraints,
+  PROPOSAL_MIN_HISTORY_DAYS,
+  PROPOSAL_MIN_REPOS,
+  shouldWithdrawProposal,
+} from './proposals'
+export type { ProposalConstraints } from './proposals'
 export { observeStructuralDensity } from './density'
 export { parseGroveYaml } from './parser'
 export type { ParseResult } from './parser'
@@ -35,6 +44,7 @@ export {
 export type {
   Climate,
   ClimateRelation,
+  ClimateProposal,
   ClimateState,
   ClimateTension,
   ConsolidationObservation,

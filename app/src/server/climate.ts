@@ -2,7 +2,13 @@ import { CLIMATES } from '@grove/core'
 import type { Climate } from '@grove/core'
 import { createServerFn } from '@tanstack/react-start'
 
-import { getCurrentClimate, persistClimate } from './db'
+import {
+  acceptProposal as acceptProposalDb,
+  dismissProposal as dismissProposalDb,
+  getActiveProposal,
+  getCurrentClimate,
+  persistClimate,
+} from './db'
 import { getStewardIdentity } from './identity'
 
 export const getClimate = createServerFn({ method: 'GET' }).handler(
@@ -29,4 +35,39 @@ export const declareClimate = createServerFn({ method: 'POST' })
 
     persistClimate(data.climate, identity.id, identity.login)
     return { climate: data.climate }
+  })
+
+/**
+ * Accept a climate proposal — confirms the proposed climate as a declaration.
+ * Atomically marks the proposal as accepted and persists the climate
+ * declaration in a single transaction within the proposal store.
+ */
+export const acceptClimateProposal = createServerFn({ method: 'POST' })
+  .handler(async () => {
+    const identity = await getStewardIdentity()
+    if (!identity) throw new Error('Not authenticated')
+
+    const active = getActiveProposal(identity.id)
+    if (!active) throw new Error('No active proposal')
+
+    // Atomic: marks proposal accepted + inserts climate declaration
+    acceptProposalDb(active.id, identity.id, identity.login)
+
+    return { climate: active.climate as Climate }
+  })
+
+/**
+ * Dismiss a climate proposal — steward declines the suggestion.
+ * The proposal is marked dismissed. Grove may re-propose if the pattern persists.
+ */
+export const dismissClimateProposal = createServerFn({ method: 'POST' })
+  .handler(async () => {
+    const identity = await getStewardIdentity()
+    if (!identity) throw new Error('Not authenticated')
+
+    const active = getActiveProposal(identity.id)
+    if (!active) throw new Error('No active proposal')
+
+    dismissProposalDb(active.id, identity.id)
+    return { dismissed: true }
   })

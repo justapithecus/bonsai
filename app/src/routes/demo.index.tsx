@@ -1,4 +1,9 @@
-import type { Climate, DensityObservation, RepositoryEcology } from '@grove/core'
+import type {
+  Climate,
+  ClimateProposal,
+  DensityObservation,
+  RepositoryEcology,
+} from '@grove/core'
 import { CLIMATES } from '@grove/core'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -134,6 +139,19 @@ const DEMO_REPOSITORIES: RepositoryEcology[] = [
 
 const DEFAULT_CLIMATE: Climate = 'consolidation'
 
+/**
+ * Demo proposal — simulates §5.4 escalation where grove (perennial/stewardship
+ * = Set A structural core) has persistently diverged toward expansion while the
+ * declared climate is consolidation. In production this would require 28 days of
+ * sustained trigger data.
+ */
+const DEMO_PROPOSAL: ClimateProposal = {
+  climate: 'expansion',
+  basis: 'sustained_core_divergence',
+  triggerType: 'core_divergence',
+  observedSeason: 'expansion',
+}
+
 // --- Route ---
 
 export const Route = createFileRoute('/demo/')({
@@ -142,6 +160,9 @@ export const Route = createFileRoute('/demo/')({
 
 function DemoPortfolioPage() {
   const [climate, setClimate] = useState<Climate | undefined>(DEFAULT_CLIMATE)
+  const [proposal, setProposal] = useState<ClimateProposal | undefined>(
+    DEMO_PROPOSAL,
+  )
   const [showClimatePanel, setShowClimatePanel] = useState(false)
 
   const seasonAttr = climate ?? undefined
@@ -154,7 +175,23 @@ function DemoPortfolioPage() {
       <Header login="Demo" />
       <ClimateBand
         climate={climate}
+        proposal={proposal}
         onOpenDeclaration={() => setShowClimatePanel(true)}
+        onAcceptProposal={
+          proposal
+            ? () => {
+                setClimate(proposal.climate)
+                setProposal(undefined)
+              }
+            : undefined
+        }
+        onDismissProposal={
+          proposal
+            ? () => {
+                setProposal(undefined)
+              }
+            : undefined
+        }
       />
 
       {showClimatePanel && (
