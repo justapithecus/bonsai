@@ -53,18 +53,19 @@ describe('observeCapability', () => {
       makeSignals({
         ciConfigPresent: true,
         testDirectoryPresent: false,
+        testFilePatternsObserved: false,
         dependencyManifestsObserved: ['package.json'],
       }),
     )
 
     expect(
       result!.descriptions.some((d) =>
-        d.includes('No dedicated test directory was observed'),
+        d.includes('No test infrastructure was observed'),
       ),
     ).toBe(true)
   })
 
-  it('surfaces tests without CI', () => {
+  it('surfaces test directory without CI', () => {
     const result = observeCapability(
       makeSignals({
         ciConfigPresent: false,
@@ -75,7 +76,45 @@ describe('observeCapability', () => {
 
     expect(
       result!.descriptions.some((d) =>
+        d.includes('A test directory is present') &&
         d.includes('No CI configuration was observed'),
+      ),
+    ).toBe(true)
+  })
+
+  it('surfaces co-located test files without CI', () => {
+    const result = observeCapability(
+      makeSignals({
+        ciConfigPresent: false,
+        testDirectoryPresent: false,
+        testFilePatternsObserved: true,
+        dependencyManifestsObserved: ['go.mod'],
+      }),
+    )
+
+    expect(result!.observedInfrastructure).toContain('Co-located test files')
+    expect(
+      result!.descriptions.some((d) =>
+        d.includes('Co-located test files are present'),
+      ),
+    ).toBe(true)
+  })
+
+  it('surfaces CI with co-located test files as automated verification path', () => {
+    const result = observeCapability(
+      makeSignals({
+        ciConfigPresent: true,
+        testDirectoryPresent: false,
+        testFilePatternsObserved: true,
+        dependencyManifestsObserved: ['go.mod'],
+      }),
+    )
+
+    expect(result!.observedInfrastructure).toContain('CI/CD configuration')
+    expect(result!.observedInfrastructure).toContain('Co-located test files')
+    expect(
+      result!.descriptions.some((d) =>
+        d.includes('automated verification path'),
       ),
     ).toBe(true)
   })
@@ -85,6 +124,7 @@ describe('observeCapability', () => {
       makeSignals({
         ciConfigPresent: false,
         testDirectoryPresent: false,
+        testFilePatternsObserved: false,
         dependencyManifestsObserved: ['package.json'],
       }),
     )
@@ -98,7 +138,7 @@ describe('observeCapability', () => {
     ).toBe(true)
   })
 
-  it('notes library role without test directory', () => {
+  it('notes library role without any test infrastructure', () => {
     const declaration: GroveDeclaration = {
       intent: 'A utility library',
       role: 'library',
@@ -109,6 +149,7 @@ describe('observeCapability', () => {
       makeSignals({
         ciConfigPresent: true,
         testDirectoryPresent: false,
+        testFilePatternsObserved: false,
         dependencyManifestsObserved: ['package.json'],
       }),
       declaration,
@@ -117,12 +158,12 @@ describe('observeCapability', () => {
     expect(
       result!.descriptions.some((d) =>
         d.includes('declares a library role') &&
-        d.includes('co-located tests would not be detected'),
+        d.includes('No test infrastructure was observed'),
       ),
     ).toBe(true)
   })
 
-  it('does not note library role when tests are present', () => {
+  it('does not note library role when test directory is present', () => {
     const declaration: GroveDeclaration = {
       intent: 'A utility library',
       role: 'library',
@@ -134,6 +175,30 @@ describe('observeCapability', () => {
         ciConfigPresent: true,
         testDirectoryPresent: true,
         dependencyManifestsObserved: ['package.json'],
+      }),
+      declaration,
+    )
+
+    expect(
+      result!.descriptions.some((d) =>
+        d.includes('declares a library role'),
+      ),
+    ).toBe(false)
+  })
+
+  it('does not note library role when co-located test files are present', () => {
+    const declaration: GroveDeclaration = {
+      intent: 'A Go library',
+      role: 'library',
+      phase: 'expanding',
+    }
+
+    const result = observeCapability(
+      makeSignals({
+        ciConfigPresent: true,
+        testDirectoryPresent: false,
+        testFilePatternsObserved: true,
+        dependencyManifestsObserved: ['go.mod'],
       }),
       declaration,
     )
