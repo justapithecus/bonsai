@@ -8,6 +8,15 @@ export {
 } from './climate-store'
 
 export {
+  acceptProposal,
+  dismissProposal,
+  getActiveProposal,
+  persistProposal,
+  withdrawActiveProposal,
+} from './proposal-store'
+export type { ProposalStatus, StoredProposal } from './proposal-store'
+
+export {
   getDeclarationHistory,
   getLatestDeclaration,
   recordDeclarationIfChanged,

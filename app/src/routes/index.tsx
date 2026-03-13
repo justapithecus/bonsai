@@ -1,6 +1,6 @@
-import type { Climate } from '@grove/core'
+import type { Climate, ClimateProposal } from '@grove/core'
 import { surfaceTriggeredEcosystemInvitations } from '@grove/core'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 
 import { ClimateBand } from '../components/ClimateBand'
@@ -12,6 +12,10 @@ import { RepoCard } from '../components/RepoCard'
 import { RitualInvitation } from '../components/RitualInvitation'
 import { usePagination } from '../hooks/usePagination'
 import { getSession } from '../server/auth'
+import {
+  acceptClimateProposal,
+  dismissClimateProposal,
+} from '../server/climate'
 import { loadPortfolio } from '../server/portfolio'
 
 export const Route = createFileRoute('/')({
@@ -27,9 +31,13 @@ export const Route = createFileRoute('/')({
 
 function PortfolioPage() {
   const { session, portfolio } = Route.useLoaderData()
+  const router = useRouter()
   const [showClimatePanel, setShowClimatePanel] = useState(false)
   const [climate, setClimate] = useState<Climate | undefined>(
     portfolio.climate,
+  )
+  const [proposal, setProposal] = useState<ClimateProposal | undefined>(
+    portfolio.climateProposal,
   )
   const { page, totalPages, paginated, setPage } = usePagination(
     portfolio.repositories,
@@ -70,7 +78,26 @@ function PortfolioPage() {
       <Header login={session.login} />
       <ClimateBand
         climate={climate}
+        proposal={proposal}
         onOpenDeclaration={() => setShowClimatePanel(true)}
+        onAcceptProposal={
+          proposal
+            ? async () => {
+                const result = await acceptClimateProposal()
+                setClimate(result.climate)
+                setProposal(undefined)
+                router.invalidate()
+              }
+            : undefined
+        }
+        onDismissProposal={
+          proposal
+            ? async () => {
+                await dismissClimateProposal()
+                setProposal(undefined)
+              }
+            : undefined
+        }
       />
 
       {showClimatePanel && (

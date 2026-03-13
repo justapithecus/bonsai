@@ -15,6 +15,13 @@
       "when": 1771871808422,
       "tag": "0001_climate_user_id",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1773360848899,
+      "tag": "0002_climate_proposals",
+      "breakpoints": true
     }
   ]
 }

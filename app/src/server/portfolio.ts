@@ -1,4 +1,5 @@
 import type {
+  ClimateProposal,
   DensityObservation,
   EcosystemTriggerResult,
   Portfolio,
@@ -22,7 +23,10 @@ import {
   recordSnapshotBatch,
   upsertRepositories,
 } from './db'
-import { evaluatePortfolioEcosystemTriggers } from './ecosystem-triggers'
+import {
+  evaluatePortfolioEcosystemTriggers,
+  evaluatePortfolioProposals,
+} from './ecosystem-triggers'
 import { getStewardIdentity, isConfigured } from './identity'
 
 const BATCH_SIZE = 10
@@ -34,7 +38,10 @@ const BATCH_SIZE = 10
  */
 export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
   async (): Promise<
-    Portfolio & { ecosystemTriggers?: EcosystemTriggerResult }
+    Portfolio & {
+      ecosystemTriggers?: EcosystemTriggerResult
+      climateProposal?: ClimateProposal
+    }
   > => {
     if (!isConfigured()) {
       return { repositories: [], unclassified: [] }
@@ -153,11 +160,17 @@ export const loadPortfolio = createServerFn({ method: 'GET' }).handler(
       repositories,
     )
 
+    // §5.4 — Evaluate proposal escalation (requires declared climate)
+    const climateProposal = climate
+      ? evaluatePortfolioProposals(climate, repositories, identity.id)
+      : undefined
+
     return {
       repositories,
       unclassified,
       climate,
       ecosystemTriggers,
+      climateProposal,
     }
   },
 )
